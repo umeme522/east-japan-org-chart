@@ -1335,6 +1335,10 @@ function isCollapsibleDepartment(nodeId) {
   return /^dept-\d+$/.test(nodeId);
 }
 
+function isCollapsibleUnitNode(node) {
+  return node?.kind === "unit" && (node.reports?.length ?? 0) > 0;
+}
+
 function buildParentMap(branch) {
   const parents = new Map();
   branch.nodes.forEach((node) => {
@@ -1537,11 +1541,12 @@ function syncCreateParentOptions(branch, targetId, preferredParentId = "") {
 
 function expandPathToNode(branch, nodeId) {
   const parents = buildParentMap(branch);
+  const nodes = nodeMap(branch);
   let currentId = nodeId;
 
   while (parents.has(currentId)) {
     const parentId = parents.get(currentId);
-    if (isCollapsibleDepartment(parentId)) {
+    if (isCollapsibleUnitNode(nodes.get(parentId))) {
       state.expandedDepartmentIds.add(parentId);
     }
     currentId = parentId;
@@ -1590,7 +1595,12 @@ function handleNodeClick(branchId, nodeId) {
     return;
   }
 
-  if (isCollapsibleDepartment(nodeId)) {
+  const node = branch.nodes.find((currentNode) => currentNode.id === nodeId);
+  if (!node) {
+    return;
+  }
+
+  if (isCollapsibleUnitNode(node)) {
     if (state.expandedDepartmentIds.has(nodeId)) {
       state.expandedDepartmentIds.delete(nodeId);
     } else {
@@ -1602,6 +1612,10 @@ function handleNodeClick(branchId, nodeId) {
     state.createStatus = "";
     clearActionStatus();
     render();
+    return;
+  }
+
+  if (node.kind === "unit") {
     return;
   }
 
@@ -1742,7 +1756,7 @@ function toggleEditFormFields(kind) {
   elements.editJoinYearField.hidden = !isPerson;
   elements.editTenureField.hidden = !isPerson;
   elements.editHistoryField.hidden = !isPerson;
-  elements.editDescriptionField.hidden = isPerson;
+  elements.editDescriptionField.hidden = true;
 }
 
 function renderHeroStats() {
@@ -1799,7 +1813,7 @@ function shouldRenderChildren(node, nodes) {
     return node.reports.some((reportId) => visibleDescendant(reportId, nodes));
   }
 
-  if (!isCollapsibleDepartment(node.id)) {
+  if (!isCollapsibleUnitNode(node)) {
     return true;
   }
 
@@ -1824,7 +1838,7 @@ function createNode(node, branch, nodes, path = new Set()) {
 
   const card = document.createElement("button");
   const kindClass = node.kind === "person" ? "person" : "unit";
-  const canToggle = isCollapsibleDepartment(node.id);
+  const canToggle = isCollapsibleUnitNode(node);
   const isExpanded = state.expandedDepartmentIds.has(node.id);
   const hasInlineMeta = node.kind === "person" && node.title;
   const isActive = node.id === state.selectedNodeId;
@@ -1973,9 +1987,8 @@ function renderProfile(branch) {
     elements.profileRoleRow.hidden = true;
     elements.profilePersonMetaRow.hidden = true;
     elements.profileAffiliationRow.classList.add("full");
-    elements.profileDescriptionRow.hidden = false;
-    elements.profileDescriptionLabel.textContent = isOfficeNode(selected) ? "営業所紹介" : "組織紹介";
-    elements.profileDescriptionValue.textContent = selected.description || `${selected.name} の紹介は未設定です。`;
+    elements.profileDescriptionRow.hidden = true;
+    elements.profileDescriptionValue.textContent = "";
   }
 
   populateEditForm(selected);
@@ -2006,7 +2019,6 @@ function populateEditForm(node) {
     elements.editAge.value = "";
     elements.editJoinYear.value = "";
     elements.editTenure.value = "";
-    elements.editDescriptionLabel.textContent = isOfficeNode(node) ? "営業所紹介" : "組織紹介";
     elements.editDescription.value = node.description ?? "";
   }
 }

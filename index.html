@@ -49,7 +49,9 @@
       </section>
 
       <section class="panel panel-members">
-        <section class="member-grid-section">
+        <details class="member-disclosure" id="memberDisclosure" open>
+          <summary>メンバー</summary>
+          <section class="member-grid-section">
           <div class="section-header">
             <div>
               <p class="section-label">メンバー一覧</p>
@@ -58,7 +60,8 @@
             <p class="section-note">氏名を押すと右側に詳細を表示</p>
           </div>
           <div id="memberGrid" class="member-grid" aria-live="polite"></div>
-        </section>
+          </section>
+        </details>
       </section>
 
       <section class="panel panel-create">
