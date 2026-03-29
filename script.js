@@ -1328,7 +1328,9 @@ function visibleDescendant(nodeId, nodes, visited = new Set()) {
 }
 
 function filteredPeople(branch) {
-  return personNodes(branch).filter((node) => matchesSearch(node));
+  return personNodes(branch)
+    .filter((node) => matchesSearch(node))
+    .sort(comparePeopleForDisplay);
 }
 
 function isCollapsibleDepartment(nodeId) {
