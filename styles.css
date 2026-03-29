@@ -137,8 +137,12 @@ textarea {
 
 .toolbar-primary > div:first-child {
   display: grid;
-  gap: 6px;
+  gap: 0;
   min-width: 196px;
+}
+
+.toolbar .section-label {
+  display: none;
 }
 
 .branch-tabs {
@@ -242,6 +246,13 @@ textarea {
   box-shadow: var(--shadow-card);
 }
 
+.summary-card.summary-card-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+}
+
 .summary-card span,
 .section-note,
 .profile-role,
@@ -257,6 +268,13 @@ textarea {
   margin-top: 4px;
   font-size: 1.12rem;
   letter-spacing: 0.01em;
+}
+
+.summary-card.summary-card-count span {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--accent-ink);
+  white-space: nowrap;
 }
 
 .org-chart-section,

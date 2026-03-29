@@ -904,8 +904,7 @@ function renderBranchSummary(branch) {
 
   elements.branchSummary.innerHTML = `
     <article class="summary-card summary-card-count">
-      <span>人数</span>
-      <strong>${peopleCount}名</strong>
+      <span>人数 ${peopleCount}名</span>
     </article>
   `;
 }
