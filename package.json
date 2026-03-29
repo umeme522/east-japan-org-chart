@@ -1,0 +1,16 @@
+{
+  "name": "east-japan-org-chart",
+  "version": "1.0.0",
+  "private": true,
+  "description": "東日本支店の組織図・プロフィール共有アプリ",
+  "scripts": {
+    "start": "node server.js",
+    "share:local": "node server.js",
+    "build:pages": "node tools/build-pages.mjs",
+    "deploy:pages": "npm run build:pages && npx wrangler pages deploy build/cloudflare-pages",
+    "prepare:github": "node tools/prepare-github-upload.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

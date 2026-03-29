@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>支店組織図</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <main class="workspace">
+      <section class="panel panel-main">
+        <div class="toolbar">
+          <div class="toolbar-primary">
+            <div>
+              <p class="section-label">支店</p>
+              <div class="branch-tabs" id="branchTabs" role="tablist" aria-label="支店一覧"></div>
+            </div>
+            <section class="branch-summary" id="branchSummary" aria-live="polite"></section>
+          </div>
+          <label class="search-box" for="memberSearch">
+            <span>メンバー検索</span>
+            <input id="memberSearch" type="search" placeholder="氏名・役職・部署で検索">
+          </label>
+        </div>
+
+        <section class="org-chart-section org-chart-section-wide">
+          <div class="section-header">
+            <div>
+              <h2 id="chartTitle">組織図</h2>
+            </div>
+            <p class="section-note">カードを押すと詳細を表示</p>
+          </div>
+          <div class="chart-frame">
+            <div id="orgChart" class="org-chart" aria-live="polite"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel panel-members">
+        <section class="member-grid-section">
+          <div class="section-header">
+            <div>
+              <p class="section-label">メンバー一覧</p>
+              <h2>支店プロフィール</h2>
+            </div>
+            <p class="section-note">氏名を押すと右側に詳細を表示</p>
+          </div>
+          <div id="memberGrid" class="member-grid" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <aside class="panel panel-detail" id="profilePanel" aria-live="polite">
+        <div id="profileEmpty" class="profile-empty"></div>
+
+        <div id="profileContent" class="profile-content" hidden>
+          <div class="profile-summary">
+            <p class="section-label" id="profileBranch"></p>
+            <h2 id="profileName"></h2>
+          </div>
+
+          <dl class="profile-simple-list">
+            <div id="profileRoleRow" class="profile-simple-wide">
+              <dt>役職</dt>
+              <dd id="profileRoleValue"></dd>
+            </div>
+            <div id="profileAffiliationRow" class="profile-simple-wide">
+              <dt>所属</dt>
+              <dd id="profileAffiliationValue"></dd>
+            </div>
+            <div id="profilePersonMetaRow" class="profile-stat-grid">
+              <div class="profile-stat">
+                <dt>年齢</dt>
+                <dd id="profileAgeValue"></dd>
+              </div>
+              <div class="profile-stat">
+                <dt>入社</dt>
+                <dd id="profileJoinYearValue"></dd>
+              </div>
+              <div class="profile-stat">
+                <dt>勤続</dt>
+                <dd id="profileTenureValue"></dd>
+              </div>
+            </div>
+            <div class="profile-simple-wide" id="profileDescriptionRow">
+              <dt id="profileDescriptionLabel">経歴</dt>
+              <dd id="profileDescriptionValue" class="history-list"></dd>
+            </div>
+          </dl>
+
+          <details class="profile-disclosure" id="profileEditor">
+            <summary>編集</summary>
+            <form id="profileForm" class="edit-form">
+              <label class="edit-field">
+                <span>氏名</span>
+                <input id="editName" type="text" required>
+              </label>
+              <label class="edit-field">
+                <span>役職</span>
+                <input id="editTitle" type="text">
+              </label>
+              <label class="edit-field">
+                <span>所属</span>
+                <input id="editDepartment" type="text">
+              </label>
+              <label class="edit-field" id="editAgeField">
+                <span>年齢</span>
+                <input id="editAge" type="text">
+              </label>
+              <label class="edit-field" id="editJoinYearField">
+                <span>入社年度</span>
+                <input id="editJoinYear" type="text">
+              </label>
+              <label class="edit-field" id="editTenureField">
+                <span>勤続</span>
+                <input id="editTenure" type="text">
+              </label>
+              <div class="edit-field edit-field-wide" id="editHistoryField">
+                <span id="editHistoryFieldLabel">経歴</span>
+                <div id="editHistoryRows" class="history-editor"></div>
+                <button id="addEditHistoryRow" type="button" class="secondary-button history-add-button">経歴を追加</button>
+              </div>
+              <label class="edit-field edit-field-wide" id="editDescriptionField" hidden>
+                <span id="editDescriptionLabel">営業所紹介</span>
+                <textarea id="editDescription" rows="4"></textarea>
+              </label>
+              <div class="edit-actions">
+                <button type="submit" class="primary-button">保存</button>
+                <button id="closeEditPanel" type="button" class="secondary-button">閉じる</button>
+              </div>
+            </form>
+            <p id="editStatus" class="edit-status" aria-live="polite"></p>
+          </details>
+
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

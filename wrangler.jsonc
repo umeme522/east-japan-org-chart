@@ -1,0 +1,6 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "east-japan-org-chart",
+  "compatibility_date": "2026-03-08",
+  "pages_build_output_dir": "cloudflare-pages"
+}
