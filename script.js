@@ -948,9 +948,11 @@ function createNode(node, branch, nodes, path = new Set()) {
   const isExpanded = state.expandedDepartmentIds.has(node.id);
   const hasInlineMeta = node.kind === "person" && node.title;
   const isActive = node.id === state.selectedNodeId;
+  const isRoot = node.id === branch.rootId;
+  const isLeaf = node.reports.length === 0;
 
   card.type = "button";
-  card.className = `node-card ${kindClass}${isActive ? " active" : ""}`;
+  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}`;
   card.innerHTML = `
     <div class="node-card-header">
       <div class="node-inline-row${hasInlineMeta ? " has-meta" : ""}">
@@ -1021,7 +1023,7 @@ function renderMemberGrid(branch) {
 
   people.forEach((person) => {
     const card = document.createElement("article");
-    card.className = "member-card";
+    card.className = `member-card${person.id === state.selectedNodeId ? " active" : ""}`;
     card.innerHTML = `
       <div class="member-inline-row${person.title ? " has-meta" : ""}">
         ${person.title ? `<p class="member-role">${person.title}</p>` : ""}
