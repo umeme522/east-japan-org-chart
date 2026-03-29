@@ -70,6 +70,58 @@
           "reports": []
         },
         {
+          "id": "office-102-suzuki",
+          "kind": "person",
+          "name": "鈴木",
+          "title": "所長",
+          "department": "安曇野",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-102-yamagata", "office-102-fujii", "office-102-miyake"]
+        },
+        {
+          "id": "office-102-yamagata",
+          "kind": "person",
+          "name": "山縣",
+          "title": "スタッフ",
+          "department": "安曇野",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": []
+        },
+        {
+          "id": "office-102-fujii",
+          "kind": "person",
+          "name": "藤井",
+          "title": "スタッフ",
+          "department": "安曇野",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": []
+        },
+        {
+          "id": "office-102-miyake",
+          "kind": "person",
+          "name": "三宅",
+          "title": "スタッフ",
+          "department": "安曇野",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": []
+        },
+        {
           "id": "office-102",
           "kind": "unit",
           "name": "安曇野",
@@ -77,7 +129,7 @@
           "department": "業務1部",
           "description": "業務1部配下です。",
           "tags": ["組織"],
-          "reports": []
+          "reports": ["office-102-suzuki"]
         },
         {
           "id": "office-103",
@@ -251,6 +303,32 @@
           "department": "業務3部",
           "description": "業務3部配下です。",
           "tags": ["組織"],
+          "reports": ["office-302-nishihata"]
+        },
+        {
+          "id": "office-302-nishihata",
+          "kind": "person",
+          "name": "西畑",
+          "title": "所長",
+          "department": "海老名流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-302-nose"]
+        },
+        {
+          "id": "office-302-nose",
+          "kind": "person",
+          "name": "能勢",
+          "title": "スタッフ",
+          "department": "海老名流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
@@ -281,6 +359,58 @@
           "department": "業務3部",
           "description": "業務3部配下です。",
           "tags": ["組織"],
+          "reports": ["office-305-yasuda"]
+        },
+        {
+          "id": "office-305-yasuda",
+          "kind": "person",
+          "name": "安田",
+          "title": "所長",
+          "department": "国立流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-305-kurishima"]
+        },
+        {
+          "id": "office-305-kurishima",
+          "kind": "person",
+          "name": "栗嶋",
+          "title": "副長",
+          "department": "国立流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-305-tajiri"]
+        },
+        {
+          "id": "office-305-tajiri",
+          "kind": "person",
+          "name": "田尻",
+          "title": "係長",
+          "department": "国立流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-305-seki"]
+        },
+        {
+          "id": "office-305-seki",
+          "kind": "person",
+          "name": "関",
+          "title": "スタッフ",
+          "department": "国立流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
@@ -291,6 +421,45 @@
           "department": "業務3部",
           "description": "業務3部配下です。",
           "tags": ["組織"],
+          "reports": ["office-306-hara"]
+        },
+        {
+          "id": "office-306-hara",
+          "kind": "person",
+          "name": "原",
+          "title": "所長",
+          "department": "青梅流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-306-kishikawa"]
+        },
+        {
+          "id": "office-306-kishikawa",
+          "kind": "person",
+          "name": "岸川",
+          "title": "係長",
+          "department": "青梅流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-306-onishi"]
+        },
+        {
+          "id": "office-306-onishi",
+          "kind": "person",
+          "name": "大西",
+          "title": "スタッフ",
+          "department": "青梅流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         }
       ]
