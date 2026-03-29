@@ -1084,10 +1084,12 @@ function renderProfile(branch) {
   elements.profileBranch.textContent = branch.name;
   elements.profileName.textContent = selected.name;
   elements.profileAffiliationRow.hidden = false;
+  elements.profileAffiliationRow.classList.remove("full");
   elements.profileAffiliationValue.textContent = buildAffiliation(branch, selected) || "未設定";
 
   if (selected.kind === "person") {
     elements.profileRoleRow.hidden = false;
+    elements.profileRoleRow.classList.remove("full");
     elements.profileRoleValue.textContent = selected.title || "未設定";
     elements.profilePersonMetaRow.hidden = false;
     elements.profileAgeValue.textContent = selected.age || "未設定";
@@ -1099,6 +1101,7 @@ function renderProfile(branch) {
   } else {
     elements.profileRoleRow.hidden = true;
     elements.profilePersonMetaRow.hidden = true;
+    elements.profileAffiliationRow.classList.add("full");
     elements.profileDescriptionRow.hidden = false;
     elements.profileDescriptionLabel.textContent = isOfficeNode(selected) ? "営業所紹介" : "組織紹介";
     elements.profileDescriptionValue.textContent = selected.description || `${selected.name} の紹介は未設定です。`;
