@@ -767,6 +767,12 @@ function handleNodeClick(branchId, nodeId) {
     } else {
       state.expandedDepartmentIds.add(nodeId);
     }
+
+    state.activeBranchId = branchId;
+    state.editStatus = "";
+    clearActionStatus();
+    render();
+    return;
   }
 
   state.activeBranchId = branchId;
