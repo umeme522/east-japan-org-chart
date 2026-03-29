@@ -699,6 +699,14 @@ textarea {
   padding-right: 4px;
 }
 
+#profilePersonMetaRow .profile-stat:nth-child(2) {
+  order: 3;
+}
+
+#profilePersonMetaRow .profile-stat:nth-child(3) {
+  order: 2;
+}
+
 .profile-simple-list dt {
   font-weight: 700;
   color: var(--muted);
@@ -1164,7 +1172,22 @@ textarea {
   }
 
   .profile-stat-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding: 10px 11px;
+  }
+
+  .profile-stat {
+    gap: 2px;
+    padding-right: 0;
+  }
+
+  .profile-stat dt {
+    font-size: 0.68rem;
+  }
+
+  .profile-stat dd {
+    font-size: 0.86rem;
   }
 
   .edit-form {
