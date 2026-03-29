@@ -506,6 +506,7 @@ const state = {
   searchTerm: "",
   expandedDepartmentIds: new Set(),
   editStatus: "",
+  createStatus: "",
   actionStatus: "",
 };
 
@@ -558,6 +559,16 @@ const elements = {
   editDescription: document.getElementById("editDescription"),
   closeEditPanel: document.getElementById("closeEditPanel"),
   editStatus: document.getElementById("editStatus"),
+  profileCreator: document.getElementById("profileCreator"),
+  createParentHint: document.getElementById("createParentHint"),
+  createForm: document.getElementById("createForm"),
+  createName: document.getElementById("createName"),
+  createTitle: document.getElementById("createTitle"),
+  createDepartment: document.getElementById("createDepartment"),
+  createAge: document.getElementById("createAge"),
+  createJoinYear: document.getElementById("createJoinYear"),
+  createTenure: document.getElementById("createTenure"),
+  createStatus: document.getElementById("createStatus"),
 };
 
 initializeExpandedDepartments();
@@ -655,6 +666,20 @@ function nodeMap(branch) {
   return new Map(branch.nodes.map((node) => [node.id, node]));
 }
 
+function createNodeId(branch, prefix = "person") {
+  const existingIds = new Set(branch.nodes.map((node) => node.id));
+  const seed = Date.now().toString(36);
+  let counter = 1;
+  let candidate = `${prefix}-${seed}`;
+
+  while (existingIds.has(candidate)) {
+    candidate = `${prefix}-${seed}-${counter}`;
+    counter += 1;
+  }
+
+  return candidate;
+}
+
 function personNodes(branch) {
   return branch.nodes.filter((node) => node.kind === "person");
 }
@@ -731,6 +756,7 @@ function resetView(branchId = branches[0]?.id) {
   state.selectedNodeId = branch.rootId;
   state.searchTerm = "";
   state.editStatus = "";
+  state.createStatus = "";
   initializeExpandedDepartments();
 
   if (elements.search) {
@@ -747,6 +773,7 @@ function selectNode(branchId, nodeId) {
   state.activeBranchId = branchId;
   state.selectedNodeId = nodeId;
   state.editStatus = "";
+  state.createStatus = "";
   clearActionStatus();
   if (isCollapsibleDepartment(nodeId)) {
     state.expandedDepartmentIds.add(nodeId);
@@ -770,6 +797,7 @@ function handleNodeClick(branchId, nodeId) {
 
     state.activeBranchId = branchId;
     state.editStatus = "";
+    state.createStatus = "";
     clearActionStatus();
     render();
     return;
@@ -778,6 +806,7 @@ function handleNodeClick(branchId, nodeId) {
   state.activeBranchId = branchId;
   state.selectedNodeId = nodeId;
   state.editStatus = "";
+  state.createStatus = "";
   clearActionStatus();
   expandPathToNode(branch, nodeId);
   render();
@@ -1076,6 +1105,7 @@ function renderProfile(branch) {
   }
 
   populateEditForm(selected);
+  populateCreateForm(selected);
 }
 
 function populateEditForm(node) {
@@ -1100,6 +1130,25 @@ function populateEditForm(node) {
     elements.editDescriptionLabel.textContent = isOfficeNode(node) ? "営業所紹介" : "組織紹介";
     elements.editDescription.value = node.description ?? "";
   }
+}
+
+function clearCreateFormFields() {
+  if (!elements.createForm) {
+    return;
+  }
+
+  elements.createForm.reset();
+}
+
+function populateCreateForm(node) {
+  if (!elements.createParentHint || !elements.createDepartment || !elements.createStatus) {
+    return;
+  }
+
+  const defaultDepartment = node.kind === "unit" ? node.name : (node.department ?? "");
+  elements.createParentHint.textContent = `${node.name} の下に新規追加します。`;
+  elements.createDepartment.placeholder = defaultDepartment || "所属";
+  elements.createStatus.textContent = state.createStatus;
 }
 
 function updateNode(branchId, nodeId, updater) {
@@ -1153,6 +1202,69 @@ async function handleProfileSave(event) {
   state.editStatus = saved ? "保存しました。" : "共有データの保存に失敗しました。";
   if (saved) {
     clearActionStatus();
+  }
+  render();
+}
+
+async function handleCreatePerson(event) {
+  event.preventDefault();
+
+  const branch = getActiveBranch();
+  if (!branch) {
+    return;
+  }
+
+  const nodes = nodeMap(branch);
+  const parent = nodes.get(state.selectedNodeId) ?? nodes.get(branch.rootId);
+  if (!parent) {
+    return;
+  }
+
+  const parentIndex = branch.nodes.findIndex((node) => node.id === parent.id);
+  if (parentIndex === -1) {
+    return;
+  }
+
+  const name = elements.createName?.value.trim() ?? "";
+  if (!name) {
+    state.createStatus = "氏名を入力してください。";
+    render();
+    return;
+  }
+
+  const newNode = {
+    id: createNodeId(branch, "person"),
+    kind: "person",
+    name,
+    title: elements.createTitle?.value.trim() ?? "",
+    department:
+      elements.createDepartment?.value.trim() ||
+      (parent.kind === "unit" ? parent.name : parent.department || ""),
+    age: elements.createAge?.value.trim() ?? "",
+    joinYear: elements.createJoinYear?.value.trim() ?? "",
+    tenure: elements.createTenure?.value.trim() ?? "",
+    historyEntries: [],
+    tags: [],
+    reports: [],
+  };
+
+  branch.nodes[parentIndex] = {
+    ...branch.nodes[parentIndex],
+    reports: [...branch.nodes[parentIndex].reports, newNode.id],
+  };
+  branch.nodes.push(newNode);
+
+  state.selectedNodeId = newNode.id;
+  expandPathToNode(branch, newNode.id);
+
+  const saved = await saveBranches();
+  state.createStatus = saved ? "新規追加しました。" : "共有データの保存に失敗しました。";
+  if (saved) {
+    clearActionStatus();
+    clearCreateFormFields();
+    if (elements.profileCreator) {
+      elements.profileCreator.open = false;
+    }
   }
   render();
 }
@@ -1330,6 +1442,9 @@ elements.addEditHistoryRow.addEventListener("click", () => {
   appendHistoryRow(elements.editHistoryRows);
 });
 elements.profileForm.addEventListener("submit", handleProfileSave);
+if (elements.createForm) {
+  elements.createForm.addEventListener("submit", handleCreatePerson);
+}
 if (elements.closeEditPanel) {
   elements.closeEditPanel.addEventListener("click", handleCloseEditPanel);
 }

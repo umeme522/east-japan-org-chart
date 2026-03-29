@@ -130,15 +130,15 @@ textarea {
 
 .toolbar-primary {
   display: flex;
-  align-items: end;
-  gap: 12px;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
 }
 
 .toolbar-primary > div:first-child {
   display: grid;
   gap: 0;
-  min-width: 196px;
+  min-width: 0;
 }
 
 .toolbar .section-label {
@@ -147,7 +147,7 @@ textarea {
 
 .branch-tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   padding: 2px 0;
 }
@@ -222,7 +222,9 @@ textarea {
 }
 
 .branch-summary {
-  display: block;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
   margin: 0;
 }
 
@@ -269,6 +271,10 @@ textarea {
 .org-chart-section,
 .member-grid-section {
   margin-top: 10px;
+}
+
+.org-chart-section .section-note {
+  display: none;
 }
 
 .panel-members .member-grid-section {
@@ -1042,6 +1048,7 @@ textarea {
 
   .toolbar-primary {
     align-items: start;
+    flex-wrap: nowrap;
   }
 
   .search-box {

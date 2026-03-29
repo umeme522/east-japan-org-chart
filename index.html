@@ -135,6 +135,41 @@
             <p id="editStatus" class="edit-status" aria-live="polite"></p>
           </details>
 
+          <details class="profile-disclosure" id="profileCreator">
+            <summary>新規追加</summary>
+            <p class="manage-hint" id="createParentHint"></p>
+            <form id="createForm" class="edit-form">
+              <label class="edit-field">
+                <span>氏名</span>
+                <input id="createName" type="text" required>
+              </label>
+              <label class="edit-field">
+                <span>役職</span>
+                <input id="createTitle" type="text">
+              </label>
+              <label class="edit-field">
+                <span>所属</span>
+                <input id="createDepartment" type="text">
+              </label>
+              <label class="edit-field">
+                <span>年齢</span>
+                <input id="createAge" type="text">
+              </label>
+              <label class="edit-field">
+                <span>入社年度</span>
+                <input id="createJoinYear" type="text">
+              </label>
+              <label class="edit-field">
+                <span>勤続</span>
+                <input id="createTenure" type="text">
+              </label>
+              <div class="edit-actions">
+                <button type="submit" class="primary-button">新規追加</button>
+              </div>
+            </form>
+            <p id="createStatus" class="edit-status" aria-live="polite"></p>
+          </details>
+
         </div>
       </aside>
     </main>
