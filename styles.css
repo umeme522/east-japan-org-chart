@@ -1024,12 +1024,62 @@ textarea {
     align-items: start;
   }
 
+  .chart-frame {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 14px 8px 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chart-scale-shell {
+    width: max-content;
+    min-width: 100%;
+    justify-content: flex-start;
+    padding-inline: 6px;
+  }
+
+  .org-chart {
+    min-width: max-content;
+  }
+
+  .org-chart ul {
+    gap: 16px;
+    padding-top: 24px;
+  }
+
+  .org-chart li {
+    padding-top: 24px;
+  }
+
   .node-card {
-    width: 134px;
+    width: 158px;
+    min-height: 52px;
+    padding: 11px 12px;
+    border-radius: 18px;
   }
 
   .node-card.is-root {
-    width: 146px;
+    width: 172px;
+    min-height: 56px;
+  }
+
+  .node-card.is-leaf {
+    width: 152px;
+  }
+
+  .node-title {
+    font-size: 0.86rem;
+  }
+
+  .node-inline-meta {
+    font-size: 0.69rem;
+  }
+
+  .node-toggle-indicator {
+    min-width: 19px;
+    height: 19px;
+    font-size: 0.74rem;
+    line-height: 17px;
   }
 
   .profile-summary {

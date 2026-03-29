@@ -1251,10 +1251,27 @@ function fitOrgChartToFrame() {
 
   content.style.transform = "scale(1)";
   shell.style.height = "auto";
+  shell.style.width = "";
+  shell.style.minWidth = "";
+  content.style.transformOrigin = "";
+
+  const isMobile = window.matchMedia("(max-width: 720px)").matches;
+  const treeRect = tree.getBoundingClientRect();
+
+  if (isMobile) {
+    shell.style.width = "max-content";
+    shell.style.minWidth = "100%";
+    content.style.transformOrigin = "top center";
+    shell.style.height = `${Math.ceil(treeRect.height)}px`;
+
+    const maxScrollLeft = Math.max(shell.scrollWidth - frame.clientWidth, 0);
+    frame.scrollLeft = Math.round(maxScrollLeft / 2);
+    return;
+  }
 
   const frameWidth = Math.max(frame.clientWidth - 20, 0);
-  const treeWidth = tree.getBoundingClientRect().width;
-  const treeHeight = tree.getBoundingClientRect().height;
+  const treeWidth = treeRect.width;
+  const treeHeight = treeRect.height;
   const scale = treeWidth > frameWidth && treeWidth > 0 ? frameWidth / treeWidth : 1;
 
   content.style.transform = `scale(${scale})`;
