@@ -68,6 +68,45 @@ const DEFAULT_BRANCHES = [
         department: "業務1部",
         description: "業務1部配下です。",
         tags: ["組織"],
+        reports: ["office-101-mera"],
+      },
+      {
+        id: "office-101-mera",
+        kind: "person",
+        name: "米良",
+        title: "所長",
+        department: "武蔵野",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
+        reports: ["office-101-nakane"],
+      },
+      {
+        id: "office-101-nakane",
+        kind: "person",
+        name: "中根",
+        title: "係長",
+        department: "武蔵野",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
+        reports: ["office-101-toshida"],
+      },
+      {
+        id: "office-101-toshida",
+        kind: "person",
+        name: "土志田",
+        title: "スタッフ",
+        department: "武蔵野",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
         reports: [],
       },
       {
@@ -150,6 +189,19 @@ const DEFAULT_BRANCHES = [
         department: "業務1部",
         description: "業務1部配下です。",
         tags: ["組織"],
+        reports: ["office-104-mitsui"],
+      },
+      {
+        id: "office-104-mitsui",
+        kind: "person",
+        name: "三井",
+        title: "所長",
+        department: "白州",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
         reports: [],
       },
       {
@@ -160,6 +212,45 @@ const DEFAULT_BRANCHES = [
         department: "業務1部",
         description: "業務1部配下です。",
         tags: ["組織"],
+        reports: ["office-105-manaka"],
+      },
+      {
+        id: "office-105-manaka",
+        kind: "person",
+        name: "真中",
+        title: "所長",
+        department: "白州水",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
+        reports: ["office-105-suzuki"],
+      },
+      {
+        id: "office-105-suzuki",
+        kind: "person",
+        name: "鈴木",
+        title: "係長",
+        department: "白州水",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
+        reports: ["office-105-endo"],
+      },
+      {
+        id: "office-105-endo",
+        kind: "person",
+        name: "遠藤",
+        title: "スタッフ",
+        department: "白州水",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
         reports: [],
       },
       {
@@ -180,6 +271,19 @@ const DEFAULT_BRANCHES = [
         department: "業務2部",
         description: "業務2部配下です。",
         tags: ["組織"],
+        reports: ["office-201-negi"],
+      },
+      {
+        id: "office-201-negi",
+        kind: "person",
+        name: "根木",
+        title: "所長",
+        department: "栃木北",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
         reports: [],
       },
       {
@@ -239,6 +343,19 @@ const DEFAULT_BRANCHES = [
         department: "業務2部",
         description: "業務2部配下です。",
         tags: ["組織"],
+        reports: ["office-203-miki"],
+      },
+      {
+        id: "office-203-miki",
+        kind: "person",
+        name: "三喜",
+        title: "所長",
+        department: "羽生とちぎ",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
         reports: [],
       },
       {
@@ -249,6 +366,19 @@ const DEFAULT_BRANCHES = [
         department: "業務2部",
         description: "業務2部配下です。",
         tags: ["組織"],
+        reports: ["office-204-kitou"],
+      },
+      {
+        id: "office-204-kitou",
+        kind: "person",
+        name: "鬼頭",
+        title: "スタッフ",
+        department: "群馬",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
         reports: [],
       },
       {
@@ -259,6 +389,19 @@ const DEFAULT_BRANCHES = [
         department: "業務2部",
         description: "業務2部配下です。",
         tags: ["組織"],
+        reports: ["office-205-hiroyama"],
+      },
+      {
+        id: "office-205-hiroyama",
+        kind: "person",
+        name: "弘山",
+        title: "所長",
+        department: "渋川",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
         reports: [],
       },
       {
@@ -269,6 +412,45 @@ const DEFAULT_BRANCHES = [
         department: "業務2部",
         description: "業務2部配下です。",
         tags: ["組織"],
+        reports: ["office-206-kataoka"],
+      },
+      {
+        id: "office-206-kataoka",
+        kind: "person",
+        name: "片岡",
+        title: "所長",
+        department: "利根川",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
+        reports: ["office-206-maezawa"],
+      },
+      {
+        id: "office-206-maezawa",
+        kind: "person",
+        name: "前澤",
+        title: "係長",
+        department: "利根川",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
+        reports: ["office-206-shinyashiki"],
+      },
+      {
+        id: "office-206-shinyashiki",
+        kind: "person",
+        name: "新屋敷",
+        title: "スタッフ",
+        department: "利根川",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
         reports: [],
       },
       {
@@ -289,6 +471,32 @@ const DEFAULT_BRANCHES = [
         department: "業務3部",
         description: "業務3部配下です。",
         tags: ["組織"],
+        reports: ["office-301-nishi"],
+      },
+      {
+        id: "office-301-nishi",
+        kind: "person",
+        name: "西",
+        title: "所長",
+        department: "群馬藤岡",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
+        reports: ["office-301-watanabe"],
+      },
+      {
+        id: "office-301-watanabe",
+        kind: "person",
+        name: "渡辺",
+        title: "副長",
+        department: "群馬藤岡",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
         reports: [],
       },
       {
@@ -335,6 +543,58 @@ const DEFAULT_BRANCHES = [
         department: "業務3部",
         description: "業務3部配下です。",
         tags: ["組織"],
+        reports: ["office-303-kawai"],
+      },
+      {
+        id: "office-303-kawai",
+        kind: "person",
+        name: "川井",
+        title: "所長",
+        department: "北関東流通",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
+        reports: ["office-303-nakahara", "office-303-ikeda", "office-303-sato"],
+      },
+      {
+        id: "office-303-nakahara",
+        kind: "person",
+        name: "中原",
+        title: "副長",
+        department: "北関東流通",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
+        reports: [],
+      },
+      {
+        id: "office-303-ikeda",
+        kind: "person",
+        name: "池田",
+        title: "副長",
+        department: "北関東流通",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
+        reports: [],
+      },
+      {
+        id: "office-303-sato",
+        kind: "person",
+        name: "佐藤",
+        title: "スタッフ",
+        department: "北関東流通",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
         reports: [],
       },
       {
@@ -345,6 +605,32 @@ const DEFAULT_BRANCHES = [
         department: "業務3部",
         description: "業務3部配下です。",
         tags: ["組織"],
+        reports: ["office-304-onishi-chief"],
+      },
+      {
+        id: "office-304-onishi-chief",
+        kind: "person",
+        name: "大西",
+        title: "所長",
+        department: "神奈川綾瀬",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
+        reports: ["office-304-taira"],
+      },
+      {
+        id: "office-304-taira",
+        kind: "person",
+        name: "平良",
+        title: "スタッフ",
+        department: "神奈川綾瀬",
+        age: "",
+        tenure: "",
+        history: "",
+        hobbies: [],
+        tags: [],
         reports: [],
       },
       {
@@ -470,6 +756,35 @@ function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function splitNameParts(name, explicitLastName = "", explicitFirstName = "") {
+  const lastName = normalizeText(explicitLastName);
+  const firstName = normalizeText(explicitFirstName);
+
+  if (lastName || firstName) {
+    return { lastName, firstName };
+  }
+
+  const normalizedName = normalizeText(name);
+  if (!normalizedName) {
+    return { lastName: "", firstName: "" };
+  }
+
+  const parts = normalizedName.split(/\s+/).filter(Boolean);
+  if (parts.length <= 1) {
+    return { lastName: normalizedName, firstName: "" };
+  }
+
+  return {
+    lastName: parts.shift() ?? "",
+    firstName: parts.join(" "),
+  };
+}
+
+function buildDisplayName(lastName, firstName, fallbackName = "") {
+  const combined = [normalizeText(lastName), normalizeText(firstName)].filter(Boolean).join(" ");
+  return combined || normalizeText(fallbackName);
+}
+
 function normalizeStringArray(value) {
   if (!Array.isArray(value)) {
     return [];
@@ -542,10 +857,11 @@ function buildAffiliation(branch, node) {
 
 function normalizeNode(node, index) {
   const kind = node?.kind === "unit" ? "unit" : "person";
+  const nameParts = splitNameParts(node?.name, node?.lastName, node?.firstName);
   const normalized = {
     id: normalizeText(node?.id) || `node-${index + 1}`,
     kind,
-    name: normalizeText(node?.name) || "未設定",
+    name: buildDisplayName(nameParts.lastName, nameParts.firstName, node?.name) || "未設定",
     title: normalizeText(node?.title),
     department: normalizeText(node?.department),
     tags: normalizeStringArray(node?.tags),
@@ -553,6 +869,8 @@ function normalizeNode(node, index) {
   };
 
   if (kind === "person") {
+    normalized.lastName = nameParts.lastName;
+    normalized.firstName = nameParts.firstName;
     const joinYear = normalizeText(node?.joinYear);
     const rawAge = normalizeText(node?.age);
     const looksLikeJoinYear = /^(?:19|20)\d{2}(?:年)?$/.test(rawAge);
@@ -561,6 +879,7 @@ function normalizeNode(node, index) {
     normalized.tenure = normalizeText(node?.tenure);
     normalized.historyEntries = normalizeHistoryEntries(node?.historyEntries, node?.history);
     normalized.hobbies = normalizeStringArray(node?.hobbies);
+    normalized.photo = normalizeText(node?.photo);
   } else {
     normalized.description = normalizeText(node?.description);
   }
@@ -686,16 +1005,18 @@ const elements = {
   chartFrame: document.querySelector(".chart-frame"),
   chartTitle: document.getElementById("chartTitle"),
   orgChart: document.getElementById("orgChart"),
-  exportButton: document.getElementById("exportButton"),
-  importButton: document.getElementById("importButton"),
+  excelExportButton: document.getElementById("excelExportButton"),
+  excelImportButton: document.getElementById("excelImportButton"),
   resetButton: document.getElementById("resetButton"),
-  importFileInput: document.getElementById("importFileInput"),
+  excelImportInput: document.getElementById("excelImportInput"),
   actionStatus: document.getElementById("actionStatus"),
   memberGrid: document.getElementById("memberGrid"),
   search: document.getElementById("memberSearch"),
   profileEmpty: document.getElementById("profileEmpty"),
   profileContent: document.getElementById("profileContent"),
   profileBranch: document.getElementById("profileBranch"),
+  profilePhoto: document.getElementById("profilePhoto"),
+  profilePhotoImage: document.getElementById("profilePhotoImage"),
   profileName: document.getElementById("profileName"),
   profileRoleRow: document.getElementById("profileRoleRow"),
   profileRoleValue: document.getElementById("profileRoleValue"),
@@ -710,9 +1031,12 @@ const elements = {
   profileDescriptionValue: document.getElementById("profileDescriptionValue"),
   profileEditor: document.getElementById("profileEditor"),
   profileForm: document.getElementById("profileForm"),
-  editName: document.getElementById("editName"),
+  editLastName: document.getElementById("editLastName"),
+  editFirstName: document.getElementById("editFirstName"),
   editTitle: document.getElementById("editTitle"),
   editDepartment: document.getElementById("editDepartment"),
+  editPhotoField: document.getElementById("editPhotoField"),
+  editPhoto: document.getElementById("editPhoto"),
   editAgeField: document.getElementById("editAgeField"),
   editAge: document.getElementById("editAge"),
   editJoinYearField: document.getElementById("editJoinYearField"),
@@ -731,9 +1055,13 @@ const elements = {
   profileCreator: document.getElementById("profileCreator"),
   createParentHint: document.getElementById("createParentHint"),
   createForm: document.getElementById("createForm"),
-  createName: document.getElementById("createName"),
+  createOffice: document.getElementById("createOffice"),
+  createParent: document.getElementById("createParent"),
+  createLastName: document.getElementById("createLastName"),
+  createFirstName: document.getElementById("createFirstName"),
   createTitle: document.getElementById("createTitle"),
   createDepartment: document.getElementById("createDepartment"),
+  createPhoto: document.getElementById("createPhoto"),
   createAge: document.getElementById("createAge"),
   createJoinYear: document.getElementById("createJoinYear"),
   createTenure: document.getElementById("createTenure"),
@@ -902,6 +1230,137 @@ function buildParentMap(branch) {
   return parents;
 }
 
+function officeNodes(branch) {
+  return branch.nodes.filter((node) => isOfficeNode(node));
+}
+
+function findOfficeForNode(branch, nodeId) {
+  const nodes = nodeMap(branch);
+  const parents = buildParentMap(branch);
+  let currentId = nodeId;
+
+  while (currentId) {
+    const currentNode = nodes.get(currentId);
+    if (isOfficeNode(currentNode)) {
+      return currentNode;
+    }
+    currentId = parents.get(currentId);
+  }
+
+  return null;
+}
+
+function findFirstOfficeDescendant(branch, nodeId) {
+  const nodes = nodeMap(branch);
+  const queue = [...(nodes.get(nodeId)?.reports ?? [])];
+
+  while (queue.length > 0) {
+    const currentId = queue.shift();
+    const currentNode = nodes.get(currentId);
+    if (!currentNode) {
+      continue;
+    }
+    if (isOfficeNode(currentNode)) {
+      return currentNode;
+    }
+    queue.push(...currentNode.reports);
+  }
+
+  return null;
+}
+
+function listCreateParentOptions(branch, officeId) {
+  const nodes = nodeMap(branch);
+  const office = nodes.get(officeId);
+  if (!office) {
+    return [];
+  }
+
+  const options = [{ value: office.id, label: `${office.name} 直下` }];
+
+  const visit = (nodeId, depth = 1) => {
+    const currentNode = nodes.get(nodeId);
+    if (!currentNode) {
+      return;
+    }
+
+    currentNode.reports.forEach((childId) => {
+      const childNode = nodes.get(childId);
+      if (!childNode) {
+        return;
+      }
+
+      if (childNode.kind === "person") {
+        options.push({
+          value: childNode.id,
+          label: `${"　".repeat(depth)}${childNode.name}`,
+        });
+      }
+
+      visit(childNode.id, childNode.kind === "person" ? depth + 1 : depth);
+    });
+  };
+
+  visit(office.id);
+  return options;
+}
+
+function setSelectOptions(select, options, preferredValue = "") {
+  if (!select) {
+    return "";
+  }
+
+  select.innerHTML = "";
+  options.forEach((option) => {
+    const element = document.createElement("option");
+    element.value = option.value;
+    element.textContent = option.label;
+    select.appendChild(element);
+  });
+
+  const selectedValue = options.some((option) => option.value === preferredValue)
+    ? preferredValue
+    : (options[0]?.value ?? "");
+  select.value = selectedValue;
+  return selectedValue;
+}
+
+function syncCreateParentOptions(branch, officeId, preferredParentId = "") {
+  const offices = officeNodes(branch);
+  const fallbackOfficeId = offices[0]?.id ?? "";
+  const resolvedOfficeId = officeId || fallbackOfficeId;
+  const office = branch.nodes.find((node) => node.id === resolvedOfficeId) ?? offices[0] ?? null;
+
+  if (!office) {
+    if (elements.createParent) {
+      elements.createParent.innerHTML = "";
+    }
+    if (elements.createDepartment) {
+      elements.createDepartment.value = "";
+      elements.createDepartment.placeholder = "所属";
+    }
+    if (elements.createParentHint) {
+      elements.createParentHint.textContent = "営業所を選択して追加先を決めてください。";
+    }
+    return;
+  }
+
+  const parentOptions = listCreateParentOptions(branch, office.id);
+  const selectedParentId = setSelectOptions(elements.createParent, parentOptions, preferredParentId || office.id);
+
+  if (elements.createOffice) {
+    elements.createOffice.value = office.id;
+  }
+  if (elements.createDepartment) {
+    elements.createDepartment.value = office.name;
+    elements.createDepartment.placeholder = office.name;
+  }
+  if (elements.createParentHint) {
+    const selectedParentLabel = parentOptions.find((option) => option.value === selectedParentId)?.label ?? office.name;
+    elements.createParentHint.textContent = `${office.name} の ${selectedParentLabel.trim()} に追加します。`;
+  }
+}
+
 function expandPathToNode(branch, nodeId) {
   const parents = buildParentMap(branch);
   let currentId = nodeId;
@@ -1043,6 +1502,47 @@ function collectHistoryEntries(container) {
     .filter((entry) => entry.year || entry.location);
 }
 
+function parseHistoryText(value) {
+  return normalizeText(value)
+    .split(/\r?\n|\s*\|\s*/)
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const matched = entry.match(/^(.+?)[〜~]\s*(.+)$/);
+      if (matched) {
+        return {
+          year: normalizeText(matched[1]),
+          location: normalizeText(matched[2]),
+        };
+      }
+
+      return {
+        year: "",
+        location: entry,
+      };
+    });
+}
+
+function serializeHistoryEntries(entries = []) {
+  return entries
+    .map((entry) => formatHistoryEntry(entry))
+    .filter(Boolean)
+    .join(" | ");
+}
+
+function readImageFileAsDataUrl(file) {
+  if (!file) {
+    return Promise.resolve("");
+  }
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+    reader.onerror = () => reject(new Error("image-read-failed"));
+    reader.readAsDataURL(file);
+  });
+}
+
 function renderHistoryDisplay(target, entries = [], fallback = "未設定") {
   target.innerHTML = "";
 
@@ -1061,6 +1561,9 @@ function renderHistoryDisplay(target, entries = [], fallback = "未設定") {
 
 function toggleEditFormFields(kind) {
   const isPerson = kind === "person";
+  if (elements.editPhotoField) {
+    elements.editPhotoField.hidden = !isPerson;
+  }
   elements.editAgeField.hidden = !isPerson;
   elements.editJoinYearField.hidden = !isPerson;
   elements.editTenureField.hidden = !isPerson;
@@ -1252,6 +1755,17 @@ function renderProfile(branch) {
   elements.profileContent.hidden = false;
   elements.profileBranch.textContent = branch.name;
   elements.profileName.textContent = selected.name;
+  if (elements.profilePhoto && elements.profilePhotoImage) {
+    if (selected.kind === "person" && selected.photo) {
+      elements.profilePhoto.hidden = false;
+      elements.profilePhotoImage.src = selected.photo;
+      elements.profilePhotoImage.alt = `${selected.name} の顔写真`;
+    } else {
+      elements.profilePhoto.hidden = true;
+      elements.profilePhotoImage.removeAttribute("src");
+      elements.profilePhotoImage.alt = "";
+    }
+  }
   elements.profileAffiliationRow.hidden = false;
   elements.profileAffiliationRow.classList.remove("full");
   elements.profileAffiliationValue.textContent = buildAffiliation(branch, selected) || "未設定";
@@ -1277,13 +1791,18 @@ function renderProfile(branch) {
   }
 
   populateEditForm(selected);
-  populateCreateForm(selected);
+  populateCreateForm(branch, selected);
 }
 
 function populateEditForm(node) {
-  elements.editName.value = node.name ?? "";
+  const nameParts = splitNameParts(node.name, node.lastName, node.firstName);
+  elements.editLastName.value = nameParts.lastName;
+  elements.editFirstName.value = nameParts.firstName;
   elements.editTitle.value = node.title ?? "";
   elements.editDepartment.value = node.department ?? "";
+  if (elements.editPhoto) {
+    elements.editPhoto.value = "";
+  }
   elements.editStatus.textContent = state.editStatus;
 
   if (node.kind === "person") {
@@ -1310,16 +1829,31 @@ function clearCreateFormFields() {
   }
 
   elements.createForm.reset();
+  if (elements.createDepartment) {
+    elements.createDepartment.value = "";
+  }
 }
 
-function populateCreateForm(node) {
-  if (!elements.createParentHint || !elements.createDepartment || !elements.createStatus) {
+function populateCreateForm(branch, node) {
+  if (!elements.createParentHint || !elements.createDepartment || !elements.createStatus || !elements.createOffice) {
     return;
   }
 
-  const defaultDepartment = node.kind === "unit" ? node.name : (node.department ?? "");
-  elements.createParentHint.textContent = `${node.name} の下に新規追加します。`;
-  elements.createDepartment.placeholder = defaultDepartment || "所属";
+  const offices = officeNodes(branch);
+  const defaultOffice = (node.kind === "unit" && isOfficeNode(node))
+    ? node
+    : findOfficeForNode(branch, node.id) ?? findFirstOfficeDescendant(branch, node.id) ?? offices[0] ?? null;
+  const defaultParentId = node.kind === "person" ? node.id : defaultOffice?.id ?? "";
+
+  setSelectOptions(
+    elements.createOffice,
+    offices.map((office) => ({
+      value: office.id,
+      label: office.name,
+    })),
+    defaultOffice?.id ?? ""
+  );
+  syncCreateParentOptions(branch, elements.createOffice.value, defaultParentId);
   elements.createStatus.textContent = state.createStatus;
 }
 
@@ -1354,17 +1888,31 @@ async function handleProfileSave(event) {
     return;
   }
 
+  const lastName = elements.editLastName.value.trim();
+  const firstName = elements.editFirstName.value.trim();
+  const displayName = buildDisplayName(lastName, firstName, selected.name) || selected.name;
+
+  if (selected.kind === "person" && !displayName) {
+    state.editStatus = "氏名を入力してください。";
+    render();
+    return;
+  }
+
   const updates = {
-    name: elements.editName.value.trim() || selected.name,
+    name: displayName,
     title: elements.editTitle.value.trim(),
     department: elements.editDepartment.value.trim() || selected.department,
   };
 
   if (selected.kind === "person") {
+    updates.lastName = lastName;
+    updates.firstName = firstName;
     updates.age = elements.editAge.value.trim();
     updates.joinYear = elements.editJoinYear.value.trim();
     updates.tenure = elements.editTenure.value.trim();
     updates.historyEntries = collectHistoryEntries(elements.editHistoryRows);
+    const nextPhoto = await readImageFileAsDataUrl(elements.editPhoto?.files?.[0]);
+    updates.photo = nextPhoto || selected.photo || "";
   } else {
     updates.description = elements.editDescription.value.trim();
   }
@@ -1387,7 +1935,16 @@ async function handleCreatePerson(event) {
   }
 
   const nodes = nodeMap(branch);
-  const parent = nodes.get(state.selectedNodeId) ?? nodes.get(branch.rootId);
+  const officeId = elements.createOffice?.value.trim() ?? "";
+  const office = nodes.get(officeId);
+  if (!office) {
+    state.createStatus = "営業所を選択してください。";
+    render();
+    return;
+  }
+
+  const parentId = elements.createParent?.value.trim() || office.id;
+  const parent = nodes.get(parentId) ?? office;
   if (!parent) {
     return;
   }
@@ -1397,27 +1954,34 @@ async function handleCreatePerson(event) {
     return;
   }
 
-  const name = elements.createName?.value.trim() ?? "";
+  const lastName = elements.createLastName?.value.trim() ?? "";
+  const firstName = elements.createFirstName?.value.trim() ?? "";
+  const name = buildDisplayName(lastName, firstName);
   if (!name) {
     state.createStatus = "氏名を入力してください。";
     render();
     return;
   }
 
+  const photo = await readImageFileAsDataUrl(elements.createPhoto?.files?.[0]);
+
   const newNode = {
     id: createNodeId(branch, "person"),
     kind: "person",
     name,
+    lastName,
+    firstName,
     title: elements.createTitle?.value.trim() ?? "",
     department:
       elements.createDepartment?.value.trim() ||
-      (parent.kind === "unit" ? parent.name : parent.department || ""),
+      office.name,
     age: elements.createAge?.value.trim() ?? "",
     joinYear: elements.createJoinYear?.value.trim() ?? "",
     tenure: elements.createTenure?.value.trim() ?? "",
     historyEntries: [],
     tags: [],
     reports: [],
+    photo,
   };
 
   branch.nodes[parentIndex] = {
@@ -1447,12 +2011,283 @@ function handleCloseEditPanel() {
   }
 }
 
+function isDescendantOf(branch, nodeId, ancestorId) {
+  if (!nodeId || !ancestorId) {
+    return false;
+  }
+  if (nodeId === ancestorId) {
+    return true;
+  }
+
+  const parents = buildParentMap(branch);
+  let currentId = nodeId;
+
+  while (parents.has(currentId)) {
+    currentId = parents.get(currentId);
+    if (currentId === ancestorId) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function addChildToParent(branch, parentId, childId) {
+  const parentIndex = branch.nodes.findIndex((node) => node.id === parentId);
+  if (parentIndex === -1) {
+    return;
+  }
+
+  const parent = branch.nodes[parentIndex];
+  if (parent.reports.includes(childId)) {
+    return;
+  }
+
+  branch.nodes[parentIndex] = {
+    ...parent,
+    reports: [...parent.reports, childId],
+  };
+}
+
+function removeChildFromParent(branch, parentId, childId) {
+  const parentIndex = branch.nodes.findIndex((node) => node.id === parentId);
+  if (parentIndex === -1) {
+    return;
+  }
+
+  const parent = branch.nodes[parentIndex];
+  branch.nodes[parentIndex] = {
+    ...parent,
+    reports: parent.reports.filter((reportId) => reportId !== childId),
+  };
+}
+
+function moveNodeToParent(branch, childId, nextParentId) {
+  const parents = buildParentMap(branch);
+  const currentParentId = parents.get(childId);
+
+  if (currentParentId === nextParentId) {
+    return;
+  }
+
+  if (currentParentId) {
+    removeChildFromParent(branch, currentParentId, childId);
+  }
+  addChildToParent(branch, nextParentId, childId);
+}
+
+function csvEscape(value) {
+  const normalized = String(value ?? "");
+  if (/[",\r\n]/.test(normalized)) {
+    return `"${normalized.replace(/"/g, "\"\"")}"`;
+  }
+  return normalized;
+}
+
+function stringifyCsv(rows) {
+  return rows.map((row) => row.map((value) => csvEscape(value)).join(",")).join("\r\n");
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let value = "";
+  let index = 0;
+  let inQuotes = false;
+
+  while (index < text.length) {
+    const character = text[index];
+
+    if (inQuotes) {
+      if (character === "\"") {
+        if (text[index + 1] === "\"") {
+          value += "\"";
+          index += 1;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        value += character;
+      }
+    } else if (character === "\"") {
+      inQuotes = true;
+    } else if (character === ",") {
+      row.push(value);
+      value = "";
+    } else if (character === "\n") {
+      row.push(value.replace(/\r$/, ""));
+      rows.push(row);
+      row = [];
+      value = "";
+    } else {
+      value += character;
+    }
+
+    index += 1;
+  }
+
+  if (value || row.length > 0) {
+    row.push(value.replace(/\r$/, ""));
+    rows.push(row);
+  }
+
+  return rows.filter((currentRow) => currentRow.some((cell) => normalizeText(cell)));
+}
+
+function csvToObjects(text) {
+  const rows = parseCsv(text.replace(/^\uFEFF/, ""));
+  if (rows.length === 0) {
+    return [];
+  }
+
+  const headers = rows[0].map((header) => normalizeText(header));
+  return rows.slice(1).map((row) => {
+    const entry = {};
+    headers.forEach((header, columnIndex) => {
+      entry[header] = normalizeText(row[columnIndex] ?? "");
+    });
+    return entry;
+  });
+}
+
+function findOfficeFromRow(branch, row, existingNode = null) {
+  const officeId = normalizeText(row["営業所ID"]);
+  if (officeId) {
+    const officeById = branch.nodes.find((node) => node.id === officeId && isOfficeNode(node));
+    if (officeById) {
+      return officeById;
+    }
+  }
+
+  const officeName = normalizeText(row["営業所名"]);
+  if (officeName) {
+    const officeByName = branch.nodes.find((node) => isOfficeNode(node) && node.name === officeName);
+    if (officeByName) {
+      return officeByName;
+    }
+  }
+
+  return existingNode ? findOfficeForNode(branch, existingNode.id) : null;
+}
+
+function resolveParentFromRow(branch, row, office) {
+  const parentId = normalizeText(row["親ID"]);
+  if (parentId) {
+    const parentById = branch.nodes.find((node) => node.id === parentId);
+    if (parentById && isDescendantOf(branch, parentById.id, office.id)) {
+      return parentById;
+    }
+  }
+
+  const parentName = normalizeText(row["親名"]);
+  if (parentName) {
+    const parentByName = branch.nodes.find((node) => node.name === parentName && isDescendantOf(branch, node.id, office.id));
+    if (parentByName) {
+      return parentByName;
+    }
+  }
+
+  return office;
+}
+
+function buildExcelRows(branch) {
+  const nodes = nodeMap(branch);
+  const parents = buildParentMap(branch);
+
+  return personNodes(branch).map((person) => {
+    const parent = nodes.get(parents.get(person.id));
+    const office = findOfficeForNode(branch, person.id);
+
+    return [
+      branch.id,
+      branch.name,
+      person.id,
+      person.lastName ?? "",
+      person.firstName ?? "",
+      person.title ?? "",
+      person.department ?? "",
+      person.age ?? "",
+      person.tenure ?? "",
+      person.joinYear ?? "",
+      office?.id ?? "",
+      office?.name ?? "",
+      parent?.id ?? "",
+      parent?.name ?? "",
+      serializeHistoryEntries(person.historyEntries ?? []),
+    ];
+  });
+}
+
+function importPeopleFromCsv(branch, rows) {
+  const summary = { created: 0, updated: 0, skipped: 0 };
+
+  rows.forEach((row) => {
+    const personId = normalizeText(row["人物ID"]);
+    const existingNode = personId
+      ? branch.nodes.find((node) => node.id === personId && node.kind === "person") ?? null
+      : null;
+    const lastName = normalizeText(row["姓"]);
+    const firstName = normalizeText(row["名"]);
+    const displayName = buildDisplayName(lastName, firstName, row["氏名"]);
+    const office = findOfficeFromRow(branch, row, existingNode);
+
+    if (!office || (!displayName && !existingNode)) {
+      summary.skipped += 1;
+      return;
+    }
+
+    const parent = resolveParentFromRow(branch, row, office);
+    const historyEntries = parseHistoryText(row["経歴"]);
+
+    if (existingNode) {
+      existingNode.lastName = lastName;
+      existingNode.firstName = firstName;
+      existingNode.name = displayName || existingNode.name;
+      existingNode.title = normalizeText(row["役職"]);
+      existingNode.department = normalizeText(row["所属"]) || office.name;
+      existingNode.age = normalizeText(row["年齢"]);
+      existingNode.tenure = normalizeText(row["勤続"]);
+      existingNode.joinYear = normalizeText(row["入社"]);
+      existingNode.historyEntries = historyEntries;
+      moveNodeToParent(branch, existingNode.id, parent.id);
+      summary.updated += 1;
+      return;
+    }
+
+    const newNodeId = personId || createNodeId(branch, "person");
+    branch.nodes.push({
+      id: newNodeId,
+      kind: "person",
+      name: displayName,
+      lastName,
+      firstName,
+      title: normalizeText(row["役職"]),
+      department: normalizeText(row["所属"]) || office.name,
+      age: normalizeText(row["年齢"]),
+      tenure: normalizeText(row["勤続"]),
+      joinYear: normalizeText(row["入社"]),
+      historyEntries,
+      photo: "",
+      tags: [],
+      reports: [],
+    });
+    addChildToParent(branch, parent.id, newNodeId);
+    summary.created += 1;
+  });
+
+  return summary;
+}
+
 function handleExport() {
   const branch = getActiveBranch();
   const fileDate = new Date().toISOString().slice(0, 10);
-  const fileName = `${branch?.name ?? "支店組織図"}-${fileDate}.json`;
-  const blob = new Blob([JSON.stringify(buildStoragePayload(), null, 2)], {
-    type: "application/json",
+  const fileName = `${branch?.name ?? "支店組織図"}-人物データ-${fileDate}.csv`;
+  const csvRows = [
+    ["支店ID", "支店名", "人物ID", "姓", "名", "役職", "所属", "年齢", "勤続", "入社", "営業所ID", "営業所名", "親ID", "親名", "経歴"],
+    ...buildExcelRows(branch),
+  ];
+  const blob = new Blob([`\uFEFF${stringifyCsv(csvRows)}`], {
+    type: "text/csv;charset=utf-8",
   });
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -1464,19 +2299,8 @@ function handleExport() {
   link.remove();
   window.URL.revokeObjectURL(url);
 
-  setActionStatus("現在のデータを JSON で出力しました。");
+  setActionStatus("現在の人物データを Excel 用CSVで出力しました。");
   renderActionStatus();
-}
-
-async function importBranches(data) {
-  const parsedBranches = parseBranches(data);
-  if (!parsedBranches) {
-    throw new Error("invalid-data");
-  }
-
-  branches = parsedBranches;
-  resetView(parsedBranches[0].id);
-  return saveBranches();
 }
 
 async function handleImportFile(event) {
@@ -1487,12 +2311,18 @@ async function handleImportFile(event) {
 
   try {
     const text = await file.text();
-    const parsed = JSON.parse(text);
-    const saved = await importBranches(parsed);
-    setActionStatus(saved ? `${file.name} を読み込みました。` : `${file.name} は読み込みましたが、共有保存に失敗しました。`);
+    const rows = csvToObjects(text);
+    const branch = getActiveBranch();
+    const summary = importPeopleFromCsv(branch, rows);
+    const saved = await saveBranches();
+    setActionStatus(
+      saved
+        ? `${file.name} を取り込みました。更新 ${summary.updated}件 / 追加 ${summary.created}件 / スキップ ${summary.skipped}件`
+        : `${file.name} は取り込みましたが、共有保存に失敗しました。`
+    );
     render();
   } catch {
-    setActionStatus("JSON の読み込みに失敗しました。");
+    setActionStatus("Excel用CSVの読み込みに失敗しました。");
     renderActionStatus();
   } finally {
     event.target.value = "";
@@ -1595,15 +2425,15 @@ elements.search.addEventListener("input", (event) => {
   render();
 });
 
-if (elements.exportButton) {
-  elements.exportButton.addEventListener("click", handleExport);
+if (elements.excelExportButton) {
+  elements.excelExportButton.addEventListener("click", handleExport);
 }
 
-if (elements.importButton && elements.importFileInput) {
-  elements.importButton.addEventListener("click", () => {
-    elements.importFileInput.click();
+if (elements.excelImportButton && elements.excelImportInput) {
+  elements.excelImportButton.addEventListener("click", () => {
+    elements.excelImportInput.click();
   });
-  elements.importFileInput.addEventListener("change", handleImportFile);
+  elements.excelImportInput.addEventListener("change", handleImportFile);
 }
 
 if (elements.resetButton) {
@@ -1616,6 +2446,16 @@ elements.addEditHistoryRow.addEventListener("click", () => {
 elements.profileForm.addEventListener("submit", handleProfileSave);
 if (elements.createForm) {
   elements.createForm.addEventListener("submit", handleCreatePerson);
+}
+if (elements.createOffice) {
+  elements.createOffice.addEventListener("change", () => {
+    const branch = getActiveBranch();
+    if (!branch) {
+      return;
+    }
+
+    syncCreateParentOptions(branch, elements.createOffice.value, elements.createParent?.value ?? "");
+  });
 }
 if (elements.closeEditPanel) {
   elements.closeEditPanel.addEventListener("click", handleCloseEditPanel);

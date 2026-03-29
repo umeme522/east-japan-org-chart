@@ -21,11 +21,19 @@
             </div>
             <section class="branch-summary" id="branchSummary" aria-live="polite"></section>
           </div>
-          <label class="search-box" for="memberSearch">
-            <span>メンバー検索</span>
-            <input id="memberSearch" type="search" placeholder="氏名・役職・部署で検索">
-          </label>
+          <div class="toolbar-meta">
+            <label class="search-box" for="memberSearch">
+              <span>メンバー検索</span>
+              <input id="memberSearch" type="search" placeholder="氏名・役職・部署で検索">
+            </label>
+            <div class="toolbar-actions">
+              <button id="excelExportButton" type="button" class="secondary-button">Excel出力</button>
+              <button id="excelImportButton" type="button" class="secondary-button">Excel取込</button>
+              <input id="excelImportInput" type="file" accept=".csv,text/csv" hidden>
+            </div>
+          </div>
         </div>
+        <p id="actionStatus" class="action-status" aria-live="polite"></p>
 
         <section class="org-chart-section org-chart-section-wide">
           <div class="section-header">
@@ -59,7 +67,12 @@
         <div id="profileContent" class="profile-content" hidden>
           <div class="profile-summary">
             <p class="section-label" id="profileBranch"></p>
-            <h2 id="profileName"></h2>
+            <div class="profile-summary-main">
+              <div class="profile-photo" id="profilePhoto" hidden>
+                <img id="profilePhotoImage" alt="顔写真">
+              </div>
+              <h2 id="profileName"></h2>
+            </div>
           </div>
 
           <dl class="profile-simple-list">
@@ -94,10 +107,13 @@
           <details class="profile-disclosure" id="profileEditor">
             <summary>編集</summary>
             <form id="profileForm" class="edit-form">
-              <label class="edit-field">
+              <div class="edit-field edit-field-wide">
                 <span>氏名</span>
-                <input id="editName" type="text" required>
-              </label>
+                <div class="name-split-grid">
+                  <input id="editLastName" type="text" placeholder="苗字" required>
+                  <input id="editFirstName" type="text" placeholder="名前">
+                </div>
+              </div>
               <label class="edit-field">
                 <span>役職</span>
                 <input id="editTitle" type="text">
@@ -105,6 +121,10 @@
               <label class="edit-field">
                 <span>所属</span>
                 <input id="editDepartment" type="text">
+              </label>
+              <label class="edit-field edit-field-wide" id="editPhotoField">
+                <span>顔写真</span>
+                <input id="editPhoto" type="file" accept="image/*">
               </label>
               <label class="edit-field" id="editAgeField">
                 <span>年齢</span>
@@ -140,9 +160,20 @@
             <p class="manage-hint" id="createParentHint"></p>
             <form id="createForm" class="edit-form">
               <label class="edit-field">
-                <span>氏名</span>
-                <input id="createName" type="text" required>
+                <span>営業所</span>
+                <select id="createOffice" required></select>
               </label>
+              <label class="edit-field">
+                <span>誰の下に追加</span>
+                <select id="createParent" required></select>
+              </label>
+              <div class="edit-field edit-field-wide">
+                <span>氏名</span>
+                <div class="name-split-grid">
+                  <input id="createLastName" type="text" placeholder="苗字" required>
+                  <input id="createFirstName" type="text" placeholder="名前">
+                </div>
+              </div>
               <label class="edit-field">
                 <span>役職</span>
                 <input id="createTitle" type="text">
@@ -150,6 +181,10 @@
               <label class="edit-field">
                 <span>所属</span>
                 <input id="createDepartment" type="text">
+              </label>
+              <label class="edit-field edit-field-wide">
+                <span>顔写真</span>
+                <input id="createPhoto" type="file" accept="image/*">
               </label>
               <label class="edit-field">
                 <span>年齢</span>

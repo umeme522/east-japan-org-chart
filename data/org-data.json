@@ -67,6 +67,45 @@
           "department": "業務1部",
           "description": "業務1部配下です。",
           "tags": ["組織"],
+          "reports": ["office-101-mera"]
+        },
+        {
+          "id": "office-101-mera",
+          "kind": "person",
+          "name": "米良",
+          "title": "所長",
+          "department": "武蔵野",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-101-nakane"]
+        },
+        {
+          "id": "office-101-nakane",
+          "kind": "person",
+          "name": "中根",
+          "title": "係長",
+          "department": "武蔵野",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-101-toshida"]
+        },
+        {
+          "id": "office-101-toshida",
+          "kind": "person",
+          "name": "土志田",
+          "title": "スタッフ",
+          "department": "武蔵野",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
@@ -149,6 +188,19 @@
           "department": "業務1部",
           "description": "業務1部配下です。",
           "tags": ["組織"],
+          "reports": ["office-104-mitsui"]
+        },
+        {
+          "id": "office-104-mitsui",
+          "kind": "person",
+          "name": "三井",
+          "title": "所長",
+          "department": "白州",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
@@ -159,6 +211,45 @@
           "department": "業務1部",
           "description": "業務1部配下です。",
           "tags": ["組織"],
+          "reports": ["office-105-manaka"]
+        },
+        {
+          "id": "office-105-manaka",
+          "kind": "person",
+          "name": "真中",
+          "title": "所長",
+          "department": "白州水",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-105-suzuki"]
+        },
+        {
+          "id": "office-105-suzuki",
+          "kind": "person",
+          "name": "鈴木",
+          "title": "係長",
+          "department": "白州水",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-105-endo"]
+        },
+        {
+          "id": "office-105-endo",
+          "kind": "person",
+          "name": "遠藤",
+          "title": "スタッフ",
+          "department": "白州水",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
@@ -179,6 +270,19 @@
           "department": "業務2部",
           "description": "業務2部配下です。",
           "tags": ["組織"],
+          "reports": ["office-201-negi"]
+        },
+        {
+          "id": "office-201-negi",
+          "kind": "person",
+          "name": "根木",
+          "title": "所長",
+          "department": "栃木北",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
@@ -243,6 +347,19 @@
           "department": "業務2部",
           "description": "業務2部配下です。",
           "tags": ["組織"],
+          "reports": ["office-203-miki"]
+        },
+        {
+          "id": "office-203-miki",
+          "kind": "person",
+          "name": "三喜",
+          "title": "所長",
+          "department": "羽生とちぎ",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
@@ -253,6 +370,19 @@
           "department": "業務2部",
           "description": "業務2部配下です。",
           "tags": ["組織"],
+          "reports": ["office-204-kitou"]
+        },
+        {
+          "id": "office-204-kitou",
+          "kind": "person",
+          "name": "鬼頭",
+          "title": "スタッフ",
+          "department": "群馬",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
@@ -263,6 +393,19 @@
           "department": "業務2部",
           "description": "業務2部配下です。",
           "tags": ["組織"],
+          "reports": ["office-205-hiroyama"]
+        },
+        {
+          "id": "office-205-hiroyama",
+          "kind": "person",
+          "name": "弘山",
+          "title": "所長",
+          "department": "渋川",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
@@ -273,6 +416,45 @@
           "department": "業務2部",
           "description": "業務2部配下です。",
           "tags": ["組織"],
+          "reports": ["office-206-kataoka"]
+        },
+        {
+          "id": "office-206-kataoka",
+          "kind": "person",
+          "name": "片岡",
+          "title": "所長",
+          "department": "利根川",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-206-maezawa"]
+        },
+        {
+          "id": "office-206-maezawa",
+          "kind": "person",
+          "name": "前澤",
+          "title": "係長",
+          "department": "利根川",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-206-shinyashiki"]
+        },
+        {
+          "id": "office-206-shinyashiki",
+          "kind": "person",
+          "name": "新屋敷",
+          "title": "スタッフ",
+          "department": "利根川",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
@@ -293,6 +475,32 @@
           "department": "業務3部",
           "description": "業務3部配下です。",
           "tags": ["組織"],
+          "reports": ["office-301-nishi"]
+        },
+        {
+          "id": "office-301-nishi",
+          "kind": "person",
+          "name": "西",
+          "title": "所長",
+          "department": "群馬藤岡",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-301-watanabe"]
+        },
+        {
+          "id": "office-301-watanabe",
+          "kind": "person",
+          "name": "渡辺",
+          "title": "副長",
+          "department": "群馬藤岡",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
@@ -339,6 +547,58 @@
           "department": "業務3部",
           "description": "業務3部配下です。",
           "tags": ["組織"],
+          "reports": ["office-303-kawai"]
+        },
+        {
+          "id": "office-303-kawai",
+          "kind": "person",
+          "name": "川井",
+          "title": "所長",
+          "department": "北関東流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-303-nakahara", "office-303-ikeda", "office-303-sato"]
+        },
+        {
+          "id": "office-303-nakahara",
+          "kind": "person",
+          "name": "中原",
+          "title": "副長",
+          "department": "北関東流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": []
+        },
+        {
+          "id": "office-303-ikeda",
+          "kind": "person",
+          "name": "池田",
+          "title": "副長",
+          "department": "北関東流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": []
+        },
+        {
+          "id": "office-303-sato",
+          "kind": "person",
+          "name": "佐藤",
+          "title": "スタッフ",
+          "department": "北関東流通",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
@@ -349,6 +609,32 @@
           "department": "業務3部",
           "description": "業務3部配下です。",
           "tags": ["組織"],
+          "reports": ["office-304-onishi-chief"]
+        },
+        {
+          "id": "office-304-onishi-chief",
+          "kind": "person",
+          "name": "大西",
+          "title": "所長",
+          "department": "神奈川綾瀬",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": ["office-304-taira"]
+        },
+        {
+          "id": "office-304-taira",
+          "kind": "person",
+          "name": "平良",
+          "title": "スタッフ",
+          "department": "神奈川綾瀬",
+          "age": "",
+          "tenure": "",
+          "history": "",
+          "hobbies": [],
+          "tags": [],
           "reports": []
         },
         {
