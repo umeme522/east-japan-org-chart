@@ -275,6 +275,10 @@ textarea {
   margin-top: 0;
 }
 
+.panel-members .section-header {
+  display: none;
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;
