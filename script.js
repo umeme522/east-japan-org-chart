@@ -841,6 +841,102 @@ function isOfficeNode(node) {
   return node?.kind === "unit" && !/^dept-\d+$/.test(node.id);
 }
 
+function isCreateTargetNode(branch, node) {
+  return Boolean(node) && (node.id === branch?.rootId || node.kind === "unit");
+}
+
+function parseNumericValue(value) {
+  const matched = normalizeText(value).match(/\d+/);
+  return matched ? Number(matched[0]) : -1;
+}
+
+function roleWeight(title) {
+  const normalized = normalizeText(title);
+  if (!normalized) {
+    return 0;
+  }
+
+  if (normalized.includes("支店長")) {
+    return 7;
+  }
+  if (normalized.includes("副支店長")) {
+    return 6;
+  }
+  if (normalized.includes("部長") || normalized.includes("署長")) {
+    return 5;
+  }
+  if (normalized.includes("所長")) {
+    return 4;
+  }
+  if (normalized.includes("副長")) {
+    return 3;
+  }
+  if (normalized.includes("係長")) {
+    return 2;
+  }
+  if (normalized.includes("スタッフ")) {
+    return 1;
+  }
+  return 0;
+}
+
+function comparePeopleForDisplay(leftNode, rightNode) {
+  return (
+    roleWeight(rightNode?.title) - roleWeight(leftNode?.title) ||
+    parseNumericValue(rightNode?.age) - parseNumericValue(leftNode?.age) ||
+    normalizeText(leftNode?.name).localeCompare(normalizeText(rightNode?.name), "ja")
+  );
+}
+
+function createTargetNodes(branch) {
+  const nodes = nodeMap(branch);
+  const targets = [];
+  const root = nodes.get(branch.rootId);
+
+  if (root) {
+    targets.push(root);
+  }
+
+  branch.nodes.forEach((node) => {
+    if (node.id !== branch.rootId && node.kind === "unit") {
+      targets.push(node);
+    }
+  });
+
+  return targets;
+}
+
+function createTargetLabel(branch, node) {
+  if (!node) {
+    return "";
+  }
+
+  return node.id === branch.rootId ? branch.name : node.name;
+}
+
+function sortReportIdsForDisplay(node, nodes) {
+  const reports = node.reports
+    .map((reportId, index) => ({
+      reportId,
+      index,
+      report: nodes.get(reportId),
+    }))
+    .filter((entry) => entry.report);
+
+  if (reports.length === 0) {
+    return [];
+  }
+
+  const allPeople = reports.every((entry) => entry.report.kind === "person");
+  if (!allPeople) {
+    return reports.map((entry) => entry.reportId);
+  }
+
+  return reports
+    .sort((left, right) => comparePeopleForDisplay(left.report, right.report) || left.index - right.index)
+    .map((entry) => entry.reportId);
+}
+
 function buildAffiliation(branch, node) {
   const parts = [branch?.name];
 
@@ -967,25 +1063,36 @@ function buildStoragePayload() {
   };
 }
 
-function loadBranches() {
+function parseUpdatedAt(value) {
+  const timestamp = Date.parse(normalizeText(value));
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+}
+
+function loadStoredPayload() {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      return parseBranches(DEFAULT_BRANCHES) ?? cloneBranches(DEFAULT_BRANCHES);
+      return null;
     }
 
-    const parsed = JSON.parse(raw);
-    return parseBranches(parsed) ?? parseBranches(DEFAULT_BRANCHES) ?? cloneBranches(DEFAULT_BRANCHES);
+    return JSON.parse(raw);
   } catch {
-    return parseBranches(DEFAULT_BRANCHES) ?? cloneBranches(DEFAULT_BRANCHES);
+    return null;
   }
 }
 
-let branches = loadBranches();
+function loadBranches(payload = null) {
+  return parseBranches(payload) ?? parseBranches(DEFAULT_BRANCHES) ?? cloneBranches(DEFAULT_BRANCHES);
+}
+
+const storedPayload = loadStoredPayload();
+let branches = loadBranches(storedPayload);
 const initialBranch = branches[0] ?? { id: "", rootId: "" };
 const persistence = {
   mode: window.location.protocol === "file:" ? "local" : "server",
   serverReachable: false,
+  localUpdatedAt: normalizeText(storedPayload?.updatedAt),
+  serverUpdatedAt: "",
 };
 
 const state = {
@@ -1088,7 +1195,9 @@ function setActionStatus(message) {
 
 function writeStorageCache() {
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(buildStoragePayload()));
+    const payload = buildStoragePayload();
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    persistence.localUpdatedAt = payload.updatedAt;
     return true;
   } catch {
     return false;
@@ -1141,11 +1250,17 @@ async function loadServerBranches() {
   const payload = await response.json();
   const parsedBranches = parseBranches(payload);
   if (parsedBranches) {
-    return parsedBranches;
+    return {
+      branches: parsedBranches,
+      updatedAt: normalizeText(payload?.updatedAt),
+    };
   }
 
   if (payload && typeof payload === "object" && Array.isArray(payload.branches) && payload.branches.length === 0) {
-    return parseBranches(DEFAULT_BRANCHES) ?? cloneBranches(DEFAULT_BRANCHES);
+    return {
+      branches: parseBranches(DEFAULT_BRANCHES) ?? cloneBranches(DEFAULT_BRANCHES),
+      updatedAt: normalizeText(payload?.updatedAt),
+    };
   }
 
   throw new Error("invalid-data");
@@ -1234,6 +1349,10 @@ function officeNodes(branch) {
   return branch.nodes.filter((node) => isOfficeNode(node));
 }
 
+function defaultCreateTarget(branch) {
+  return createTargetNodes(branch)[0] ?? null;
+}
+
 function findOfficeForNode(branch, nodeId) {
   const nodes = nodeMap(branch);
   const parents = buildParentMap(branch);
@@ -1269,14 +1388,66 @@ function findFirstOfficeDescendant(branch, nodeId) {
   return null;
 }
 
-function listCreateParentOptions(branch, officeId) {
+function findCreateTargetForNode(branch, nodeId) {
   const nodes = nodeMap(branch);
-  const office = nodes.get(officeId);
-  if (!office) {
+  const parents = buildParentMap(branch);
+  let currentId = nodeId;
+
+  while (currentId) {
+    const currentNode = nodes.get(currentId);
+    if (isCreateTargetNode(branch, currentNode)) {
+      return currentNode;
+    }
+    currentId = parents.get(currentId);
+  }
+
+  return nodes.get(branch.rootId) ?? null;
+}
+
+function findFirstCreateTargetDescendant(branch, nodeId) {
+  const nodes = nodeMap(branch);
+  const queue = [...(nodes.get(nodeId)?.reports ?? [])];
+
+  while (queue.length > 0) {
+    const currentId = queue.shift();
+    const currentNode = nodes.get(currentId);
+    if (!currentNode) {
+      continue;
+    }
+    if (isCreateTargetNode(branch, currentNode)) {
+      return currentNode;
+    }
+    queue.push(...currentNode.reports);
+  }
+
+  return null;
+}
+
+function createDepartmentName(branch, targetNode, parentNode = null) {
+  if (parentNode?.kind === "person" && parentNode.department) {
+    return parentNode.department;
+  }
+
+  const office = parentNode?.kind === "person"
+    ? findOfficeForNode(branch, parentNode.id)
+    : (isOfficeNode(targetNode) ? targetNode : findOfficeForNode(branch, targetNode?.id));
+
+  if (office?.name) {
+    return office.name;
+  }
+
+  return targetNode?.id === branch.rootId ? branch.name : normalizeText(targetNode?.name);
+}
+
+function listCreateParentOptions(branch, targetId) {
+  const nodes = nodeMap(branch);
+  const targetNode = nodes.get(targetId);
+  if (!targetNode) {
     return [];
   }
 
-  const options = [{ value: office.id, label: `${office.name} 直下` }];
+  const baseLabel = createTargetLabel(branch, targetNode);
+  const options = [{ value: targetNode.id, label: `${baseLabel} 直下` }];
 
   const visit = (nodeId, depth = 1) => {
     const currentNode = nodes.get(nodeId);
@@ -1301,7 +1472,7 @@ function listCreateParentOptions(branch, officeId) {
     });
   };
 
-  visit(office.id);
+  visit(targetNode.id);
   return options;
 }
 
@@ -1325,13 +1496,13 @@ function setSelectOptions(select, options, preferredValue = "") {
   return selectedValue;
 }
 
-function syncCreateParentOptions(branch, officeId, preferredParentId = "") {
-  const offices = officeNodes(branch);
-  const fallbackOfficeId = offices[0]?.id ?? "";
-  const resolvedOfficeId = officeId || fallbackOfficeId;
-  const office = branch.nodes.find((node) => node.id === resolvedOfficeId) ?? offices[0] ?? null;
+function syncCreateParentOptions(branch, targetId, preferredParentId = "") {
+  const targets = createTargetNodes(branch);
+  const fallbackTarget = targets[0] ?? null;
+  const resolvedTargetId = targetId || fallbackTarget?.id || "";
+  const targetNode = branch.nodes.find((node) => node.id === resolvedTargetId) ?? fallbackTarget;
 
-  if (!office) {
+  if (!targetNode) {
     if (elements.createParent) {
       elements.createParent.innerHTML = "";
     }
@@ -1340,24 +1511,27 @@ function syncCreateParentOptions(branch, officeId, preferredParentId = "") {
       elements.createDepartment.placeholder = "所属";
     }
     if (elements.createParentHint) {
-      elements.createParentHint.textContent = "営業所を選択して追加先を決めてください。";
+      elements.createParentHint.textContent = "追加先を選択してください。";
     }
     return;
   }
 
-  const parentOptions = listCreateParentOptions(branch, office.id);
-  const selectedParentId = setSelectOptions(elements.createParent, parentOptions, preferredParentId || office.id);
+  const parentOptions = listCreateParentOptions(branch, targetNode.id);
+  const selectedParentId = setSelectOptions(elements.createParent, parentOptions, preferredParentId || targetNode.id);
+  const nodes = nodeMap(branch);
+  const parentNode = nodes.get(selectedParentId) ?? targetNode;
+  const departmentName = createDepartmentName(branch, targetNode, parentNode);
 
   if (elements.createOffice) {
-    elements.createOffice.value = office.id;
+    elements.createOffice.value = targetNode.id;
   }
   if (elements.createDepartment) {
-    elements.createDepartment.value = office.name;
-    elements.createDepartment.placeholder = office.name;
+    elements.createDepartment.value = departmentName;
+    elements.createDepartment.placeholder = departmentName || "所属";
   }
   if (elements.createParentHint) {
-    const selectedParentLabel = parentOptions.find((option) => option.value === selectedParentId)?.label ?? office.name;
-    elements.createParentHint.textContent = `${office.name} の ${selectedParentLabel.trim()} に追加します。`;
+    const selectedParentLabel = parentOptions.find((option) => option.value === selectedParentId)?.label ?? createTargetLabel(branch, targetNode);
+    elements.createParentHint.textContent = `${createTargetLabel(branch, targetNode)} の ${selectedParentLabel.trim()} に追加します。`;
   }
 }
 
@@ -1656,9 +1830,10 @@ function createNode(node, branch, nodes, path = new Set()) {
   const isActive = node.id === state.selectedNodeId;
   const isRoot = node.id === branch.rootId;
   const isLeaf = node.reports.length === 0;
+  const toneClass = node.kind === "person" && !isRoot ? ` role-tone-${roleWeight(node.title)}` : "";
 
   card.type = "button";
-  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}`;
+  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}${toneClass}`;
   card.innerHTML = `
     <div class="node-card-header">
       <div class="node-inline-row${hasInlineMeta ? " has-meta" : ""}">
@@ -1673,7 +1848,13 @@ function createNode(node, branch, nodes, path = new Set()) {
 
   if (shouldRenderChildren(node, nodes)) {
     const children = document.createElement("ul");
-    node.reports.forEach((reportId) => {
+    const reportIds = sortReportIdsForDisplay(node, nodes);
+    const allPeopleChildren = reportIds.length > 0 && reportIds.every((reportId) => nodes.get(reportId)?.kind === "person");
+    if (allPeopleChildren) {
+      children.classList.add("vertical-children");
+    }
+
+    reportIds.forEach((reportId) => {
       const report = nodes.get(reportId);
       if (report) {
         children.appendChild(createNode(report, branch, nodes, nextPath));
@@ -1753,8 +1934,11 @@ function renderProfile(branch) {
 
   elements.profileEmpty.hidden = true;
   elements.profileContent.hidden = false;
-  elements.profileBranch.textContent = branch.name;
+  if (elements.profileBranch) {
+    elements.profileBranch.textContent = branch.name;
+  }
   elements.profileName.textContent = selected.name;
+  elements.profileName.title = selected.name;
   if (elements.profilePhoto && elements.profilePhotoImage) {
     if (selected.kind === "person" && selected.photo) {
       elements.profilePhoto.hidden = false;
@@ -1768,12 +1952,16 @@ function renderProfile(branch) {
   }
   elements.profileAffiliationRow.hidden = false;
   elements.profileAffiliationRow.classList.remove("full");
-  elements.profileAffiliationValue.textContent = buildAffiliation(branch, selected) || "未設定";
+  const affiliation = buildAffiliation(branch, selected) || "未設定";
+  elements.profileAffiliationValue.textContent = affiliation;
+  elements.profileAffiliationValue.title = affiliation;
 
   if (selected.kind === "person") {
     elements.profileRoleRow.hidden = false;
     elements.profileRoleRow.classList.remove("full");
-    elements.profileRoleValue.textContent = selected.title || "未設定";
+    const roleText = selected.title || "未設定";
+    elements.profileRoleValue.textContent = roleText;
+    elements.profileRoleValue.title = roleText;
     elements.profilePersonMetaRow.hidden = false;
     elements.profileAgeValue.textContent = selected.age || "未設定";
     elements.profileJoinYearValue.textContent = selected.joinYear || "未設定";
@@ -1839,19 +2027,19 @@ function populateCreateForm(branch, node) {
     return;
   }
 
-  const offices = officeNodes(branch);
-  const defaultOffice = (node.kind === "unit" && isOfficeNode(node))
+  const targets = createTargetNodes(branch);
+  const defaultTarget = isCreateTargetNode(branch, node)
     ? node
-    : findOfficeForNode(branch, node.id) ?? findFirstOfficeDescendant(branch, node.id) ?? offices[0] ?? null;
-  const defaultParentId = node.kind === "person" ? node.id : defaultOffice?.id ?? "";
+    : findCreateTargetForNode(branch, node.id) ?? findFirstCreateTargetDescendant(branch, node.id) ?? defaultCreateTarget(branch);
+  const defaultParentId = node.kind === "person" ? node.id : defaultTarget?.id ?? "";
 
   setSelectOptions(
     elements.createOffice,
-    offices.map((office) => ({
-      value: office.id,
-      label: office.name,
+    targets.map((targetNode) => ({
+      value: targetNode.id,
+      label: createTargetLabel(branch, targetNode),
     })),
-    defaultOffice?.id ?? ""
+    defaultTarget?.id ?? ""
   );
   syncCreateParentOptions(branch, elements.createOffice.value, defaultParentId);
   elements.createStatus.textContent = state.createStatus;
@@ -1935,16 +2123,16 @@ async function handleCreatePerson(event) {
   }
 
   const nodes = nodeMap(branch);
-  const officeId = elements.createOffice?.value.trim() ?? "";
-  const office = nodes.get(officeId);
-  if (!office) {
-    state.createStatus = "営業所を選択してください。";
+  const targetId = elements.createOffice?.value.trim() ?? "";
+  const targetNode = nodes.get(targetId);
+  if (!targetNode) {
+    state.createStatus = "追加先を選択してください。";
     render();
     return;
   }
 
-  const parentId = elements.createParent?.value.trim() || office.id;
-  const parent = nodes.get(parentId) ?? office;
+  const parentId = elements.createParent?.value.trim() || targetNode.id;
+  const parent = nodes.get(parentId) ?? targetNode;
   if (!parent) {
     return;
   }
@@ -1974,7 +2162,7 @@ async function handleCreatePerson(event) {
     title: elements.createTitle?.value.trim() ?? "",
     department:
       elements.createDepartment?.value.trim() ||
-      office.name,
+      createDepartmentName(branch, targetNode, parent),
     age: elements.createAge?.value.trim() ?? "",
     joinYear: elements.createJoinYear?.value.trim() ?? "",
     tenure: elements.createTenure?.value.trim() ?? "",
@@ -2378,13 +2566,11 @@ function fitOrgChartToFrame() {
   const treeRect = tree.getBoundingClientRect();
 
   if (isMobile) {
-    shell.style.width = "max-content";
-    shell.style.minWidth = "100%";
+    shell.style.width = "100%";
+    shell.style.minWidth = "0";
     content.style.transformOrigin = "top center";
-    shell.style.height = `${Math.ceil(treeRect.height)}px`;
-
-    const maxScrollLeft = Math.max(shell.scrollWidth - frame.clientWidth, 0);
-    frame.scrollLeft = Math.round(maxScrollLeft / 2);
+    shell.style.height = "auto";
+    frame.scrollLeft = 0;
     return;
   }
 
@@ -2405,9 +2591,18 @@ async function initializeApp() {
   }
 
   try {
-    const serverBranches = await loadServerBranches();
-    branches = serverBranches;
+    const serverState = await loadServerBranches();
     persistence.serverReachable = true;
+    persistence.serverUpdatedAt = serverState.updatedAt;
+
+    if (parseUpdatedAt(persistence.localUpdatedAt) > parseUpdatedAt(serverState.updatedAt)) {
+      const saved = await saveBranches();
+      setActionStatus(saved ? "この端末の最新編集を共有データへ反映しました。" : "この端末の最新編集は残していますが、共有反映に失敗しました。");
+      render();
+      return;
+    }
+
+    branches = serverState.branches;
     resetView(branches[0]?.id);
     setActionStatus("共有データに接続しました。");
     render();
@@ -2455,6 +2650,16 @@ if (elements.createOffice) {
     }
 
     syncCreateParentOptions(branch, elements.createOffice.value, elements.createParent?.value ?? "");
+  });
+}
+if (elements.createParent) {
+  elements.createParent.addEventListener("change", () => {
+    const branch = getActiveBranch();
+    if (!branch) {
+      return;
+    }
+
+    syncCreateParentOptions(branch, elements.createOffice?.value ?? "", elements.createParent.value);
   });
 }
 if (elements.closeEditPanel) {

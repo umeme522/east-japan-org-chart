@@ -61,12 +61,72 @@
         </section>
       </section>
 
+      <section class="panel panel-create">
+        <details class="profile-disclosure create-disclosure" id="profileCreator">
+          <summary>
+            <span class="create-summary-content">
+              <span class="create-summary-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+              </span>
+              <span>新規追加</span>
+            </span>
+          </summary>
+          <p class="manage-hint" id="createParentHint"></p>
+          <form id="createForm" class="edit-form">
+            <label class="edit-field">
+              <span>追加先</span>
+              <select id="createOffice" required></select>
+            </label>
+            <label class="edit-field">
+              <span>誰の下に追加</span>
+              <select id="createParent" required></select>
+            </label>
+            <div class="edit-field edit-field-wide">
+              <span>氏名</span>
+              <div class="name-split-grid">
+                <input id="createLastName" type="text" placeholder="苗字" required>
+                <input id="createFirstName" type="text" placeholder="名前">
+              </div>
+            </div>
+            <label class="edit-field">
+              <span>役職</span>
+              <input id="createTitle" type="text">
+            </label>
+            <label class="edit-field">
+              <span>所属</span>
+              <input id="createDepartment" type="text">
+            </label>
+            <label class="edit-field edit-field-wide">
+              <span>顔写真</span>
+              <input id="createPhoto" type="file" accept="image/*">
+            </label>
+            <label class="edit-field">
+              <span>年齢</span>
+              <input id="createAge" type="text">
+            </label>
+            <label class="edit-field">
+              <span>入社年度</span>
+              <input id="createJoinYear" type="text">
+            </label>
+            <label class="edit-field">
+              <span>勤続</span>
+              <input id="createTenure" type="text">
+            </label>
+            <div class="edit-actions">
+              <button type="submit" class="primary-button">新規追加</button>
+            </div>
+          </form>
+          <p id="createStatus" class="edit-status" aria-live="polite"></p>
+        </details>
+      </section>
+
       <aside class="panel panel-detail" id="profilePanel" aria-live="polite">
         <div id="profileEmpty" class="profile-empty"></div>
 
         <div id="profileContent" class="profile-content" hidden>
           <div class="profile-summary">
-            <p class="section-label" id="profileBranch"></p>
             <div class="profile-summary-main">
               <div class="profile-photo" id="profilePhoto" hidden>
                 <img id="profilePhotoImage" alt="顔写真">
@@ -154,57 +214,6 @@
             </form>
             <p id="editStatus" class="edit-status" aria-live="polite"></p>
           </details>
-
-          <details class="profile-disclosure" id="profileCreator">
-            <summary>新規追加</summary>
-            <p class="manage-hint" id="createParentHint"></p>
-            <form id="createForm" class="edit-form">
-              <label class="edit-field">
-                <span>営業所</span>
-                <select id="createOffice" required></select>
-              </label>
-              <label class="edit-field">
-                <span>誰の下に追加</span>
-                <select id="createParent" required></select>
-              </label>
-              <div class="edit-field edit-field-wide">
-                <span>氏名</span>
-                <div class="name-split-grid">
-                  <input id="createLastName" type="text" placeholder="苗字" required>
-                  <input id="createFirstName" type="text" placeholder="名前">
-                </div>
-              </div>
-              <label class="edit-field">
-                <span>役職</span>
-                <input id="createTitle" type="text">
-              </label>
-              <label class="edit-field">
-                <span>所属</span>
-                <input id="createDepartment" type="text">
-              </label>
-              <label class="edit-field edit-field-wide">
-                <span>顔写真</span>
-                <input id="createPhoto" type="file" accept="image/*">
-              </label>
-              <label class="edit-field">
-                <span>年齢</span>
-                <input id="createAge" type="text">
-              </label>
-              <label class="edit-field">
-                <span>入社年度</span>
-                <input id="createJoinYear" type="text">
-              </label>
-              <label class="edit-field">
-                <span>勤続</span>
-                <input id="createTenure" type="text">
-              </label>
-              <div class="edit-actions">
-                <button type="submit" class="primary-button">新規追加</button>
-              </div>
-            </form>
-            <p id="createStatus" class="edit-status" aria-live="polite"></p>
-          </details>
-
         </div>
       </aside>
     </main>
