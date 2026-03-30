@@ -47,7 +47,7 @@ textarea {
 .page-shell {
   width: min(1740px, calc(100% - 22px));
   margin: 0 auto;
-  padding: 14px 0 18px;
+  padding: 8px 0 16px;
 }
 
 .section-label {
@@ -73,7 +73,7 @@ textarea {
     "detail"
     "members"
     "create";
-  gap: 16px;
+  gap: 14px;
   align-items: start;
 }
 
@@ -98,12 +98,12 @@ textarea {
 
 .panel-main {
   grid-area: main;
-  padding: 18px 20px 20px;
+  padding: 12px 20px 18px;
 }
 
 .panel-members {
   grid-area: members;
-  padding: 18px 20px 20px;
+  padding: 16px 20px 18px;
 }
 
 .panel-create {
@@ -117,7 +117,7 @@ textarea {
   align-self: start;
   max-height: none;
   overflow: visible;
-  padding: 18px;
+  padding: 16px 18px;
   background:
     linear-gradient(180deg, rgba(248, 251, 249, 0.98) 0%, rgba(255, 255, 254, 0.95) 100%);
 }
@@ -127,7 +127,7 @@ textarea {
   grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
   gap: 12px 16px;
   align-items: end;
-  padding: 14px 16px;
+  padding: 10px 14px;
   border-radius: 22px;
   background: rgba(248, 249, 245, 0.98);
   border: 1px solid rgba(102, 111, 104, 0.14);
@@ -140,7 +140,7 @@ textarea {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
-  gap: 10px;
+  gap: 8px;
 }
 
 .toolbar-primary > div:first-child {
@@ -294,7 +294,7 @@ textarea {
 .summary-card {
   width: 100%;
   min-width: 0;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border: 1px solid rgba(217, 119, 42, 0.2);
   border-radius: 20px;
   background: rgba(247, 242, 236, 0.98);
@@ -305,7 +305,7 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 48px;
+  min-height: 44px;
 }
 
 .summary-card span,
@@ -866,9 +866,10 @@ textarea {
 }
 
 .member-inline-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(68px, 0.46fr) minmax(0, 0.54fr) auto;
   align-items: center;
-  gap: 6px;
+  column-gap: 8px;
   min-width: 0;
   white-space: nowrap;
 }
@@ -880,14 +881,17 @@ textarea {
 }
 
 .member-role {
-  flex: 0 0 auto;
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--muted);
+  text-align: left;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .member-name-button {
-  flex: 1 1 auto;
+  width: 100%;
   padding: 0;
   border: 0;
   background: transparent;
@@ -895,6 +899,7 @@ textarea {
   font-size: 0.95rem;
   font-weight: 700;
   text-align: left;
+  justify-self: stretch;
   cursor: pointer;
 }
 
@@ -904,7 +909,7 @@ textarea {
 }
 
 .member-edit-button {
-  flex: 0 0 auto;
+  justify-self: end;
   padding: 4px 8px;
   border-radius: 999px;
   border: 1px solid rgba(31, 106, 67, 0.18);
@@ -1576,18 +1581,31 @@ textarea {
 
   .member-inline-row {
     display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "role edit"
+      "name edit";
     gap: 5px;
     align-items: start;
     white-space: normal;
   }
 
+  .member-role {
+    grid-area: role;
+  }
+
   .member-edit-button {
+    grid-area: edit;
     justify-self: start;
   }
 
   .member-inline-row.has-meta .member-name-button {
     overflow: visible;
     text-overflow: clip;
+  }
+
+  .member-name-button {
+    grid-area: name;
   }
 
   .member-role {
