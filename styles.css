@@ -124,9 +124,9 @@ textarea {
 
 .toolbar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 560px);
   gap: 12px 16px;
-  align-items: end;
+  align-items: center;
   padding: 10px 14px;
   border-radius: 22px;
   background: rgba(248, 249, 245, 0.98);
@@ -151,13 +151,15 @@ textarea {
 
 .toolbar-meta {
   display: grid;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
   min-width: 0;
 }
 
 .toolbar-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   justify-content: flex-end;
 }
@@ -678,7 +680,7 @@ textarea {
 .node-title {
   display: block;
   min-width: 0;
-  font-size: 0.77rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-align: center;
   white-space: nowrap;
@@ -700,7 +702,7 @@ textarea {
 }
 
 .node-inline-leader-role {
-  font-size: 0.61rem;
+  font-size: 0.57rem;
   font-weight: 800;
   color: var(--warm-deep);
   white-space: nowrap;
@@ -708,7 +710,7 @@ textarea {
 
 .node-inline-leader-name {
   min-width: 0;
-  font-size: 0.67rem;
+  font-size: 0.62rem;
   font-weight: 700;
   color: var(--accent-ink);
   white-space: nowrap;
@@ -718,7 +720,7 @@ textarea {
 
 .node-inline-meta {
   flex: 0 0 auto;
-  font-size: 0.63rem;
+  font-size: 0.58rem;
   font-weight: 700;
   color: var(--muted);
   white-space: nowrap;
@@ -881,7 +883,7 @@ textarea {
 }
 
 .member-role {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
   color: var(--muted);
   text-align: left;
@@ -896,7 +898,7 @@ textarea {
   border: 0;
   background: transparent;
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   text-align: left;
   justify-self: stretch;
@@ -955,6 +957,11 @@ textarea {
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+.profile-edit-button {
+  margin-left: auto;
+  align-self: center;
 }
 
 .profile-photo {
@@ -1178,6 +1185,10 @@ textarea {
   cursor: pointer;
   list-style: none;
   background: rgba(244, 245, 241, 0.98);
+}
+
+#profileEditor > summary {
+  display: none;
 }
 
 .profile-disclosure summary::after {
@@ -1484,10 +1495,12 @@ textarea {
   }
 
   .toolbar-meta {
+    grid-template-columns: 1fr;
     width: 100%;
   }
 
   .toolbar-actions {
+    flex-wrap: wrap;
     justify-content: flex-start;
   }
 }

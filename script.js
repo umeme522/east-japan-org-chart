@@ -1273,6 +1273,7 @@ const elements = {
   profileDescriptionRow: document.getElementById("profileDescriptionRow"),
   profileDescriptionLabel: document.getElementById("profileDescriptionLabel"),
   profileDescriptionValue: document.getElementById("profileDescriptionValue"),
+  profileEditButton: document.getElementById("profileEditButton"),
   profileEditor: document.getElementById("profileEditor"),
   profileForm: document.getElementById("profileForm"),
   editLastName: document.getElementById("editLastName"),
@@ -1291,9 +1292,6 @@ const elements = {
   editHistoryFieldLabel: document.getElementById("editHistoryFieldLabel"),
   editHistoryRows: document.getElementById("editHistoryRows"),
   addEditHistoryRow: document.getElementById("addEditHistoryRow"),
-  editDescriptionField: document.getElementById("editDescriptionField"),
-  editDescriptionLabel: document.getElementById("editDescriptionLabel"),
-  editDescription: document.getElementById("editDescription"),
   closeEditPanel: document.getElementById("closeEditPanel"),
   editStatus: document.getElementById("editStatus"),
   profileCreator: document.getElementById("profileCreator"),
@@ -2131,7 +2129,6 @@ function toggleEditFormFields(kind) {
   elements.editJoinYearField.hidden = !isPerson;
   elements.editTenureField.hidden = !isPerson;
   elements.editHistoryField.hidden = !isPerson;
-  elements.editDescriptionField.hidden = true;
 }
 
 function renderHeroStats() {
@@ -2413,13 +2410,11 @@ function populateEditForm(node) {
     elements.editTenure.value = node.tenure ?? "";
     renderHistoryRows(elements.editHistoryRows, node.historyEntries ?? []);
     elements.editHistoryFieldLabel.textContent = "経歴";
-    elements.editDescription.value = "";
   } else {
     toggleEditFormFields("unit");
     elements.editAge.value = "";
     elements.editJoinYear.value = "";
     elements.editTenure.value = "";
-    elements.editDescription.value = node.description ?? "";
   }
 }
 
@@ -2513,8 +2508,6 @@ async function handleProfileSave(event) {
     updates.historyEntries = collectHistoryEntries(elements.editHistoryRows);
     const nextPhoto = await readImageFileAsDataUrl(elements.editPhoto?.files?.[0]);
     updates.photo = nextPhoto || selected.photo || "";
-  } else {
-    updates.description = elements.editDescription.value.trim();
   }
 
   updateNode(branch.id, selected.id, updates);
@@ -3061,7 +3054,7 @@ async function initializeApp() {
   } catch {
     persistence.mode = "local";
     persistence.serverReachable = false;
-    setActionStatus("共有サーバーに接続できないため、このPCの保存データで表示しています。");
+    setActionStatus("");
     renderActionStatus();
   }
 }
@@ -3085,6 +3078,17 @@ if (elements.excelImportButton && elements.excelImportInput) {
 
 if (elements.resetButton) {
   elements.resetButton.addEventListener("click", handleReset);
+}
+
+if (elements.profileEditButton) {
+  elements.profileEditButton.addEventListener("click", () => {
+    const branch = getActiveBranch();
+    if (!branch || !state.selectedNodeId) {
+      return;
+    }
+
+    openProfileEditor(branch.id, state.selectedNodeId);
+  });
 }
 
 elements.addEditHistoryRow.addEventListener("click", () => {
