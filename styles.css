@@ -169,6 +169,10 @@ textarea {
   font-size: 0.84rem;
 }
 
+.action-status:empty {
+  display: none;
+}
+
 .toolbar .section-label {
   display: none;
 }
@@ -618,7 +622,7 @@ textarea {
 }
 
 .node-card.has-inline-leader {
-  width: 244px;
+  width: 258px;
 }
 
 .node-card.is-leaf {
@@ -645,9 +649,30 @@ textarea {
 }
 
 .node-inline-row.has-leader {
-  justify-content: space-between;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(92px, auto);
+  align-items: stretch;
+  gap: 10px;
   padding-right: 16px;
+}
+
+.node-inline-main {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.node-card.has-inline-leader .node-inline-main {
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background: rgba(102, 111, 104, 0.08);
+}
+
+.node-inline-row.has-leader .node-inline-main {
+  justify-content: center;
 }
 
 .node-title {
@@ -664,11 +689,14 @@ textarea {
 .node-inline-leader {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   min-width: 0;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: rgba(217, 119, 42, 0.14);
+  min-height: 32px;
+  padding: 0 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(217, 119, 42, 0.18);
+  background: rgba(217, 119, 42, 0.12);
 }
 
 .node-inline-leader-role {
@@ -873,6 +901,24 @@ textarea {
 .member-name-button:hover,
 .member-name-button:focus-visible {
   color: var(--accent);
+}
+
+.member-edit-button {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 106, 67, 0.18);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--accent-deep);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.member-edit-button:hover,
+.member-edit-button:focus-visible {
+  border-color: var(--warm);
+  color: var(--warm-deep);
 }
 
 .profile-empty {
@@ -1197,6 +1243,10 @@ textarea {
 .profile-disclosure .manage-hint,
 .profile-disclosure .edit-status {
   margin-inline: 12px;
+}
+
+.manage-hint:empty {
+  display: none;
 }
 
 .profile-disclosure form {
@@ -1531,6 +1581,10 @@ textarea {
     white-space: normal;
   }
 
+  .member-edit-button {
+    justify-self: start;
+  }
+
   .member-inline-row.has-meta .member-name-button {
     overflow: visible;
     text-overflow: clip;
@@ -1657,11 +1711,13 @@ textarea {
   }
 
   .node-inline-row.has-leader {
+    grid-template-columns: minmax(0, 1fr) minmax(84px, auto);
     gap: 6px;
   }
 
   .node-inline-leader {
-    padding: 2px 6px;
+    min-height: 28px;
+    padding: 0 6px;
   }
 
   .node-inline-leader-role {

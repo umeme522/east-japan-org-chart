@@ -27,8 +27,8 @@
               <input id="memberSearch" type="search" placeholder="氏名・役職・部署で検索">
             </label>
             <div class="toolbar-actions">
-              <button id="excelExportButton" type="button" class="secondary-button">Excel出力</button>
-              <button id="excelImportButton" type="button" class="secondary-button">Excel取込</button>
+              <button id="excelExportButton" type="button" class="secondary-button">エクスポート</button>
+              <button id="excelImportButton" type="button" class="secondary-button">インポート</button>
               <input id="excelImportInput" type="file" accept=".csv,text/csv" hidden>
             </div>
           </div>
@@ -51,13 +51,7 @@
         <details class="member-disclosure" id="memberDisclosure" open>
           <summary>メンバー</summary>
           <section class="member-grid-section">
-          <div class="section-header">
-            <div>
-              <p class="section-label">メンバー一覧</p>
-              <h2>支店プロフィール</h2>
-            </div>
-          </div>
-          <div id="memberGrid" class="member-grid" aria-live="polite"></div>
+            <div id="memberGrid" class="member-grid" aria-live="polite"></div>
           </section>
         </details>
       </section>
@@ -105,15 +99,15 @@
             </label>
             <label class="edit-field">
               <span>年齢</span>
-              <input id="createAge" type="text">
+              <input id="createAge" type="number" inputmode="numeric" min="0" step="1">
             </label>
             <label class="edit-field">
               <span>入社年度</span>
-              <input id="createJoinYear" type="text">
+              <input id="createJoinYear" type="number" inputmode="numeric" min="0" step="1">
             </label>
             <label class="edit-field">
               <span>勤続</span>
-              <input id="createTenure" type="text">
+              <input id="createTenure" type="number" inputmode="numeric" min="0" step="1">
             </label>
             <div class="edit-actions">
               <button type="submit" class="primary-button">新規追加</button>
@@ -189,23 +183,23 @@
               </label>
               <label class="edit-field" id="editAgeField">
                 <span>年齢</span>
-                <input id="editAge" type="text">
-              </label>
-              <label class="edit-field" id="editJoinYearField">
-                <span>入社年度</span>
-                <input id="editJoinYear" type="text">
-              </label>
-              <label class="edit-field" id="editTenureField">
-                <span>勤続</span>
-                <input id="editTenure" type="text">
-              </label>
+              <input id="editAge" type="number" inputmode="numeric" min="0" step="1">
+            </label>
+            <label class="edit-field" id="editJoinYearField">
+              <span>入社年度</span>
+              <input id="editJoinYear" type="number" inputmode="numeric" min="0" step="1">
+            </label>
+            <label class="edit-field" id="editTenureField">
+              <span>勤続</span>
+              <input id="editTenure" type="number" inputmode="numeric" min="0" step="1">
+            </label>
               <div class="edit-field edit-field-wide" id="editHistoryField">
                 <span id="editHistoryFieldLabel">経歴</span>
                 <div id="editHistoryRows" class="history-editor"></div>
                 <button id="addEditHistoryRow" type="button" class="secondary-button history-add-button">経歴を追加</button>
               </div>
               <label class="edit-field edit-field-wide" id="editDescriptionField" hidden>
-                <span id="editDescriptionLabel">営業所紹介</span>
+                <span id="editDescriptionLabel">説明</span>
                 <textarea id="editDescription" rows="4"></textarea>
               </label>
               <div class="edit-actions">

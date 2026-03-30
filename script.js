@@ -850,6 +850,11 @@ function parseNumericValue(value) {
   return matched ? Number(matched[0]) : -1;
 }
 
+function normalizeNumericField(value) {
+  const digits = normalizeText(value).match(/\d+/g);
+  return digits ? digits.join("") : "";
+}
+
 function roleWeight(title) {
   const normalized = normalizeText(title);
   if (!normalized) {
@@ -918,21 +923,34 @@ function isDepartmentUnitNode(node) {
   return node?.kind === "unit" && /^dept-\d+$/.test(normalizeText(node?.id));
 }
 
-function getInlineDepartmentLeader(node, nodes) {
-  if (!isDepartmentUnitNode(node)) {
+function getInlineUnitLeader(node, nodes) {
+  if (node?.kind !== "unit") {
     return null;
   }
 
-  const candidate = nodes.get(node.reports[0]);
-  if (!candidate || candidate.kind !== "person") {
-    return null;
+  if (isDepartmentUnitNode(node)) {
+    return (
+      node.reports
+        .map((reportId) => nodes.get(reportId))
+        .find((candidate) => candidate?.kind === "person" && normalizeText(candidate.title).includes("部長")) ??
+      null
+    );
   }
 
-  return normalizeText(candidate.title).includes("部長") ? candidate : null;
+  if (isOfficeNode(node)) {
+    return (
+      node.reports
+        .map((reportId) => nodes.get(reportId))
+        .find((candidate) => candidate?.kind === "person" && /(所長|署長)/.test(normalizeText(candidate.title))) ??
+      null
+    );
+  }
+
+  return null;
 }
 
 function sortReportIdsForDisplay(node, nodes) {
-  const inlineLeader = getInlineDepartmentLeader(node, nodes);
+  const inlineLeader = getInlineUnitLeader(node, nodes);
   const reports = node.reports
     .filter((reportId) => reportId !== inlineLeader?.id)
     .map((reportId, index) => ({
@@ -986,12 +1004,12 @@ function normalizeNode(node, index) {
   if (kind === "person") {
     normalized.lastName = nameParts.lastName;
     normalized.firstName = nameParts.firstName;
-    const joinYear = normalizeText(node?.joinYear);
-    const rawAge = normalizeText(node?.age);
-    const looksLikeJoinYear = /^(?:19|20)\d{2}(?:年)?$/.test(rawAge);
+    const joinYear = normalizeNumericField(node?.joinYear);
+    const rawAge = normalizeNumericField(node?.age);
+    const looksLikeJoinYear = /^(?:19|20)\d{2}$/.test(rawAge);
     normalized.age = looksLikeJoinYear && !joinYear ? "" : rawAge;
     normalized.joinYear = joinYear || (looksLikeJoinYear ? rawAge : "");
-    normalized.tenure = normalizeText(node?.tenure);
+    normalized.tenure = normalizeNumericField(node?.tenure);
     normalized.historyEntries = normalizeHistoryEntries(node?.historyEntries, node?.history);
     normalized.hobbies = normalizeStringArray(node?.hobbies);
     normalized.photo = normalizeText(node?.photo);
@@ -1309,7 +1327,18 @@ function clearActionStatus() {
 }
 
 function setActionStatus(message) {
-  state.actionStatus = message;
+  const normalized = normalizeText(message);
+  if (!normalized) {
+    state.actionStatus = "";
+    return;
+  }
+
+  if (/(失敗|できません|できない|確認|入力|選択|読み込み)/.test(normalized)) {
+    state.actionStatus = normalized;
+    return;
+  }
+
+  state.actionStatus = "";
 }
 
 function writeStorageCache() {
@@ -1719,7 +1748,7 @@ function syncCreateParentOptions(branch, targetId, preferredParentId = "") {
       elements.createDepartment.placeholder = "所属";
     }
     if (elements.createParentHint) {
-      elements.createParentHint.textContent = "追加先を選択してください。";
+      elements.createParentHint.textContent = "";
     }
     return;
   }
@@ -1738,8 +1767,7 @@ function syncCreateParentOptions(branch, targetId, preferredParentId = "") {
     elements.createDepartment.placeholder = departmentName || "所属";
   }
   if (elements.createParentHint) {
-    const selectedParentLabel = parentOptions.find((option) => option.value === selectedParentId)?.label ?? createTargetLabel(branch, targetNode);
-    elements.createParentHint.textContent = `${createTargetLabel(branch, targetNode)} の ${selectedParentLabel.trim()} に追加します。`;
+    elements.createParentHint.textContent = "";
   }
 }
 
@@ -2193,16 +2221,17 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
 
   const nextPath = new Set(path);
   nextPath.add(node.id);
+  const reportIds = sortReportIdsForDisplay(node, nodes);
 
   const card = document.createElement("button");
   const kindClass = node.kind === "person" ? "person" : "unit";
-  const canToggle = isCollapsibleUnitNode(node);
+  const canToggle = node.kind === "unit" && reportIds.length > 0;
   const isExpanded = state.expandedDepartmentIds.has(node.id);
   const hasInlineMeta = node.kind === "person" && node.title;
-  const inlineLeader = node.kind === "unit" ? getInlineDepartmentLeader(node, nodes) : null;
+  const inlineLeader = node.kind === "unit" ? getInlineUnitLeader(node, nodes) : null;
   const isActive = node.id === state.selectedNodeId;
   const isRoot = node.id === scopeRootId;
-  const isLeaf = node.reports.length === 0;
+  const isLeaf = reportIds.length === 0;
   const toneClass = node.kind === "person" && !isRoot ? ` role-tone-${roleWeight(node.title)}` : "";
   const hasInlineLeader = Boolean(inlineLeader);
 
@@ -2211,8 +2240,10 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
   card.innerHTML = `
     <div class="node-card-header">
       <div class="node-inline-row${hasInlineMeta ? " has-meta" : ""}${hasInlineLeader ? " has-leader" : ""}">
-        ${hasInlineMeta ? `<span class="node-inline-meta">${node.title}</span>` : ""}
-        <span class="node-title">${node.name}</span>
+        <span class="node-inline-main">
+          ${hasInlineMeta ? `<span class="node-inline-meta">${node.title}</span>` : ""}
+          <span class="node-title">${node.name}</span>
+        </span>
         ${hasInlineLeader ? `
           <span class="node-inline-leader">
             <span class="node-inline-leader-role">${inlineLeader.title}</span>
@@ -2229,7 +2260,6 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
 
   if (shouldRenderChildren(node, nodes)) {
     const children = document.createElement("ul");
-    const reportIds = sortReportIdsForDisplay(node, nodes);
     const allPeopleChildren = reportIds.length > 0 && reportIds.every((reportId) => nodes.get(reportId)?.kind === "person");
     if (allPeopleChildren) {
       children.classList.add("vertical-children");
@@ -2297,10 +2327,12 @@ function renderMemberGrid(branch) {
       <div class="member-inline-row${person.title ? " has-meta" : ""}">
         ${person.title ? `<p class="member-role">${person.title}</p>` : ""}
         <button type="button" class="member-name-button">${person.name}</button>
+        <button type="button" class="member-edit-button">編集</button>
       </div>
     `;
 
     card.querySelector(".member-name-button").addEventListener("click", () => selectNode(branch.id, person.id));
+    card.querySelector(".member-edit-button").addEventListener("click", () => openProfileEditor(branch.id, person.id));
     elements.memberGrid.appendChild(card);
   });
 }
@@ -2475,9 +2507,9 @@ async function handleProfileSave(event) {
   if (selected.kind === "person") {
     updates.lastName = lastName;
     updates.firstName = firstName;
-    updates.age = elements.editAge.value.trim();
-    updates.joinYear = elements.editJoinYear.value.trim();
-    updates.tenure = elements.editTenure.value.trim();
+    updates.age = normalizeNumericField(elements.editAge.value);
+    updates.joinYear = normalizeNumericField(elements.editJoinYear.value);
+    updates.tenure = normalizeNumericField(elements.editTenure.value);
     updates.historyEntries = collectHistoryEntries(elements.editHistoryRows);
     const nextPhoto = await readImageFileAsDataUrl(elements.editPhoto?.files?.[0]);
     updates.photo = nextPhoto || selected.photo || "";
@@ -2487,7 +2519,7 @@ async function handleProfileSave(event) {
 
   updateNode(branch.id, selected.id, updates);
   const saved = await saveBranches();
-  state.editStatus = saved ? "保存しました。" : "共有データの保存に失敗しました。";
+  state.editStatus = saved ? "" : "共有保存に失敗しました。";
   if (saved) {
     clearActionStatus();
   }
@@ -2543,9 +2575,9 @@ async function handleCreatePerson(event) {
     department:
       elements.createDepartment?.value.trim() ||
       createDepartmentName(branch, targetNode, parent),
-    age: elements.createAge?.value.trim() ?? "",
-    joinYear: elements.createJoinYear?.value.trim() ?? "",
-    tenure: elements.createTenure?.value.trim() ?? "",
+    age: normalizeNumericField(elements.createAge?.value),
+    joinYear: normalizeNumericField(elements.createJoinYear?.value),
+    tenure: normalizeNumericField(elements.createTenure?.value),
     historyEntries: [],
     tags: [],
     reports: [],
@@ -2562,7 +2594,7 @@ async function handleCreatePerson(event) {
   expandPathToNode(branch, newNode.id);
 
   const saved = await saveBranches();
-  state.createStatus = saved ? "新規追加しました。" : "共有データの保存に失敗しました。";
+  state.createStatus = saved ? "" : "共有保存に失敗しました。";
   if (saved) {
     clearActionStatus();
     clearCreateFormFields();
@@ -2571,6 +2603,15 @@ async function handleCreatePerson(event) {
     }
   }
   render();
+}
+
+function openProfileEditor(branchId, nodeId) {
+  state.editStatus = "";
+  selectNode(branchId, nodeId);
+  if (elements.profileEditor) {
+    elements.profileEditor.open = true;
+    elements.profileEditor.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
 }
 
 function handleCloseEditPanel() {
@@ -2848,9 +2889,9 @@ function importPeopleFromCsv(branch, rows) {
       existingNode.name = displayName || existingNode.name;
       existingNode.title = normalizeText(row["役職"]);
       existingNode.department = normalizeText(row["所属"]) || office.name;
-      existingNode.age = normalizeText(row["年齢"]);
-      existingNode.tenure = normalizeText(row["勤続"]);
-      existingNode.joinYear = normalizeText(row["入社"]);
+      existingNode.age = normalizeNumericField(row["年齢"]);
+      existingNode.tenure = normalizeNumericField(row["勤続"]);
+      existingNode.joinYear = normalizeNumericField(row["入社"]);
       existingNode.historyEntries = historyEntries;
       moveNodeToParent(branch, existingNode.id, parent.id);
       summary.updated += 1;
@@ -2866,9 +2907,9 @@ function importPeopleFromCsv(branch, rows) {
       firstName,
       title: normalizeText(row["役職"]),
       department: normalizeText(row["所属"]) || office.name,
-      age: normalizeText(row["年齢"]),
-      tenure: normalizeText(row["勤続"]),
-      joinYear: normalizeText(row["入社"]),
+      age: normalizeNumericField(row["年齢"]),
+      tenure: normalizeNumericField(row["勤続"]),
+      joinYear: normalizeNumericField(row["入社"]),
       historyEntries,
       photo: "",
       tags: [],
@@ -2902,7 +2943,7 @@ function handleExport() {
   link.remove();
   window.URL.revokeObjectURL(url);
 
-  setActionStatus("現在の人物データを Excel 用CSVで出力しました。");
+  setActionStatus("");
   renderActionStatus();
 }
 
@@ -2916,16 +2957,12 @@ async function handleImportFile(event) {
     const text = await file.text();
     const rows = csvToObjects(text);
     const branch = getActiveBranch();
-    const summary = importPeopleFromCsv(branch, rows);
+    importPeopleFromCsv(branch, rows);
     const saved = await saveBranches();
-    setActionStatus(
-      saved
-        ? `${file.name} を取り込みました。更新 ${summary.updated}件 / 追加 ${summary.created}件 / スキップ ${summary.skipped}件`
-        : `${file.name} は取り込みましたが、共有保存に失敗しました。`
-    );
+    setActionStatus(saved ? "" : "インポート後の共有保存に失敗しました。");
     render();
   } catch {
-    setActionStatus("Excel用CSVの読み込みに失敗しました。");
+    setActionStatus("インポートに失敗しました。");
     renderActionStatus();
   } finally {
     event.target.value = "";
@@ -3012,14 +3049,14 @@ async function initializeApp() {
 
     if (parseUpdatedAt(persistence.localUpdatedAt) > parseUpdatedAt(serverState.updatedAt)) {
       const saved = await saveBranches();
-      setActionStatus(saved ? "この端末の最新編集を共有データへ反映しました。" : "この端末の最新編集は残していますが、共有反映に失敗しました。");
+      setActionStatus(saved ? "" : "共有反映に失敗しました。");
       render();
       return;
     }
 
     branches = serverState.branches;
     resetView(branches[0]?.id);
-    setActionStatus("共有データに接続しました。");
+    setActionStatus("");
     render();
   } catch {
     persistence.mode = "local";
