@@ -914,8 +914,27 @@ function createTargetLabel(branch, node) {
   return node.id === branch.rootId ? branch.name : node.name;
 }
 
+function isDepartmentUnitNode(node) {
+  return node?.kind === "unit" && /^dept-\d+$/.test(normalizeText(node?.id));
+}
+
+function getInlineDepartmentLeader(node, nodes) {
+  if (!isDepartmentUnitNode(node)) {
+    return null;
+  }
+
+  const candidate = nodes.get(node.reports[0]);
+  if (!candidate || candidate.kind !== "person") {
+    return null;
+  }
+
+  return normalizeText(candidate.title).includes("部長") ? candidate : null;
+}
+
 function sortReportIdsForDisplay(node, nodes) {
+  const inlineLeader = getInlineDepartmentLeader(node, nodes);
   const reports = node.reports
+    .filter((reportId) => reportId !== inlineLeader?.id)
     .map((reportId, index) => ({
       reportId,
       index,
@@ -1055,6 +1074,91 @@ function parseBranches(data) {
   return normalized.length > 0 ? normalized : null;
 }
 
+function upsertBranchNode(branch, node) {
+  const index = branch.nodes.findIndex((entry) => entry.id === node.id);
+  if (index === -1) {
+    branch.nodes.push(node);
+    return;
+  }
+
+  branch.nodes[index] = {
+    ...branch.nodes[index],
+    ...node,
+  };
+}
+
+function migrateEastJapanBranch(branch) {
+  if (!branch || branch.id !== "east-japan") {
+    return branch;
+  }
+
+  const dept1 = branch.nodes.find((node) => node.id === "dept-1");
+  const dept1Manager = branch.nodes.find((node) => node.id === "dept-1-manager");
+  if (dept1 && dept1Manager) {
+    const officeIds = Array.from(new Set([
+      ...dept1.reports.filter((reportId) => reportId !== dept1Manager.id),
+      ...dept1Manager.reports,
+    ]));
+
+    dept1.reports = [dept1Manager.id, ...officeIds];
+    dept1Manager.title = "部長";
+    dept1Manager.department = "業務1部";
+    dept1Manager.reports = [];
+  }
+
+  upsertBranchNode(branch, {
+    id: "dept-2-manager",
+    kind: "person",
+    name: "藤原 邦康",
+    lastName: "藤原",
+    firstName: "邦康",
+    title: "部長",
+    department: "業務2部",
+    age: "",
+    joinYear: "",
+    tenure: "",
+    history: "",
+    historyEntries: [],
+    hobbies: [],
+    tags: [],
+    reports: [],
+  });
+
+  upsertBranchNode(branch, {
+    id: "dept-3-manager",
+    kind: "person",
+    name: "堀内 義人",
+    lastName: "堀内",
+    firstName: "義人",
+    title: "部長",
+    department: "業務3部",
+    age: "",
+    joinYear: "",
+    tenure: "",
+    history: "",
+    historyEntries: [],
+    hobbies: [],
+    tags: [],
+    reports: [],
+  });
+
+  const dept2 = branch.nodes.find((node) => node.id === "dept-2");
+  if (dept2) {
+    dept2.reports = ["dept-2-manager", ...dept2.reports.filter((reportId) => reportId !== "dept-2-manager")];
+  }
+
+  const dept3 = branch.nodes.find((node) => node.id === "dept-3");
+  if (dept3) {
+    dept3.reports = ["dept-3-manager", ...dept3.reports.filter((reportId) => reportId !== "dept-3-manager")];
+  }
+
+  return branch;
+}
+
+function migrateBranches(branchList) {
+  return branchList.map((branch) => migrateEastJapanBranch(branch));
+}
+
 function buildStoragePayload() {
   return {
     version: STORAGE_VERSION,
@@ -1082,7 +1186,7 @@ function loadStoredPayload() {
 }
 
 function loadBranches(payload = null) {
-  return parseBranches(payload) ?? parseBranches(DEFAULT_BRANCHES) ?? cloneBranches(DEFAULT_BRANCHES);
+  return migrateBranches(parseBranches(payload) ?? parseBranches(DEFAULT_BRANCHES) ?? cloneBranches(DEFAULT_BRANCHES));
 }
 
 const storedPayload = loadStoredPayload();
@@ -1104,6 +1208,20 @@ const state = {
   editStatus: "",
   createStatus: "",
   actionStatus: "",
+  ignoreNodeClickUntil: 0,
+};
+
+const dragState = {
+  active: false,
+  pointerId: null,
+  branchId: "",
+  nodeId: "",
+  parentId: "",
+  startX: 0,
+  startY: 0,
+  moved: false,
+  overNodeId: "",
+  placeAfter: false,
 };
 
 const elements = {
@@ -1252,14 +1370,14 @@ async function loadServerBranches() {
   const parsedBranches = parseBranches(payload);
   if (parsedBranches) {
     return {
-      branches: parsedBranches,
+      branches: migrateBranches(parsedBranches),
       updatedAt: normalizeText(payload?.updatedAt),
     };
   }
 
   if (payload && typeof payload === "object" && Array.isArray(payload.branches) && payload.branches.length === 0) {
     return {
-      branches: parseBranches(DEFAULT_BRANCHES) ?? cloneBranches(DEFAULT_BRANCHES),
+      branches: loadBranches(DEFAULT_BRANCHES),
       updatedAt: normalizeText(payload?.updatedAt),
     };
   }
@@ -1677,6 +1795,10 @@ function selectNode(branchId, nodeId) {
 }
 
 function handleNodeClick(branchId, nodeId) {
+  if (Date.now() < state.ignoreNodeClickUntil) {
+    return;
+  }
+
   const branch = getBranch(branchId);
   if (!branch) {
     return;
@@ -1713,6 +1835,144 @@ function handleNodeClick(branchId, nodeId) {
   clearActionStatus();
   expandPathToNode(branch, nodeId);
   render();
+}
+
+function clearDragIndicators() {
+  document.body.classList.remove("org-drag-active");
+  document.querySelectorAll(".org-chart li.is-dragging, .org-chart li.drop-before, .org-chart li.drop-after").forEach((item) => {
+    item.classList.remove("is-dragging", "drop-before", "drop-after");
+  });
+}
+
+function resetDragState() {
+  dragState.active = false;
+  dragState.pointerId = null;
+  dragState.branchId = "";
+  dragState.nodeId = "";
+  dragState.parentId = "";
+  dragState.startX = 0;
+  dragState.startY = 0;
+  dragState.moved = false;
+  dragState.overNodeId = "";
+  dragState.placeAfter = false;
+}
+
+function beginNodeDrag(event, branchId, nodeId, parentId) {
+  if (!parentId) {
+    return;
+  }
+
+  if (typeof event.button === "number" && event.button !== 0) {
+    return;
+  }
+
+  const item = event.currentTarget.closest("li[data-node-id]");
+  if (!item) {
+    return;
+  }
+
+  clearDragIndicators();
+  resetDragState();
+
+  dragState.active = true;
+  dragState.pointerId = event.pointerId;
+  dragState.branchId = branchId;
+  dragState.nodeId = nodeId;
+  dragState.parentId = parentId;
+  dragState.startX = event.clientX;
+  dragState.startY = event.clientY;
+
+  item.classList.add("is-dragging");
+  if (typeof event.currentTarget.setPointerCapture === "function") {
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+}
+
+function updateDragTarget(targetItem, placeAfter) {
+  document.querySelectorAll(".org-chart li.drop-before, .org-chart li.drop-after").forEach((item) => {
+    if (item !== targetItem) {
+      item.classList.remove("drop-before", "drop-after");
+    }
+  });
+
+  targetItem.classList.toggle("drop-before", !placeAfter);
+  targetItem.classList.toggle("drop-after", placeAfter);
+}
+
+function handleNodePointerMove(event) {
+  if (!dragState.active || event.pointerId !== dragState.pointerId) {
+    return;
+  }
+
+  const distance = Math.hypot(event.clientX - dragState.startX, event.clientY - dragState.startY);
+  if (!dragState.moved && distance < 10) {
+    return;
+  }
+
+  if (!dragState.moved) {
+    dragState.moved = true;
+    document.body.classList.add("org-drag-active");
+  }
+
+  const targetItem = document.elementFromPoint(event.clientX, event.clientY)?.closest("li[data-node-id]");
+  if (!targetItem || targetItem.dataset.parentId !== dragState.parentId || targetItem.dataset.nodeId === dragState.nodeId) {
+    dragState.overNodeId = "";
+    document.querySelectorAll(".org-chart li.drop-before, .org-chart li.drop-after").forEach((item) => {
+      item.classList.remove("drop-before", "drop-after");
+    });
+    return;
+  }
+
+  const rect = targetItem.getBoundingClientRect();
+  const placeAfter = event.clientY >= rect.top + rect.height / 2;
+
+  dragState.overNodeId = targetItem.dataset.nodeId ?? "";
+  dragState.placeAfter = placeAfter;
+  updateDragTarget(targetItem, placeAfter);
+  event.preventDefault();
+}
+
+async function finishNodeDrag(event) {
+  if (!dragState.active || event.pointerId !== dragState.pointerId) {
+    return;
+  }
+
+  const shouldSuppressClick = dragState.moved;
+  const branchId = dragState.branchId;
+  const parentId = dragState.parentId;
+  const nodeId = dragState.nodeId;
+  const overNodeId = dragState.overNodeId;
+  const placeAfter = dragState.placeAfter;
+
+  clearDragIndicators();
+  resetDragState();
+
+  if (shouldSuppressClick) {
+    state.ignoreNodeClickUntil = Date.now() + 250;
+  }
+
+  if (!shouldSuppressClick || !overNodeId) {
+    return;
+  }
+
+  const reordered = reorderNodeWithinParent(branchId, parentId, nodeId, overNodeId, placeAfter);
+  if (!reordered) {
+    render();
+    return;
+  }
+
+  const saved = await saveBranches();
+  setActionStatus(saved ? "組織図の順番を更新しました。" : "順番は更新しましたが、共有保存に失敗しました。");
+  render();
+}
+
+function cancelNodeDrag(event) {
+  if (!dragState.active || event.pointerId !== dragState.pointerId) {
+    return;
+  }
+
+  clearDragIndicators();
+  resetDragState();
 }
 
 function renderActionStatus() {
@@ -1916,8 +2176,10 @@ function shouldRenderChildren(node, nodes) {
   return state.expandedDepartmentIds.has(node.id);
 }
 
-function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.rootId) {
+function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.rootId, parentId = "") {
   const item = document.createElement("li");
+  item.dataset.nodeId = node.id;
+  item.dataset.parentId = parentId;
   if (path.has(node.id)) {
     item.hidden = true;
     return item;
@@ -1937,22 +2199,31 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
   const canToggle = isCollapsibleUnitNode(node);
   const isExpanded = state.expandedDepartmentIds.has(node.id);
   const hasInlineMeta = node.kind === "person" && node.title;
+  const inlineLeader = node.kind === "unit" ? getInlineDepartmentLeader(node, nodes) : null;
   const isActive = node.id === state.selectedNodeId;
   const isRoot = node.id === scopeRootId;
   const isLeaf = node.reports.length === 0;
   const toneClass = node.kind === "person" && !isRoot ? ` role-tone-${roleWeight(node.title)}` : "";
+  const hasInlineLeader = Boolean(inlineLeader);
 
   card.type = "button";
-  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}${toneClass}`;
+  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${toneClass}`;
   card.innerHTML = `
     <div class="node-card-header">
-      <div class="node-inline-row${hasInlineMeta ? " has-meta" : ""}">
+      <div class="node-inline-row${hasInlineMeta ? " has-meta" : ""}${hasInlineLeader ? " has-leader" : ""}">
         ${hasInlineMeta ? `<span class="node-inline-meta">${node.title}</span>` : ""}
         <span class="node-title">${node.name}</span>
+        ${hasInlineLeader ? `
+          <span class="node-inline-leader">
+            <span class="node-inline-leader-role">${inlineLeader.title}</span>
+            <span class="node-inline-leader-name">${inlineLeader.name}</span>
+          </span>
+        ` : ""}
       </div>
       ${canToggle ? `<span class="node-toggle-indicator">${isExpanded ? "-" : "+"}</span>` : ""}
     </div>
   `;
+  card.addEventListener("pointerdown", (event) => beginNodeDrag(event, branch.id, node.id, parentId));
   card.addEventListener("click", () => handleNodeClick(branch.id, node.id));
   item.appendChild(card);
 
@@ -1967,7 +2238,7 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
     reportIds.forEach((reportId) => {
       const report = nodes.get(reportId);
       if (report) {
-        children.appendChild(createNode(report, branch, nodes, nextPath, scopeRootId));
+        children.appendChild(createNode(report, branch, nodes, nextPath, scopeRootId, node.id));
       }
     });
 
@@ -2373,6 +2644,41 @@ function moveNodeToParent(branch, childId, nextParentId) {
   addChildToParent(branch, nextParentId, childId);
 }
 
+function reorderNodeWithinParent(branchId, parentId, nodeId, targetId, placeAfter = false) {
+  const branch = getBranch(branchId);
+  if (!branch || !parentId || !nodeId || !targetId || nodeId === targetId) {
+    return false;
+  }
+
+  const parentIndex = branch.nodes.findIndex((node) => node.id === parentId);
+  if (parentIndex === -1) {
+    return false;
+  }
+
+  const parent = branch.nodes[parentIndex];
+  const nextReports = [...parent.reports];
+  const sourceIndex = nextReports.indexOf(nodeId);
+  const targetIndex = nextReports.indexOf(targetId);
+  if (sourceIndex === -1 || targetIndex === -1) {
+    return false;
+  }
+
+  nextReports.splice(sourceIndex, 1);
+  const resolvedTargetIndex = nextReports.indexOf(targetId);
+  nextReports.splice(placeAfter ? resolvedTargetIndex + 1 : resolvedTargetIndex, 0, nodeId);
+
+  if (nextReports.join("|") === parent.reports.join("|")) {
+    return false;
+  }
+
+  branch.nodes[parentIndex] = {
+    ...parent,
+    reports: nextReports,
+  };
+
+  return true;
+}
+
 function csvEscape(value) {
   const normalized = String(value ?? "");
   if (/[",\r\n]/.test(normalized)) {
@@ -2632,7 +2938,7 @@ async function handleReset() {
     return;
   }
 
-  branches = cloneBranches(DEFAULT_BRANCHES);
+  branches = loadBranches(DEFAULT_BRANCHES);
   resetView(branches[0].id);
   const saved = await saveBranches();
   setActionStatus(saved ? "初期状態に戻しました。" : "初期状態には戻しましたが、共有保存に失敗しました。");
@@ -2777,5 +3083,8 @@ if (elements.closeEditPanel) {
 window.addEventListener("resize", () => {
   window.requestAnimationFrame(fitOrgChartToFrame);
 });
+window.addEventListener("pointermove", handleNodePointerMove);
+window.addEventListener("pointerup", finishNodeDrag);
+window.addEventListener("pointercancel", cancelNodeDrag);
 
 initializeApp();

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-03-08T00:00:00.000Z",
+  "updatedAt": "2026-03-30T00:00:00.000Z",
   "branches": [
     {
       "id": "east-japan",
@@ -19,9 +19,18 @@
           "age": "52歳",
           "tenure": "28年",
           "history": "首都圏の責任者と東日本エリア統括を経て、東日本支店長に就任。",
-          "hobbies": ["ゴルフ", "歴史散策"],
-          "tags": ["支店運営", "組織管理", "営業統括"],
-          "reports": ["east-japan-2"]
+          "hobbies": [
+            "ゴルフ",
+            "歴史散策"
+          ],
+          "tags": [
+            "支店運営",
+            "組織管理",
+            "営業統括"
+          ],
+          "reports": [
+            "east-japan-2"
+          ]
         },
         {
           "id": "east-japan-2",
@@ -32,9 +41,20 @@
           "age": "48歳",
           "tenure": "22年",
           "history": "現場運営と業務管理を歴任し、現在は副支店長として各部を統括。",
-          "hobbies": ["釣り", "ドライブ"],
-          "tags": ["支店運営補佐", "組織管理", "営業支援"],
-          "reports": ["dept-1", "dept-2", "dept-3"]
+          "hobbies": [
+            "釣り",
+            "ドライブ"
+          ],
+          "tags": [
+            "支店運営補佐",
+            "組織管理",
+            "営業支援"
+          ],
+          "reports": [
+            "dept-1",
+            "dept-2",
+            "dept-3"
+          ]
         },
         {
           "id": "dept-1",
@@ -43,21 +63,30 @@
           "title": "",
           "department": "東日本支店",
           "description": "副支店長配下の業務1部です。",
-          "tags": ["組織"],
-          "reports": ["dept-1-manager"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "dept-1-manager",
+            "office-101",
+            "office-102",
+            "office-103",
+            "office-104",
+            "office-105"
+          ]
         },
         {
           "id": "dept-1-manager",
           "kind": "person",
           "name": "西原 達也",
-          "title": "部長",
-          "department": "業務1部",
+          "title": "??",
+          "department": "??1?",
           "age": "",
           "tenure": "",
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-101", "office-102", "office-103", "office-104", "office-105"]
+          "reports": []
         },
         {
           "id": "office-101",
@@ -66,8 +95,12 @@
           "title": "",
           "department": "業務1部",
           "description": "業務1部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-101-mera"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-101-mera"
+          ]
         },
         {
           "id": "office-101-mera",
@@ -80,7 +113,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-101-nakane"]
+          "reports": [
+            "office-101-nakane"
+          ]
         },
         {
           "id": "office-101-nakane",
@@ -93,7 +128,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-101-toshida"]
+          "reports": [
+            "office-101-toshida"
+          ]
         },
         {
           "id": "office-101-toshida",
@@ -109,6 +146,20 @@
           "reports": []
         },
         {
+          "id": "office-102",
+          "kind": "unit",
+          "name": "安曇野",
+          "title": "",
+          "department": "業務1部",
+          "description": "業務1部配下です。",
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-102-suzuki"
+          ]
+        },
+        {
           "id": "office-102-suzuki",
           "kind": "person",
           "name": "鈴木",
@@ -119,7 +170,11 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-102-yamagata", "office-102-fujii", "office-102-miyake"]
+          "reports": [
+            "office-102-yamagata",
+            "office-102-fujii",
+            "office-102-miyake"
+          ]
         },
         {
           "id": "office-102-yamagata",
@@ -161,23 +216,15 @@
           "reports": []
         },
         {
-          "id": "office-102",
-          "kind": "unit",
-          "name": "安曇野",
-          "title": "",
-          "department": "業務1部",
-          "description": "業務1部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-102-suzuki"]
-        },
-        {
           "id": "office-103",
           "kind": "unit",
           "name": "富士見",
           "title": "",
           "department": "業務1部",
           "description": "業務1部配下です。",
-          "tags": ["組織"],
+          "tags": [
+            "組織"
+          ],
           "reports": []
         },
         {
@@ -187,8 +234,12 @@
           "title": "",
           "department": "業務1部",
           "description": "業務1部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-104-mitsui"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-104-mitsui"
+          ]
         },
         {
           "id": "office-104-mitsui",
@@ -210,8 +261,12 @@
           "title": "",
           "department": "業務1部",
           "description": "業務1部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-105-manaka"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-105-manaka"
+          ]
         },
         {
           "id": "office-105-manaka",
@@ -224,7 +279,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-105-suzuki"]
+          "reports": [
+            "office-105-suzuki"
+          ]
         },
         {
           "id": "office-105-suzuki",
@@ -237,7 +294,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-105-endo"]
+          "reports": [
+            "office-105-endo"
+          ]
         },
         {
           "id": "office-105-endo",
@@ -259,8 +318,18 @@
           "title": "",
           "department": "東日本支店",
           "description": "副支店長配下の業務2部です。",
-          "tags": ["組織"],
-          "reports": ["office-201", "office-202", "office-203", "office-204", "office-205", "office-206"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "dept-2-manager",
+            "office-201",
+            "office-202",
+            "office-203",
+            "office-204",
+            "office-205",
+            "office-206"
+          ]
         },
         {
           "id": "office-201",
@@ -269,8 +338,12 @@
           "title": "",
           "department": "業務2部",
           "description": "業務2部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-201-negi"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-201-negi"
+          ]
         },
         {
           "id": "office-201-negi",
@@ -292,8 +365,12 @@
           "title": "",
           "department": "業務2部",
           "description": "業務2部配下です。",
-          "tags": ["組織"],
-          "reports": ["tochigi-1"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "tochigi-1"
+          ]
         },
         {
           "id": "tochigi-1",
@@ -306,7 +383,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["tochigi-2"]
+          "reports": [
+            "tochigi-2"
+          ]
         },
         {
           "id": "tochigi-2",
@@ -324,7 +403,9 @@
           ],
           "hobbies": [],
           "tags": [],
-          "reports": ["tochigi-3"]
+          "reports": [
+            "tochigi-3"
+          ]
         },
         {
           "id": "tochigi-3",
@@ -346,8 +427,12 @@
           "title": "",
           "department": "業務2部",
           "description": "業務2部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-203-miki"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-203-miki"
+          ]
         },
         {
           "id": "office-203-miki",
@@ -369,8 +454,12 @@
           "title": "",
           "department": "業務2部",
           "description": "業務2部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-204-kitou"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-204-kitou"
+          ]
         },
         {
           "id": "office-204-kitou",
@@ -392,8 +481,12 @@
           "title": "",
           "department": "業務2部",
           "description": "業務2部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-205-hiroyama"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-205-hiroyama"
+          ]
         },
         {
           "id": "office-205-hiroyama",
@@ -415,8 +508,12 @@
           "title": "",
           "department": "業務2部",
           "description": "業務2部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-206-kataoka"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-206-kataoka"
+          ]
         },
         {
           "id": "office-206-kataoka",
@@ -429,7 +526,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-206-maezawa"]
+          "reports": [
+            "office-206-maezawa"
+          ]
         },
         {
           "id": "office-206-maezawa",
@@ -442,7 +541,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-206-shinyashiki"]
+          "reports": [
+            "office-206-shinyashiki"
+          ]
         },
         {
           "id": "office-206-shinyashiki",
@@ -464,8 +565,18 @@
           "title": "",
           "department": "東日本支店",
           "description": "副支店長配下の業務3部です。",
-          "tags": ["組織"],
-          "reports": ["office-301", "office-302", "office-303", "office-304", "office-305", "office-306"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "dept-3-manager",
+            "office-301",
+            "office-302",
+            "office-303",
+            "office-304",
+            "office-305",
+            "office-306"
+          ]
         },
         {
           "id": "office-301",
@@ -474,8 +585,12 @@
           "title": "",
           "department": "業務3部",
           "description": "業務3部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-301-nishi"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-301-nishi"
+          ]
         },
         {
           "id": "office-301-nishi",
@@ -488,7 +603,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-301-watanabe"]
+          "reports": [
+            "office-301-watanabe"
+          ]
         },
         {
           "id": "office-301-watanabe",
@@ -510,8 +627,12 @@
           "title": "",
           "department": "業務3部",
           "description": "業務3部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-302-nishihata"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-302-nishihata"
+          ]
         },
         {
           "id": "office-302-nishihata",
@@ -524,7 +645,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-302-nose"]
+          "reports": [
+            "office-302-nose"
+          ]
         },
         {
           "id": "office-302-nose",
@@ -546,8 +669,12 @@
           "title": "",
           "department": "業務3部",
           "description": "業務3部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-303-kawai"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-303-kawai"
+          ]
         },
         {
           "id": "office-303-kawai",
@@ -560,7 +687,11 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-303-nakahara", "office-303-ikeda", "office-303-sato"]
+          "reports": [
+            "office-303-nakahara",
+            "office-303-ikeda",
+            "office-303-sato"
+          ]
         },
         {
           "id": "office-303-nakahara",
@@ -608,8 +739,12 @@
           "title": "",
           "department": "業務3部",
           "description": "業務3部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-304-onishi-chief"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-304-onishi-chief"
+          ]
         },
         {
           "id": "office-304-onishi-chief",
@@ -622,7 +757,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-304-taira"]
+          "reports": [
+            "office-304-taira"
+          ]
         },
         {
           "id": "office-304-taira",
@@ -644,8 +781,12 @@
           "title": "",
           "department": "業務3部",
           "description": "業務3部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-305-yasuda"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-305-yasuda"
+          ]
         },
         {
           "id": "office-305-yasuda",
@@ -658,7 +799,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-305-kurishima"]
+          "reports": [
+            "office-305-kurishima"
+          ]
         },
         {
           "id": "office-305-kurishima",
@@ -671,7 +814,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-305-tajiri"]
+          "reports": [
+            "office-305-tajiri"
+          ]
         },
         {
           "id": "office-305-tajiri",
@@ -684,7 +829,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-305-seki"]
+          "reports": [
+            "office-305-seki"
+          ]
         },
         {
           "id": "office-305-seki",
@@ -706,8 +853,12 @@
           "title": "",
           "department": "業務3部",
           "description": "業務3部配下です。",
-          "tags": ["組織"],
-          "reports": ["office-306-hara"]
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "office-306-hara"
+          ]
         },
         {
           "id": "office-306-hara",
@@ -720,7 +871,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-306-kishikawa"]
+          "reports": [
+            "office-306-kishikawa"
+          ]
         },
         {
           "id": "office-306-kishikawa",
@@ -733,7 +886,9 @@
           "history": "",
           "hobbies": [],
           "tags": [],
-          "reports": ["office-306-onishi"]
+          "reports": [
+            "office-306-onishi"
+          ]
         },
         {
           "id": "office-306-onishi",
@@ -744,6 +899,40 @@
           "age": "",
           "tenure": "",
           "history": "",
+          "hobbies": [],
+          "tags": [],
+          "reports": []
+        },
+        {
+          "id": "dept-2-manager",
+          "kind": "person",
+          "name": "?? ??",
+          "lastName": "??",
+          "firstName": "??",
+          "title": "??",
+          "department": "??2?",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "history": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "tags": [],
+          "reports": []
+        },
+        {
+          "id": "dept-3-manager",
+          "kind": "person",
+          "name": "?? ??",
+          "lastName": "??",
+          "firstName": "??",
+          "title": "??",
+          "department": "??3?",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "history": "",
+          "historyEntries": [],
           "hobbies": [],
           "tags": [],
           "reports": []
