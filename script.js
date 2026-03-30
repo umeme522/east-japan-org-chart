@@ -1097,6 +1097,7 @@ const persistence = {
 
 const state = {
   activeBranchId: initialBranch.id,
+  scopeNodeId: initialBranch.rootId,
   selectedNodeId: initialBranch.rootId,
   searchTerm: "",
   expandedDepartmentIds: new Set(),
@@ -1278,6 +1279,15 @@ function nodeMap(branch) {
   return new Map(branch.nodes.map((node) => [node.id, node]));
 }
 
+function getScopeNode(branch = getActiveBranch()) {
+  if (!branch) {
+    return null;
+  }
+
+  const nodes = nodeMap(branch);
+  return nodes.get(state.scopeNodeId) ?? nodes.get(branch.rootId) ?? null;
+}
+
 function createNodeId(branch, prefix = "person") {
   const existingIds = new Set(branch.nodes.map((node) => node.id));
   const seed = Date.now().toString(36);
@@ -1294,6 +1304,80 @@ function createNodeId(branch, prefix = "person") {
 
 function personNodes(branch) {
   return branch.nodes.filter((node) => node.kind === "person");
+}
+
+function collectScopePeople(branch, scopeNodeId = state.scopeNodeId) {
+  const nodes = nodeMap(branch);
+  const scopeRoot = nodes.get(scopeNodeId) ?? nodes.get(branch.rootId);
+  if (!scopeRoot) {
+    return [];
+  }
+
+  const people = [];
+  const visited = new Set();
+  const stack = [scopeRoot];
+
+  while (stack.length > 0) {
+    const currentNode = stack.pop();
+    if (!currentNode || visited.has(currentNode.id)) {
+      continue;
+    }
+
+    visited.add(currentNode.id);
+    if (currentNode.kind === "person") {
+      people.push(currentNode);
+    }
+
+    [...currentNode.reports].reverse().forEach((childId) => {
+      const childNode = nodes.get(childId);
+      if (childNode) {
+        stack.push(childNode);
+      }
+    });
+  }
+
+  return people;
+}
+
+function isNodeInScope(branch, nodeId, scopeNodeId = state.scopeNodeId) {
+  return collectScopePeople(branch, scopeNodeId).some((node) => node.id === nodeId);
+}
+
+function firstPersonInScope(branch, scopeNodeId = state.scopeNodeId) {
+  return collectScopePeople(branch, scopeNodeId)[0] ?? null;
+}
+
+function setScope(branchId, scopeNodeId) {
+  const branch = getBranch(branchId) ?? branches[0];
+  if (!branch) {
+    return;
+  }
+
+  const nodes = nodeMap(branch);
+  const resolvedScopeId = nodes.has(scopeNodeId) ? scopeNodeId : branch.rootId;
+  const scopeNode = nodes.get(resolvedScopeId) ?? nodes.get(branch.rootId) ?? null;
+
+  state.activeBranchId = branch.id;
+  state.scopeNodeId = resolvedScopeId;
+  state.editStatus = "";
+  state.createStatus = "";
+  clearActionStatus();
+
+  if (scopeNode && isCollapsibleUnitNode(scopeNode)) {
+    state.expandedDepartmentIds.add(scopeNode.id);
+  }
+
+  if (scopeNode?.kind === "person") {
+    state.selectedNodeId = scopeNode.id;
+  } else if (!isNodeInScope(branch, state.selectedNodeId, resolvedScopeId)) {
+    state.selectedNodeId = firstPersonInScope(branch, resolvedScopeId)?.id ?? scopeNode?.id ?? branch.rootId;
+  }
+
+  if (state.selectedNodeId) {
+    expandPathToNode(branch, state.selectedNodeId);
+  }
+
+  render();
 }
 
 function searchText(node) {
@@ -1328,7 +1412,7 @@ function visibleDescendant(nodeId, nodes, visited = new Set()) {
 }
 
 function filteredPeople(branch) {
-  return personNodes(branch)
+  return collectScopePeople(branch)
     .filter((node) => matchesSearch(node))
     .sort(comparePeopleForDisplay);
 }
@@ -1562,6 +1646,7 @@ function resetView(branchId = branches[0]?.id) {
   }
 
   state.activeBranchId = branch.id;
+  state.scopeNodeId = branch.rootId;
   state.selectedNodeId = branch.rootId;
   state.searchTerm = "";
   state.editStatus = "";
@@ -1778,26 +1863,35 @@ function renderHeroStats() {
 }
 
 function renderBranchTabs() {
+  const branch = getActiveBranch();
   elements.branchTabs.innerHTML = "";
 
-  branches.forEach((branch) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "branch-tab";
-    button.role = "tab";
-    button.setAttribute("aria-selected", String(branch.id === state.activeBranchId));
-    button.textContent = branch.name;
-    button.addEventListener("click", () => {
-      clearActionStatus();
-      resetView(branch.id);
-      render();
-    });
-    elements.branchTabs.appendChild(button);
+  if (!branch) {
+    return;
+  }
+
+  const select = document.createElement("select");
+  select.className = "branch-scope-select";
+  select.setAttribute("aria-label", "表示範囲");
+
+  setSelectOptions(
+    select,
+    createTargetNodes(branch).map((targetNode) => ({
+      value: targetNode.id,
+      label: createTargetLabel(branch, targetNode),
+    })),
+    state.scopeNodeId
+  );
+
+  select.addEventListener("change", (event) => {
+    setScope(branch.id, event.target.value);
   });
+
+  elements.branchTabs.appendChild(select);
 }
 
 function renderBranchSummary(branch) {
-  const peopleCount = personNodes(branch).length;
+  const peopleCount = collectScopePeople(branch).length;
 
   elements.branchSummary.innerHTML = `
     <article class="summary-card summary-card-count">
@@ -1822,7 +1916,7 @@ function shouldRenderChildren(node, nodes) {
   return state.expandedDepartmentIds.has(node.id);
 }
 
-function createNode(node, branch, nodes, path = new Set()) {
+function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.rootId) {
   const item = document.createElement("li");
   if (path.has(node.id)) {
     item.hidden = true;
@@ -1844,7 +1938,7 @@ function createNode(node, branch, nodes, path = new Set()) {
   const isExpanded = state.expandedDepartmentIds.has(node.id);
   const hasInlineMeta = node.kind === "person" && node.title;
   const isActive = node.id === state.selectedNodeId;
-  const isRoot = node.id === branch.rootId;
+  const isRoot = node.id === scopeRootId;
   const isLeaf = node.reports.length === 0;
   const toneClass = node.kind === "person" && !isRoot ? ` role-tone-${roleWeight(node.title)}` : "";
 
@@ -1873,7 +1967,7 @@ function createNode(node, branch, nodes, path = new Set()) {
     reportIds.forEach((reportId) => {
       const report = nodes.get(reportId);
       if (report) {
-        children.appendChild(createNode(report, branch, nodes, nextPath));
+        children.appendChild(createNode(report, branch, nodes, nextPath, scopeRootId));
       }
     });
 
@@ -1887,7 +1981,7 @@ function createNode(node, branch, nodes, path = new Set()) {
 
 function renderOrgChart(branch) {
   const nodes = nodeMap(branch);
-  const root = nodes.get(branch.rootId);
+  const root = getScopeNode(branch);
   elements.chartTitle.textContent = "組織図";
   elements.orgChart.innerHTML = "";
 
@@ -1897,7 +1991,7 @@ function renderOrgChart(branch) {
   }
 
   const tree = document.createElement("ul");
-  tree.appendChild(createNode(root, branch, nodes));
+  tree.appendChild(createNode(root, branch, nodes, new Set(), root.id));
 
   if (Array.from(tree.children).every((child) => child.hidden)) {
     elements.orgChart.innerHTML = `<div class="empty-state">検索条件に一致する組織がありません。</div>`;
@@ -1926,7 +2020,8 @@ function renderMemberGrid(branch) {
 
   people.forEach((person) => {
     const card = document.createElement("article");
-    card.className = `member-card${person.id === state.selectedNodeId ? " active" : ""}`;
+    const toneClass = ` tone-${Math.max(roleWeight(person.title), 0)}`;
+    card.className = `member-card${person.id === state.selectedNodeId ? " active" : ""}${toneClass}`;
     card.innerHTML = `
       <div class="member-inline-row${person.title ? " has-meta" : ""}">
         ${person.title ? `<p class="member-role">${person.title}</p>` : ""}
