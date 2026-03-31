@@ -2,6 +2,12 @@ const STORAGE_KEY = "east-japan-org-chart-data";
 const STORAGE_VERSION = 1;
 const SERVER_DATA_ENDPOINT = "/api/org-data";
 const EDIT_ROLE_OPTIONS = ["", "支店長", "副支店長", "部長", "所長", "副長", "係長", "スタッフ"];
+const EDIT_AGE_OPTIONS = Array.from({ length: 82 }, (_, index) => String(index + 18));
+const EDIT_TENURE_OPTIONS = Array.from({ length: 61 }, (_, index) => String(index));
+const EDIT_JOIN_YEAR_OPTIONS = Array.from(
+  { length: new Date().getFullYear() - 1979 },
+  (_, index) => String(new Date().getFullYear() - index)
+);
 
 const DEFAULT_BRANCHES = [
   {
@@ -1004,15 +1010,46 @@ function buildEditRoleOptions(currentTitle = "") {
   return options;
 }
 
+function buildNumericSelectOptions(values, currentValue = "", emptyLabel = "未設定") {
+  const options = [{ value: "", label: emptyLabel }];
+  values.forEach((value) => {
+    options.push({
+      value,
+      label: value,
+    });
+  });
+
+  const normalizedCurrentValue = normalizeNumericField(currentValue);
+  if (normalizedCurrentValue && !options.some((option) => option.value === normalizedCurrentValue)) {
+    options.splice(1, 0, {
+      value: normalizedCurrentValue,
+      label: normalizedCurrentValue,
+    });
+  }
+
+  return options;
+}
+
 function buildAffiliation(branch, node) {
+  if (node?.kind === "person") {
+    const office = findOfficeForNode(branch, node.id);
+    if (office?.name && office.name !== branch?.name) {
+      return office.name;
+    }
+
+    if (node?.department && node.department !== branch?.name) {
+      return node.department;
+    }
+
+    return branch?.name ?? "";
+  }
+
   const parts = [branch?.name];
 
   if (node?.kind === "unit") {
     if (node?.name && node.name !== branch?.name) {
       parts.push(node.name);
     }
-  } else if (node?.department && node.department !== branch?.name) {
-    parts.push(node.department);
   }
 
   return parts.filter(Boolean).join(" / ");
@@ -2456,16 +2493,16 @@ function populateEditForm(node) {
 
   if (node.kind === "person") {
     toggleEditFormFields("person");
-    elements.editAge.value = node.age ?? "";
-    elements.editJoinYear.value = node.joinYear ?? "";
-    elements.editTenure.value = node.tenure ?? "";
+    setSelectOptions(elements.editAge, buildNumericSelectOptions(EDIT_AGE_OPTIONS, node.age), normalizeNumericField(node.age));
+    setSelectOptions(elements.editJoinYear, buildNumericSelectOptions(EDIT_JOIN_YEAR_OPTIONS, node.joinYear), normalizeNumericField(node.joinYear));
+    setSelectOptions(elements.editTenure, buildNumericSelectOptions(EDIT_TENURE_OPTIONS, node.tenure), normalizeNumericField(node.tenure));
     renderHistoryRows(elements.editHistoryRows, node.historyEntries ?? []);
     elements.editHistoryFieldLabel.textContent = "経歴";
   } else {
     toggleEditFormFields("unit");
-    elements.editAge.value = "";
-    elements.editJoinYear.value = "";
-    elements.editTenure.value = "";
+    setSelectOptions(elements.editAge, buildNumericSelectOptions(EDIT_AGE_OPTIONS), "");
+    setSelectOptions(elements.editJoinYear, buildNumericSelectOptions(EDIT_JOIN_YEAR_OPTIONS), "");
+    setSelectOptions(elements.editTenure, buildNumericSelectOptions(EDIT_TENURE_OPTIONS), "");
   }
 }
 
