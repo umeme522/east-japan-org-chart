@@ -26,13 +26,9 @@ async function ensureDatabase(env) {
     throw new Error("missing-d1-binding");
   }
 
-  await env.ORG_DB.exec(`
-    CREATE TABLE IF NOT EXISTS org_state (
-      id INTEGER PRIMARY KEY,
-      payload TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    );
-  `);
+  await env.ORG_DB.prepare(
+    "CREATE TABLE IF NOT EXISTS org_state (id INTEGER PRIMARY KEY, payload TEXT NOT NULL, updated_at TEXT NOT NULL)"
+  ).run();
 }
 
 async function readPayload(env) {
