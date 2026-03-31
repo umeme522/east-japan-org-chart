@@ -1398,6 +1398,15 @@ textarea {
   grid-column: 1 / -1;
 }
 
+.role-toggle-field {
+  align-content: end;
+}
+
+.role-add-button {
+  justify-self: start;
+  white-space: nowrap;
+}
+
 .edit-actions {
   display: flex;
   gap: 8px;

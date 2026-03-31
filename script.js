@@ -867,16 +867,43 @@ function normalizeNumericField(value) {
   return digits ? digits.join("") : "";
 }
 
+function splitRoleText(value) {
+  return normalizeText(value)
+    .split(/\s*(?:\/|／|\||｜)\s*/)
+    .map((entry) => normalizeText(entry))
+    .filter(Boolean);
+}
+
+function normalizeTitles(value, legacyTitle = "") {
+  const candidates = Array.isArray(value)
+    ? value.flatMap((entry) => splitRoleText(entry))
+    : splitRoleText(value || legacyTitle);
+
+  return Array.from(new Set(candidates));
+}
+
+function getNodeTitles(node) {
+  return normalizeTitles(node?.titles, node?.title);
+}
+
+function getPrimaryTitle(node) {
+  return getNodeTitles(node)[0] || "";
+}
+
+function getRoleText(node) {
+  return getNodeTitles(node).join(" / ");
+}
+
 function roleWeight(title) {
   const normalized = normalizeText(title);
   if (!normalized) {
     return 0;
   }
 
-  if (normalized.includes("支店長")) {
+  if (normalized.includes("副支店長")) {
     return 7;
   }
-  if (normalized.includes("副支店長")) {
+  if (normalized.includes("支店長")) {
     return 6;
   }
   if (normalized.includes("部長")) {
@@ -900,9 +927,18 @@ function roleWeight(title) {
   return 0;
 }
 
+function getRoleWeight(node) {
+  const titles = getNodeTitles(node);
+  if (titles.length === 0) {
+    return 0;
+  }
+
+  return Math.max(...titles.map((title) => roleWeight(title)));
+}
+
 function comparePeopleForDisplay(leftNode, rightNode) {
   return (
-    roleWeight(rightNode?.title) - roleWeight(leftNode?.title) ||
+    getRoleWeight(rightNode) - getRoleWeight(leftNode) ||
     parseNumericValue(rightNode?.age) - parseNumericValue(leftNode?.age) ||
     normalizeText(leftNode?.name).localeCompare(normalizeText(rightNode?.name), "ja")
   );
@@ -947,7 +983,7 @@ function getInlineUnitLeader(node, nodes) {
     return (
       node.reports
         .map((reportId) => nodes.get(reportId))
-        .find((candidate) => candidate?.kind === "person" && normalizeText(candidate.title).includes("部長")) ??
+        .find((candidate) => candidate?.kind === "person" && getRoleText(candidate).includes("部長")) ??
       null
     );
   }
@@ -956,7 +992,7 @@ function getInlineUnitLeader(node, nodes) {
     return (
       node.reports
         .map((reportId) => nodes.get(reportId))
-        .find((candidate) => candidate?.kind === "person" && /(所長|署長)/.test(normalizeText(candidate.title))) ??
+        .find((candidate) => candidate?.kind === "person" && /(所長|署長)/.test(getRoleText(candidate))) ??
       null
     );
   }
@@ -1015,6 +1051,32 @@ function buildEditRoleOptions(currentTitle = "") {
   return options;
 }
 
+function setSecondaryRoleVisibility(field, button, visible) {
+  if (field) {
+    field.hidden = !visible;
+  }
+  if (button) {
+    button.hidden = visible;
+  }
+}
+
+function populateRoleFields(primarySelect, secondarySelect, secondaryField, addButton, titles = []) {
+  const normalizedTitles = normalizeTitles(titles);
+  const primaryTitle = normalizedTitles[0] || "";
+  const secondaryTitle = normalizedTitles[1] || "";
+
+  setSelectOptions(primarySelect, buildEditRoleOptions(primaryTitle), primaryTitle);
+  setSelectOptions(secondarySelect, buildEditRoleOptions(secondaryTitle), secondaryTitle);
+  setSecondaryRoleVisibility(secondaryField, addButton, Boolean(secondaryTitle));
+}
+
+function collectRoleValues(primarySelect, secondarySelect) {
+  return normalizeTitles([
+    primarySelect?.value,
+    secondarySelect?.value,
+  ]);
+}
+
 function buildNumericSelectOptions(values, currentValue = "", emptyLabel = "未設定") {
   const options = [{ value: "", label: emptyLabel }];
   values.forEach((value) => {
@@ -1063,11 +1125,13 @@ function buildAffiliation(branch, node) {
 function normalizeNode(node, index) {
   const kind = node?.kind === "unit" ? "unit" : "person";
   const nameParts = splitNameParts(node?.name, node?.lastName, node?.firstName);
+  const titles = normalizeTitles(node?.titles, node?.title);
   const normalized = {
     id: normalizeText(node?.id) || `node-${index + 1}`,
     kind,
     name: buildDisplayName(nameParts.lastName, nameParts.firstName, node?.name) || "未設定",
-    title: normalizeText(node?.title),
+    title: titles[0] || "",
+    titles,
     department: normalizeText(node?.department),
     tags: normalizeStringArray(node?.tags),
     reports: normalizeReports(node?.reports),
@@ -1375,6 +1439,9 @@ const elements = {
   editLastName: document.getElementById("editLastName"),
   editFirstName: document.getElementById("editFirstName"),
   editTitle: document.getElementById("editTitle"),
+  editTitleSecondaryField: document.getElementById("editTitleSecondaryField"),
+  editTitleSecondary: document.getElementById("editTitleSecondary"),
+  editAddTitleButton: document.getElementById("editAddTitleButton"),
   editDepartment: document.getElementById("editDepartment"),
   editPhotoField: document.getElementById("editPhotoField"),
   editPhoto: document.getElementById("editPhoto"),
@@ -1398,6 +1465,9 @@ const elements = {
   createLastName: document.getElementById("createLastName"),
   createFirstName: document.getElementById("createFirstName"),
   createTitle: document.getElementById("createTitle"),
+  createTitleSecondaryField: document.getElementById("createTitleSecondaryField"),
+  createTitleSecondary: document.getElementById("createTitleSecondary"),
+  createAddTitleButton: document.getElementById("createAddTitleButton"),
   createDepartment: document.getElementById("createDepartment"),
   createPhoto: document.getElementById("createPhoto"),
   createAge: document.getElementById("createAge"),
@@ -1714,7 +1784,7 @@ function setScope(branchId, scopeNodeId) {
 }
 
 function searchText(node) {
-  return [node.name, node.title, node.department, historyText(node), node.description ?? "", ...(node.tags ?? [])]
+  return [node.name, getRoleText(node), node.department, historyText(node), node.description ?? "", ...(node.tags ?? [])]
     .join(" ")
     .toLowerCase();
 }
@@ -1958,7 +2028,13 @@ function syncCreateParentOptions(branch, targetId, preferredParentId = "") {
 }
 
 function populateCreateSelectFields(defaults = {}) {
-  setSelectOptions(elements.createTitle, buildEditRoleOptions(defaults.title), normalizeText(defaults.title));
+  populateRoleFields(
+    elements.createTitle,
+    elements.createTitleSecondary,
+    elements.createTitleSecondaryField,
+    elements.createAddTitleButton,
+    defaults.titles ?? defaults.title
+  );
   setSelectOptions(elements.createAge, buildNumericSelectOptions(EDIT_AGE_OPTIONS, defaults.age), normalizeNumericField(defaults.age));
   setSelectOptions(elements.createJoinYear, buildNumericSelectOptions(EDIT_JOIN_YEAR_OPTIONS, defaults.joinYear), normalizeNumericField(defaults.joinYear));
   setSelectOptions(elements.createTenure, buildNumericSelectOptions(EDIT_TENURE_OPTIONS, defaults.tenure), normalizeNumericField(defaults.tenure));
@@ -2349,6 +2425,9 @@ function toggleEditFormFields(kind) {
   if (elements.editPhotoField) {
     elements.editPhotoField.hidden = !isPerson;
   }
+  if (!isPerson) {
+    setSecondaryRoleVisibility(elements.editTitleSecondaryField, elements.editAddTitleButton, false);
+  }
   elements.editAgeField.hidden = !isPerson;
   elements.editJoinYearField.hidden = !isPerson;
   elements.editTenureField.hidden = !isPerson;
@@ -2448,14 +2527,15 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
   const kindClass = node.kind === "person" ? "person" : "unit";
   const canToggle = node.kind === "unit" && reportIds.length > 0;
   const isExpanded = state.expandedDepartmentIds.has(node.id);
-  const hasInlineMeta = node.kind === "person" && node.title;
+  const primaryTitle = getPrimaryTitle(node);
+  const hasInlineMeta = node.kind === "person" && primaryTitle;
   const inlineLeader = node.kind === "unit" ? getInlineUnitLeader(node, nodes) : null;
   const isActive = node.id === state.selectedNodeId;
   const isRoot = node.id === scopeRootId;
   const isLeaf = reportIds.length === 0;
-  const toneClass = node.kind === "person" && !isRoot ? ` role-tone-${roleWeight(node.title)}` : "";
+  const toneClass = node.kind === "person" && !isRoot ? ` role-tone-${getRoleWeight(node)}` : "";
   const hasInlineLeader = Boolean(inlineLeader);
-  const isExecutive = node.kind === "person" && /(支店長|副支店長)/.test(normalizeText(node.title));
+  const isExecutive = node.kind === "person" && /(支店長|副支店長)/.test(getRoleText(node));
   const isOfficeWithLeader = isOfficeNode(node) && hasInlineLeader;
 
   card.type = "button";
@@ -2464,12 +2544,12 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
     <div class="node-card-header">
       <div class="node-inline-row${hasInlineMeta ? " has-meta" : ""}${hasInlineLeader ? " has-leader" : ""}">
         <span class="node-inline-main">
-          ${hasInlineMeta ? `<span class="node-inline-meta">${node.title}</span>` : ""}
+          ${hasInlineMeta ? `<span class="node-inline-meta">${primaryTitle}</span>` : ""}
           <span class="node-title">${node.name}</span>
         </span>
         ${hasInlineLeader ? `
           <span class="node-inline-leader">
-            <span class="node-inline-leader-role">${inlineLeader.title}</span>
+            <span class="node-inline-leader-role">${getPrimaryTitle(inlineLeader)}</span>
             <span class="node-inline-leader-name">${inlineLeader.name}</span>
           </span>
         ` : ""}
@@ -2546,11 +2626,12 @@ function renderMemberGrid(branch) {
 
   people.forEach((person) => {
     const card = document.createElement("article");
-    const toneClass = ` tone-${Math.max(roleWeight(person.title), 0)}`;
+    const roleText = getRoleText(person);
+    const toneClass = ` tone-${Math.max(getRoleWeight(person), 0)}`;
     card.className = `member-card${person.id === state.selectedNodeId ? " active" : ""}${toneClass}`;
     card.innerHTML = `
-      <div class="member-inline-row${person.title ? " has-meta" : ""}">
-        ${person.title ? `<p class="member-role">${person.title}</p>` : ""}
+      <div class="member-inline-row${roleText ? " has-meta" : ""}">
+        ${roleText ? `<p class="member-role">${roleText}</p>` : ""}
         <button type="button" class="member-name-button">${person.name}</button>
       </div>
     `;
@@ -2594,9 +2675,9 @@ function renderProfile(branch) {
   elements.profileAffiliationValue.title = affiliation;
 
   if (selected.kind === "person") {
+    const roleText = getRoleText(selected) || "未設定";
     elements.profileRoleRow.hidden = false;
     elements.profileRoleRow.classList.remove("full");
-    const roleText = selected.title || "未設定";
     elements.profileRoleValue.textContent = roleText;
     elements.profileRoleValue.title = roleText;
     elements.profilePersonMetaRow.hidden = false;
@@ -2622,7 +2703,13 @@ function populateEditForm(node) {
   const nameParts = splitNameParts(node.name, node.lastName, node.firstName);
   elements.editLastName.value = nameParts.lastName;
   elements.editFirstName.value = nameParts.firstName;
-  setSelectOptions(elements.editTitle, buildEditRoleOptions(node.title), node.title ?? "");
+  populateRoleFields(
+    elements.editTitle,
+    elements.editTitleSecondary,
+    elements.editTitleSecondaryField,
+    elements.editAddTitleButton,
+    node.titles ?? node.title
+  );
   elements.editDepartment.value = node.department ?? "";
   if (elements.editPhoto) {
     elements.editPhoto.value = "";
@@ -2651,6 +2738,7 @@ function clearCreateFormFields() {
 
   elements.createForm.reset();
   populateCreateSelectFields();
+  setSecondaryRoleVisibility(elements.createTitleSecondaryField, elements.createAddTitleButton, false);
   if (elements.createDepartment) {
     elements.createDepartment.value = "";
   }
@@ -2723,9 +2811,14 @@ async function handleProfileSave(event) {
 
   const updates = {
     name: displayName,
-    title: elements.editTitle.value.trim(),
+    title: "",
+    titles: [],
     department: elements.editDepartment.value.trim() || selected.department,
   };
+
+  const selectedTitles = collectRoleValues(elements.editTitle, elements.editTitleSecondary);
+  updates.title = selectedTitles[0] || "";
+  updates.titles = selectedTitles;
 
   if (selected.kind === "person") {
     updates.lastName = lastName;
@@ -2792,7 +2885,8 @@ async function handleCreatePerson(event) {
     name,
     lastName,
     firstName,
-    title: elements.createTitle?.value.trim() ?? "",
+    title: "",
+    titles: collectRoleValues(elements.createTitle, elements.createTitleSecondary),
     department:
       elements.createDepartment?.value.trim() ||
       createDepartmentName(branch, targetNode, parent),
@@ -2804,6 +2898,7 @@ async function handleCreatePerson(event) {
     reports: [],
     photo,
   };
+  newNode.title = newNode.titles[0] || "";
 
   branch.nodes[parentIndex] = {
     ...branch.nodes[parentIndex],
@@ -3146,7 +3241,7 @@ function buildExcelRows(branch) {
       placementName,
       person.lastName ?? "",
       person.firstName ?? "",
-      person.title ?? "",
+      getRoleText(person),
       person.age ?? "",
       person.tenure ?? "",
       person.joinYear ?? "",
@@ -3191,10 +3286,12 @@ function importPeopleFromCsv(branch, rows) {
     }
 
     if (existingNode) {
+      const nextTitles = normalizeTitles(row["役職"]);
       existingNode.lastName = lastName;
       existingNode.firstName = firstName;
       existingNode.name = displayName || existingNode.name;
-      existingNode.title = normalizeText(row["役職"]);
+      existingNode.title = nextTitles[0] || "";
+      existingNode.titles = nextTitles;
       existingNode.department = normalizeText(row["営業所名"]) || normalizeText(row["所属"]) || createTargetLabel(branch, office);
       existingNode.age = normalizeNumericField(row["年齢"]);
       existingNode.tenure = normalizeNumericField(row["勤続"]);
@@ -3205,13 +3302,15 @@ function importPeopleFromCsv(branch, rows) {
     }
 
     const newNodeId = personId || createNodeId(branch, "person");
+    const nextTitles = normalizeTitles(row["役職"]);
     branch.nodes.push({
       id: newNodeId,
       kind: "person",
       name: displayName,
       lastName,
       firstName,
-      title: normalizeText(row["役職"]),
+      title: nextTitles[0] || "",
+      titles: nextTitles,
       department: normalizeText(row["営業所名"]) || normalizeText(row["所属"]) || createTargetLabel(branch, office),
       age: normalizeNumericField(row["年齢"]),
       tenure: normalizeNumericField(row["勤続"]),
@@ -3433,6 +3532,28 @@ if (elements.createParent) {
     }
 
     syncCreateParentOptions(branch, elements.createOffice?.value ?? "", elements.createParent.value);
+  });
+}
+if (elements.editAddTitleButton) {
+  elements.editAddTitleButton.addEventListener("click", () => {
+    setSecondaryRoleVisibility(elements.editTitleSecondaryField, elements.editAddTitleButton, true);
+    setSelectOptions(
+      elements.editTitleSecondary,
+      buildEditRoleOptions(elements.editTitleSecondary?.value ?? ""),
+      elements.editTitleSecondary?.value ?? ""
+    );
+    elements.editTitleSecondary?.focus();
+  });
+}
+if (elements.createAddTitleButton) {
+  elements.createAddTitleButton.addEventListener("click", () => {
+    setSecondaryRoleVisibility(elements.createTitleSecondaryField, elements.createAddTitleButton, true);
+    setSelectOptions(
+      elements.createTitleSecondary,
+      buildEditRoleOptions(elements.createTitleSecondary?.value ?? ""),
+      elements.createTitleSecondary?.value ?? ""
+    );
+    elements.createTitleSecondary?.focus();
   });
 }
 if (elements.closeEditPanel) {
