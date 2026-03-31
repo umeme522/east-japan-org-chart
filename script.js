@@ -1,7 +1,7 @@
 const STORAGE_KEY = "east-japan-org-chart-data";
 const STORAGE_VERSION = 1;
 const SERVER_DATA_ENDPOINT = "/api/org-data";
-const EDIT_ROLE_OPTIONS = ["", "東日本支店長", "副支店長", "部長", "副長", "所長", "署長", "係長", "スタッフ"];
+const EDIT_ROLE_OPTIONS = ["", "支店長", "副支店長", "部長", "所長", "副長", "係長", "スタッフ"];
 
 const DEFAULT_BRANCHES = [
   {
@@ -868,7 +868,7 @@ function roleWeight(title) {
   if (normalized.includes("副支店長")) {
     return 6;
   }
-  if (normalized.includes("部長") || normalized.includes("署長")) {
+  if (normalized.includes("部長")) {
     return 5;
   }
   if (normalized.includes("所長")) {
@@ -876,6 +876,9 @@ function roleWeight(title) {
   }
   if (normalized.includes("副長")) {
     return 3;
+  }
+  if (normalized.includes("署長")) {
+    return 2.5;
   }
   if (normalized.includes("係長")) {
     return 2;
