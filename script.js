@@ -1,6 +1,7 @@
 const STORAGE_KEY = "east-japan-org-chart-data";
 const STORAGE_VERSION = 1;
 const SERVER_DATA_ENDPOINT = "/api/org-data";
+const BUNDLED_UPDATED_AT = "2026-03-31T00:00:00.000Z";
 const EDIT_ROLE_OPTIONS = ["", "支店長", "副支店長", "部長", "所長", "副長", "係長", "スタッフ"];
 const EDIT_AGE_OPTIONS = Array.from({ length: 82 }, (_, index) => String(index + 18));
 const EDIT_TENURE_OPTIONS = Array.from({ length: 61 }, (_, index) => String(index));
@@ -1281,13 +1282,14 @@ function countPeopleInBranches(branchList = []) {
   );
 }
 
+function shouldPreferBundledData(localUpdatedAt = "") {
+  return parseUpdatedAt(localUpdatedAt) < parseUpdatedAt(BUNDLED_UPDATED_AT);
+}
+
 const storedPayload = loadStoredPayload();
 const bundledBranches = loadBranches(DEFAULT_BRANCHES);
 let branches = loadBranches(storedPayload);
-if (
-  window.location.protocol !== "file:" &&
-  countPeopleInBranches(branches) < countPeopleInBranches(bundledBranches)
-) {
+if (window.location.protocol !== "file:" && shouldPreferBundledData(storedPayload?.updatedAt)) {
   branches = bundledBranches;
 }
 const initialBranch = branches[0] ?? { id: "", rootId: "" };
@@ -1486,7 +1488,7 @@ async function loadServerBranches() {
   if (payload && typeof payload === "object" && Array.isArray(payload.branches) && payload.branches.length === 0) {
     return {
       branches: loadBranches(DEFAULT_BRANCHES),
-      updatedAt: normalizeText(payload?.updatedAt),
+      updatedAt: normalizeText(payload?.updatedAt) || BUNDLED_UPDATED_AT,
     };
   }
 
@@ -3194,7 +3196,7 @@ async function initializeApp() {
   } catch {
     persistence.mode = "local";
     persistence.serverReachable = false;
-    if (countPeopleInBranches(branches) < countPeopleInBranches(bundledBranches)) {
+    if (shouldPreferBundledData(persistence.localUpdatedAt)) {
       branches = bundledBranches;
       resetView(branches[0]?.id);
     }
