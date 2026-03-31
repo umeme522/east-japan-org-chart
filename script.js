@@ -1,6 +1,9 @@
 const STORAGE_KEY = "east-japan-org-chart-data";
 const STORAGE_VERSION = 1;
-const SERVER_DATA_ENDPOINT = "/api/org-data";
+const PUBLIC_SYNC_ENDPOINT = "https://east-japan-org-chart.pages.dev/api/org-data";
+const USE_REMOTE_SYNC_ENDPOINT = window.location.protocol === "file:" || ["localhost", "127.0.0.1", "0.0.0.0"].includes(window.location.hostname);
+const SERVER_DATA_ENDPOINT = USE_REMOTE_SYNC_ENDPOINT ? PUBLIC_SYNC_ENDPOINT : "/api/org-data";
+const SERVER_SYNC_INTERVAL_MS = 8000;
 const BUNDLED_UPDATED_AT = "2026-03-31T00:00:00.000Z";
 const ORG_DRAG_ENABLED = false;
 const EDIT_ROLE_OPTIONS = ["", "支店長", "副支店長", "部長", "所長", "副長", "係長", "スタッフ"];
@@ -1246,12 +1249,8 @@ function migrateBranches(branchList) {
   return branchList.map((branch) => migrateEastJapanBranch(branch));
 }
 
-function buildStoragePayload() {
-  return {
-    version: STORAGE_VERSION,
-    updatedAt: new Date().toISOString(),
-    branches,
-  };
+function buildStoragePayload(updatedAt = "") {
+  return buildSnapshotPayload(branches, updatedAt);
 }
 
 function parseUpdatedAt(value) {
@@ -1276,6 +1275,14 @@ function loadBranches(payload = null) {
   return migrateBranches(parseBranches(payload) ?? parseBranches(DEFAULT_BRANCHES) ?? cloneBranches(DEFAULT_BRANCHES));
 }
 
+function buildSnapshotPayload(branchList, updatedAt = "") {
+  return {
+    version: STORAGE_VERSION,
+    updatedAt: normalizeText(updatedAt) || new Date().toISOString(),
+    branches: cloneBranches(branchList),
+  };
+}
+
 function countPeopleInBranches(branchList = []) {
   return branchList.reduce(
     (sum, branch) => sum + (branch?.nodes?.filter((node) => node.kind === "person").length ?? 0),
@@ -1295,7 +1302,7 @@ if (window.location.protocol !== "file:" && shouldPreferBundledData(storedPayloa
 }
 const initialBranch = branches[0] ?? { id: "", rootId: "" };
 const persistence = {
-  mode: window.location.protocol === "file:" ? "local" : "server",
+  mode: SERVER_DATA_ENDPOINT ? "server" : "local",
   serverReachable: false,
   localUpdatedAt: normalizeText(storedPayload?.updatedAt),
   serverUpdatedAt: "",
@@ -1326,6 +1333,9 @@ const dragState = {
   overNodeId: "",
   placeAfter: false,
 };
+
+let syncTimerId = 0;
+let syncInFlight = false;
 
 const elements = {
   branchTabs: document.getElementById("branchTabs"),
@@ -1425,19 +1435,24 @@ function setActionStatus(message) {
   state.actionStatus = "";
 }
 
-function writeStorageCache() {
+function writeStorageCache(payload = buildStoragePayload()) {
   try {
-    const payload = buildStoragePayload();
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-    persistence.localUpdatedAt = payload.updatedAt;
+    persistence.localUpdatedAt = normalizeText(payload.updatedAt);
     return true;
   } catch {
     return false;
   }
 }
 
+function writeStorageSnapshot(branchList, updatedAt = "") {
+  const payload = buildSnapshotPayload(branchList, updatedAt);
+  return writeStorageCache(payload);
+}
+
 async function saveBranches() {
-  const cached = writeStorageCache();
+  const payload = buildStoragePayload();
+  const cached = writeStorageCache(payload);
 
   if (persistence.mode !== "server") {
     if (!cached) {
@@ -1454,14 +1469,18 @@ async function saveBranches() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(buildStoragePayload()),
+      body: JSON.stringify(payload),
     });
 
-    if (!response.ok) {
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok || result?.ok === false) {
       throw new Error("save-failed");
     }
 
     persistence.serverReachable = true;
+    persistence.serverUpdatedAt = normalizeText(result?.updatedAt) || payload.updatedAt;
+    writeStorageSnapshot(branches, persistence.serverUpdatedAt);
     return true;
   } catch {
     persistence.serverReachable = false;
@@ -1496,6 +1515,89 @@ async function loadServerBranches() {
   }
 
   throw new Error("invalid-data");
+}
+
+function applyServerState(serverState) {
+  if (!serverState?.branches?.length) {
+    return;
+  }
+
+  const previousBranchId = state.activeBranchId;
+  const previousScopeNodeId = state.scopeNodeId;
+  const previousSelectedNodeId = state.selectedNodeId;
+  const previousSearchTerm = state.searchTerm;
+  const knownNodeIds = new Set(serverState.branches.flatMap((branch) => branch.nodes.map((node) => node.id)));
+
+  branches = cloneBranches(serverState.branches);
+  writeStorageSnapshot(branches, serverState.updatedAt);
+
+  const branch = getBranch(previousBranchId) ?? branches[0];
+  if (!branch) {
+    return;
+  }
+
+  state.activeBranchId = branch.id;
+  state.searchTerm = previousSearchTerm;
+  state.expandedDepartmentIds = new Set(
+    [...state.expandedDepartmentIds].filter((nodeId) => knownNodeIds.has(nodeId))
+  );
+
+  const nodes = nodeMap(branch);
+  state.scopeNodeId = nodes.has(previousScopeNodeId) ? previousScopeNodeId : branch.rootId;
+  state.selectedNodeId = nodes.has(previousSelectedNodeId)
+    ? previousSelectedNodeId
+    : firstPersonInScope(branch, state.scopeNodeId)?.id ?? state.scopeNodeId;
+
+  const scopeNode = nodes.get(state.scopeNodeId);
+  if (isCollapsibleUnitNode(scopeNode)) {
+    state.expandedDepartmentIds.add(scopeNode.id);
+  }
+  if (state.selectedNodeId) {
+    expandPathToNode(branch, state.selectedNodeId);
+  }
+  if (elements.search) {
+    elements.search.value = state.searchTerm;
+  }
+
+  render();
+}
+
+async function syncBranchesFromServer(options = {}) {
+  const { force = false } = options;
+
+  if (persistence.mode !== "server" || syncInFlight || state.isImporting) {
+    return;
+  }
+
+  if (!force && (elements.profileEditor?.open || elements.profileCreator?.open)) {
+    return;
+  }
+
+  syncInFlight = true;
+
+  try {
+    const serverState = await loadServerBranches();
+    persistence.serverReachable = true;
+    persistence.serverUpdatedAt = normalizeText(serverState.updatedAt);
+
+    if (parseUpdatedAt(serverState.updatedAt) > parseUpdatedAt(persistence.localUpdatedAt)) {
+      applyServerState(serverState);
+    }
+  } catch {
+    persistence.serverReachable = false;
+  } finally {
+    syncInFlight = false;
+  }
+}
+
+function startServerSyncPolling() {
+  if (persistence.mode !== "server" || syncTimerId) {
+    return;
+  }
+
+  syncTimerId = window.setInterval(() => {
+    syncBranchesFromServer();
+  }, SERVER_SYNC_INTERVAL_MS);
 }
 
 function getActiveBranch() {
@@ -3253,28 +3355,21 @@ async function initializeApp() {
     return;
   }
 
+  startServerSyncPolling();
+
   try {
     const serverState = await loadServerBranches();
     persistence.serverReachable = true;
-    persistence.serverUpdatedAt = serverState.updatedAt;
-
-    if (parseUpdatedAt(persistence.localUpdatedAt) > parseUpdatedAt(serverState.updatedAt)) {
-      const saved = await saveBranches();
-      setActionStatus(saved ? "" : "共有反映に失敗しました。");
-      render();
-      return;
-    }
-
-    branches = serverState.branches;
-    resetView(branches[0]?.id);
+    persistence.serverUpdatedAt = normalizeText(serverState.updatedAt);
+    applyServerState(serverState);
     setActionStatus("");
-    render();
   } catch {
-    persistence.mode = "local";
     persistence.serverReachable = false;
     if (shouldPreferBundledData(persistence.localUpdatedAt)) {
       branches = bundledBranches;
       resetView(branches[0]?.id);
+      writeStorageSnapshot(branches, BUNDLED_UPDATED_AT);
+      render();
     }
     setActionStatus("");
     renderActionStatus();
@@ -3352,6 +3447,36 @@ if (elements.openCreateButton) {
 }
 window.addEventListener("resize", () => {
   window.requestAnimationFrame(fitOrgChartToFrame);
+});
+window.addEventListener("focus", () => {
+  syncBranchesFromServer({ force: true });
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    syncBranchesFromServer({ force: true });
+  }
+});
+window.addEventListener("storage", (event) => {
+  if (event.key !== STORAGE_KEY || !event.newValue || state.isImporting) {
+    return;
+  }
+
+  try {
+    const payload = JSON.parse(event.newValue);
+    const parsedBranches = parseBranches(payload);
+    const updatedAt = normalizeText(payload?.updatedAt);
+
+    if (!parsedBranches || parseUpdatedAt(updatedAt) <= parseUpdatedAt(persistence.localUpdatedAt)) {
+      return;
+    }
+
+    applyServerState({
+      branches: migrateBranches(parsedBranches),
+      updatedAt,
+    });
+  } catch {
+    // Ignore invalid storage payloads from other tabs.
+  }
 });
 if (ORG_DRAG_ENABLED) {
   window.addEventListener("pointermove", handleNodePointerMove);
