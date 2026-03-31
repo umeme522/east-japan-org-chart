@@ -93,8 +93,16 @@ export async function onRequestGet(context) {
   try {
     const payload = await readPayload(context.env);
     return createJsonResponse(payload);
-  } catch {
-    return createJsonResponse({ ok: false, message: "共有データの取得に失敗しました。" }, 500);
+  } catch (error) {
+    console.error("org-data GET failed", error);
+    return createJsonResponse(
+      {
+        ok: false,
+        message: "共有データの取得に失敗しました。",
+        details: String(error?.message ?? error),
+      },
+      500
+    );
   }
 }
 
@@ -109,7 +117,15 @@ export async function onRequestPut(context) {
 
     const updatedAt = await writePayload(context.env, payload);
     return createJsonResponse({ ok: true, updatedAt });
-  } catch {
-    return createJsonResponse({ ok: false, message: "JSON の保存に失敗しました。" }, 400);
+  } catch (error) {
+    console.error("org-data PUT failed", error);
+    return createJsonResponse(
+      {
+        ok: false,
+        message: "JSON の保存に失敗しました。",
+        details: String(error?.message ?? error),
+      },
+      400
+    );
   }
 }
