@@ -171,6 +171,11 @@ textarea {
   font-size: 0.84rem;
 }
 
+.action-status[data-state="busy"] {
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+
 .action-status:empty {
   display: none;
 }

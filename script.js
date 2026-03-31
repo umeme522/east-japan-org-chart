@@ -1309,6 +1309,7 @@ const state = {
   editStatus: "",
   createStatus: "",
   actionStatus: "",
+  isImporting: false,
   ignoreNodeClickUntil: 0,
 };
 
@@ -2094,7 +2095,29 @@ function cancelNodeDrag(event) {
 function renderActionStatus() {
   if (elements.actionStatus) {
     elements.actionStatus.textContent = state.actionStatus;
+    if (state.isImporting) {
+      elements.actionStatus.dataset.state = "busy";
+    } else {
+      delete elements.actionStatus.dataset.state;
+    }
   }
+}
+
+function syncImportButtonState() {
+  if (!elements.excelImportButton) {
+    return;
+  }
+
+  elements.excelImportButton.disabled = state.isImporting;
+  elements.excelImportButton.textContent = state.isImporting ? "インポート中..." : "インポート";
+}
+
+function waitForNextPaint() {
+  return new Promise((resolve) => {
+    window.requestAnimationFrame(() => {
+      window.setTimeout(resolve, 0);
+    });
+  });
 }
 
 function createHistoryRow(entry = {}) {
@@ -2989,7 +3012,6 @@ function buildExcelRows(branch) {
       person.lastName ?? "",
       person.firstName ?? "",
       person.title ?? "",
-      placementName,
       person.age ?? "",
       person.tenure ?? "",
       person.joinYear ?? "",
@@ -3038,7 +3060,7 @@ function importPeopleFromCsv(branch, rows) {
       existingNode.firstName = firstName;
       existingNode.name = displayName || existingNode.name;
       existingNode.title = normalizeText(row["役職"]);
-      existingNode.department = normalizeText(row["所属"]) || createTargetLabel(branch, office);
+      existingNode.department = normalizeText(row["営業所名"]) || normalizeText(row["所属"]) || createTargetLabel(branch, office);
       existingNode.age = normalizeNumericField(row["年齢"]);
       existingNode.tenure = normalizeNumericField(row["勤続"]);
       existingNode.joinYear = normalizeNumericField(row["入社"]);
@@ -3055,7 +3077,7 @@ function importPeopleFromCsv(branch, rows) {
       lastName,
       firstName,
       title: normalizeText(row["役職"]),
-      department: normalizeText(row["所属"]) || createTargetLabel(branch, office),
+      department: normalizeText(row["営業所名"]) || normalizeText(row["所属"]) || createTargetLabel(branch, office),
       age: normalizeNumericField(row["年齢"]),
       tenure: normalizeNumericField(row["勤続"]),
       joinYear: normalizeNumericField(row["入社"]),
@@ -3076,7 +3098,7 @@ function handleExport() {
   const fileDate = new Date().toISOString().slice(0, 10);
   const fileName = `${branch?.name ?? "支店組織図"}-人物データ-${fileDate}.csv`;
   const csvRows = [
-    ["支店名", "営業所名", "姓", "名", "役職", "所属", "年齢", "勤続", "入社"],
+    ["支店名", "営業所名", "姓", "名", "役職", "年齢", "勤続", "入社"],
     ...buildExcelRows(branch),
   ];
   const blob = new Blob([`\uFEFF${stringifyCsv(csvRows)}`], {
@@ -3098,11 +3120,17 @@ function handleExport() {
 
 async function handleImportFile(event) {
   const [file] = event.target.files ?? [];
-  if (!file) {
+  if (!file || state.isImporting) {
     return;
   }
 
+  state.isImporting = true;
+  state.actionStatus = "インポート中...";
+  syncImportButtonState();
+  renderActionStatus();
+
   try {
+    await waitForNextPaint();
     const text = await file.text();
     const rows = csvToObjects(text);
     const branch = getActiveBranch();
@@ -3116,6 +3144,9 @@ async function handleImportFile(event) {
     setActionStatus("インポートに失敗しました。");
     renderActionStatus();
   } finally {
+    state.isImporting = false;
+    syncImportButtonState();
+    renderActionStatus();
     event.target.value = "";
   }
 }
@@ -3139,6 +3170,7 @@ function render() {
     return;
   }
 
+  syncImportButtonState();
   renderActionStatus();
   renderHeroStats();
   renderBranchTabs();
