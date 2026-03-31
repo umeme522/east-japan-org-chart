@@ -2878,33 +2878,46 @@ function csvToObjects(text) {
 }
 
 function findOfficeFromRow(branch, row, existingNode = null) {
-  const officeName = normalizeText(row["営業所名"]);
-  if (officeName) {
-    const unitByName = branch.nodes.find((node) => node.kind === "unit" && node.name === officeName);
-    if (unitByName) {
-      return unitByName;
+  const resolveScopeNode = (value) => {
+    const label = normalizeText(value);
+    if (!label) {
+      return null;
     }
-  }
 
-  const departmentName = normalizeText(row["所属"]);
-  if (departmentName) {
-    const exactUnit = branch.nodes.find((node) => node.kind === "unit" && node.name === departmentName);
+    if (label === branch.name) {
+      return nodeMap(branch).get(branch.rootId) ?? null;
+    }
+
+    const exactUnit = branch.nodes.find((node) => node.kind === "unit" && node.name === label);
     if (exactUnit) {
       return exactUnit;
     }
 
-    const tail = departmentName
+    const tail = label
       .split("/")
       .map((part) => normalizeText(part))
       .filter(Boolean)
       .pop();
 
-    if (tail) {
-      const tailUnit = branch.nodes.find((node) => node.kind === "unit" && node.name === tail);
-      if (tailUnit) {
-        return tailUnit;
-      }
+    if (!tail) {
+      return null;
     }
+
+    if (tail === branch.name) {
+      return nodeMap(branch).get(branch.rootId) ?? null;
+    }
+
+    return branch.nodes.find((node) => node.kind === "unit" && node.name === tail) ?? null;
+  };
+
+  const officeTarget = resolveScopeNode(row["営業所名"]);
+  if (officeTarget) {
+    return officeTarget;
+  }
+
+  const departmentTarget = resolveScopeNode(row["所属"]);
+  if (departmentTarget) {
+    return departmentTarget;
   }
 
   return existingNode
@@ -2967,15 +2980,16 @@ function resolveParentFromImport(branch, targetUnit, row, existingNode = null) {
 
 function buildExcelRows(branch) {
   return personNodes(branch).map((person) => {
-    const office = findOfficeForNode(branch, person.id) ?? findCreateTargetForNode(branch, person.id);
+    const targetNode = findCreateTargetForNode(branch, person.id);
+    const placementName = createTargetLabel(branch, targetNode) || normalizeText(person.department) || branch.name;
 
     return [
       branch.name,
-      office?.name ?? "",
+      placementName,
       person.lastName ?? "",
       person.firstName ?? "",
       person.title ?? "",
-      person.department ?? "",
+      placementName,
       person.age ?? "",
       person.tenure ?? "",
       person.joinYear ?? "",
@@ -3024,7 +3038,7 @@ function importPeopleFromCsv(branch, rows) {
       existingNode.firstName = firstName;
       existingNode.name = displayName || existingNode.name;
       existingNode.title = normalizeText(row["役職"]);
-      existingNode.department = normalizeText(row["所属"]) || office.name;
+      existingNode.department = normalizeText(row["所属"]) || createTargetLabel(branch, office);
       existingNode.age = normalizeNumericField(row["年齢"]);
       existingNode.tenure = normalizeNumericField(row["勤続"]);
       existingNode.joinYear = normalizeNumericField(row["入社"]);
@@ -3041,7 +3055,7 @@ function importPeopleFromCsv(branch, rows) {
       lastName,
       firstName,
       title: normalizeText(row["役職"]),
-      department: normalizeText(row["所属"]) || office.name,
+      department: normalizeText(row["所属"]) || createTargetLabel(branch, office),
       age: normalizeNumericField(row["年齢"]),
       tenure: normalizeNumericField(row["勤続"]),
       joinYear: normalizeNumericField(row["入社"]),
@@ -3092,9 +3106,11 @@ async function handleImportFile(event) {
     const text = await file.text();
     const rows = csvToObjects(text);
     const branch = getActiveBranch();
-    importPeopleFromCsv(branch, rows);
+    const summary = importPeopleFromCsv(branch, rows);
     const saved = await saveBranches();
-    setActionStatus(saved ? "" : "インポート後の共有保存に失敗しました。");
+    state.actionStatus = saved
+      ? `インポート完了 更新${summary.updated}件 追加${summary.created}件 スキップ${summary.skipped}件`
+      : `インポート完了 更新${summary.updated}件 追加${summary.created}件 スキップ${summary.skipped}件 共有保存に失敗しました。`;
     render();
   } catch {
     setActionStatus("インポートに失敗しました。");
