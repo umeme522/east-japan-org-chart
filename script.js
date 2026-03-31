@@ -1234,8 +1234,22 @@ function loadBranches(payload = null) {
   return migrateBranches(parseBranches(payload) ?? parseBranches(DEFAULT_BRANCHES) ?? cloneBranches(DEFAULT_BRANCHES));
 }
 
+function countPeopleInBranches(branchList = []) {
+  return branchList.reduce(
+    (sum, branch) => sum + (branch?.nodes?.filter((node) => node.kind === "person").length ?? 0),
+    0
+  );
+}
+
 const storedPayload = loadStoredPayload();
+const bundledBranches = loadBranches(DEFAULT_BRANCHES);
 let branches = loadBranches(storedPayload);
+if (
+  window.location.protocol !== "file:" &&
+  countPeopleInBranches(branches) < countPeopleInBranches(bundledBranches)
+) {
+  branches = bundledBranches;
+}
 const initialBranch = branches[0] ?? { id: "", rootId: "" };
 const persistence = {
   mode: window.location.protocol === "file:" ? "local" : "server",
@@ -3140,6 +3154,10 @@ async function initializeApp() {
   } catch {
     persistence.mode = "local";
     persistence.serverReachable = false;
+    if (countPeopleInBranches(branches) < countPeopleInBranches(bundledBranches)) {
+      branches = bundledBranches;
+      resetView(branches[0]?.id);
+    }
     setActionStatus("");
     renderActionStatus();
   }
