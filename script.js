@@ -1,6 +1,7 @@
 const STORAGE_KEY = "east-japan-org-chart-data";
 const STORAGE_VERSION = 1;
 const SERVER_DATA_ENDPOINT = "/api/org-data";
+const EDIT_ROLE_OPTIONS = ["", "東日本支店長", "副支店長", "部長", "副長", "所長", "署長", "係長", "スタッフ"];
 
 const DEFAULT_BRANCHES = [
   {
@@ -951,8 +952,17 @@ function getInlineUnitLeader(node, nodes) {
 
 function sortReportIdsForDisplay(node, nodes) {
   const inlineLeader = getInlineUnitLeader(node, nodes);
-  const reports = node.reports
-    .filter((reportId) => reportId !== inlineLeader?.id)
+  const displayReportIds = node.reports.filter((reportId) => reportId !== inlineLeader?.id);
+
+  if (node.id === state.scopeNodeId && isOfficeNode(node) && inlineLeader?.reports?.length) {
+    inlineLeader.reports.forEach((reportId) => {
+      if (!displayReportIds.includes(reportId)) {
+        displayReportIds.push(reportId);
+      }
+    });
+  }
+
+  const reports = displayReportIds
     .map((reportId, index) => ({
       reportId,
       index,
@@ -972,6 +982,23 @@ function sortReportIdsForDisplay(node, nodes) {
   return reports
     .sort((left, right) => comparePeopleForDisplay(left.report, right.report) || left.index - right.index)
     .map((entry) => entry.reportId);
+}
+
+function buildEditRoleOptions(currentTitle = "") {
+  const options = EDIT_ROLE_OPTIONS.map((title) => ({
+    value: title,
+    label: title || "未設定",
+  }));
+
+  const normalizedCurrentTitle = normalizeText(currentTitle);
+  if (normalizedCurrentTitle && !options.some((option) => option.value === normalizedCurrentTitle)) {
+    options.splice(1, 0, {
+      value: normalizedCurrentTitle,
+      label: normalizedCurrentTitle,
+    });
+  }
+
+  return options;
 }
 
 function buildAffiliation(branch, node) {
@@ -2403,7 +2430,7 @@ function populateEditForm(node) {
   const nameParts = splitNameParts(node.name, node.lastName, node.firstName);
   elements.editLastName.value = nameParts.lastName;
   elements.editFirstName.value = nameParts.firstName;
-  elements.editTitle.value = node.title ?? "";
+  setSelectOptions(elements.editTitle, buildEditRoleOptions(node.title), node.title ?? "");
   elements.editDepartment.value = node.department ?? "";
   if (elements.editPhoto) {
     elements.editPhoto.value = "";
