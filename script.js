@@ -1820,7 +1820,7 @@ function selectNode(branchId, nodeId) {
   render();
 }
 
-function handleNodeClick(branchId, nodeId) {
+function handleNodeClick(event, branchId, nodeId) {
   if (Date.now() < state.ignoreNodeClickUntil) {
     return;
   }
@@ -1832,6 +1832,13 @@ function handleNodeClick(branchId, nodeId) {
 
   const node = branch.nodes.find((currentNode) => currentNode.id === nodeId);
   if (!node) {
+    return;
+  }
+
+  const nodes = nodeMap(branch);
+  const inlineLeader = getInlineUnitLeader(node, nodes);
+  if (inlineLeader && event?.target?.closest(".node-inline-leader")) {
+    selectNode(branchId, inlineLeader.id);
     return;
   }
 
@@ -2252,7 +2259,7 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
     </div>
   `;
   card.addEventListener("pointerdown", (event) => beginNodeDrag(event, branch.id, node.id, parentId));
-  card.addEventListener("click", () => handleNodeClick(branch.id, node.id));
+  card.addEventListener("click", (event) => handleNodeClick(event, branch.id, node.id));
   item.appendChild(card);
 
   if (shouldRenderChildren(node, nodes)) {
@@ -2788,57 +2795,100 @@ function csvToObjects(text) {
 }
 
 function findOfficeFromRow(branch, row, existingNode = null) {
-  const officeId = normalizeText(row["営業所ID"]);
-  if (officeId) {
-    const officeById = branch.nodes.find((node) => node.id === officeId && isOfficeNode(node));
-    if (officeById) {
-      return officeById;
-    }
-  }
-
   const officeName = normalizeText(row["営業所名"]);
   if (officeName) {
-    const officeByName = branch.nodes.find((node) => isOfficeNode(node) && node.name === officeName);
-    if (officeByName) {
-      return officeByName;
+    const unitByName = branch.nodes.find((node) => node.kind === "unit" && node.name === officeName);
+    if (unitByName) {
+      return unitByName;
     }
   }
 
-  return existingNode ? findOfficeForNode(branch, existingNode.id) : null;
+  const departmentName = normalizeText(row["所属"]);
+  if (departmentName) {
+    const exactUnit = branch.nodes.find((node) => node.kind === "unit" && node.name === departmentName);
+    if (exactUnit) {
+      return exactUnit;
+    }
+
+    const tail = departmentName
+      .split("/")
+      .map((part) => normalizeText(part))
+      .filter(Boolean)
+      .pop();
+
+    if (tail) {
+      const tailUnit = branch.nodes.find((node) => node.kind === "unit" && node.name === tail);
+      if (tailUnit) {
+        return tailUnit;
+      }
+    }
+  }
+
+  return existingNode
+    ? findOfficeForNode(branch, existingNode.id) ?? findCreateTargetForNode(branch, existingNode.id)
+    : null;
 }
 
-function resolveParentFromRow(branch, row, office) {
-  const parentId = normalizeText(row["親ID"]);
-  if (parentId) {
-    const parentById = branch.nodes.find((node) => node.id === parentId);
-    if (parentById && isDescendantOf(branch, parentById.id, office.id)) {
-      return parentById;
+function findExistingPersonForImport(branch, targetUnit, displayName, lastName, firstName) {
+  const normalizedName = buildDisplayName(lastName, firstName, displayName);
+  if (!normalizedName) {
+    return null;
+  }
+
+  const candidates = personNodes(branch).filter((node) => node.name === normalizedName);
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  if (!targetUnit) {
+    return candidates.length === 1 ? candidates[0] : null;
+  }
+
+  return (
+    candidates.find((candidate) => {
+      const candidateUnit = findOfficeForNode(branch, candidate.id) ?? findCreateTargetForNode(branch, candidate.id);
+      return candidateUnit?.id === targetUnit.id;
+    }) ?? null
+  );
+}
+
+function resolveParentFromImport(branch, targetUnit, row, existingNode = null) {
+  if (!targetUnit) {
+    return null;
+  }
+
+  const hasLegacyParentColumns = normalizeText(row["親ID"]) || normalizeText(row["親名"]);
+  if (existingNode && !hasLegacyParentColumns) {
+    const parents = buildParentMap(branch);
+    const currentParent = nodeMap(branch).get(parents.get(existingNode.id));
+    const currentUnit = findOfficeForNode(branch, existingNode.id) ?? findCreateTargetForNode(branch, existingNode.id);
+    if (currentParent && currentUnit?.id === targetUnit.id) {
+      return currentParent;
     }
   }
 
-  const parentName = normalizeText(row["親名"]);
-  if (parentName) {
-    const parentByName = branch.nodes.find((node) => node.name === parentName && isDescendantOf(branch, node.id, office.id));
-    if (parentByName) {
-      return parentByName;
-    }
+  const roleText = normalizeText(row["役職"]);
+  const inlineLeader = getInlineUnitLeader(targetUnit, nodeMap(branch));
+  const rowName = buildDisplayName(row["姓"], row["名"], row["氏名"]);
+
+  if (!inlineLeader) {
+    return targetUnit;
   }
 
-  return office;
+  if (inlineLeader.name === rowName || /(所長|署長|部長|支店長)/.test(roleText)) {
+    return targetUnit;
+  }
+
+  return inlineLeader;
 }
 
 function buildExcelRows(branch) {
-  const nodes = nodeMap(branch);
-  const parents = buildParentMap(branch);
-
   return personNodes(branch).map((person) => {
-    const parent = nodes.get(parents.get(person.id));
-    const office = findOfficeForNode(branch, person.id);
+    const office = findOfficeForNode(branch, person.id) ?? findCreateTargetForNode(branch, person.id);
 
     return [
-      branch.id,
       branch.name,
-      person.id,
+      office?.name ?? "",
       person.lastName ?? "",
       person.firstName ?? "",
       person.title ?? "",
@@ -2846,11 +2896,6 @@ function buildExcelRows(branch) {
       person.age ?? "",
       person.tenure ?? "",
       person.joinYear ?? "",
-      office?.id ?? "",
-      office?.name ?? "",
-      parent?.id ?? "",
-      parent?.name ?? "",
-      serializeHistoryEntries(person.historyEntries ?? []),
     ];
   });
 }
@@ -2859,22 +2904,37 @@ function importPeopleFromCsv(branch, rows) {
   const summary = { created: 0, updated: 0, skipped: 0 };
 
   rows.forEach((row) => {
-    const personId = normalizeText(row["人物ID"]);
-    const existingNode = personId
-      ? branch.nodes.find((node) => node.id === personId && node.kind === "person") ?? null
-      : null;
     const lastName = normalizeText(row["姓"]);
     const firstName = normalizeText(row["名"]);
     const displayName = buildDisplayName(lastName, firstName, row["氏名"]);
-    const office = findOfficeFromRow(branch, row, existingNode);
+    let existingNode = null;
+    let office = findOfficeFromRow(branch, row);
+
+    const personId = normalizeText(row["人物ID"]);
+    if (personId) {
+      existingNode = branch.nodes.find((node) => node.id === personId && node.kind === "person") ?? null;
+      if (!office) {
+        office = findOfficeFromRow(branch, row, existingNode);
+      }
+    }
+
+    if (!existingNode) {
+      existingNode = findExistingPersonForImport(branch, office, displayName, lastName, firstName);
+      if (!office && existingNode) {
+        office = findOfficeFromRow(branch, row, existingNode);
+      }
+    }
 
     if (!office || (!displayName && !existingNode)) {
       summary.skipped += 1;
       return;
     }
 
-    const parent = resolveParentFromRow(branch, row, office);
-    const historyEntries = parseHistoryText(row["経歴"]);
+    const parent = resolveParentFromImport(branch, office, row, existingNode);
+    if (!parent) {
+      summary.skipped += 1;
+      return;
+    }
 
     if (existingNode) {
       existingNode.lastName = lastName;
@@ -2885,7 +2945,6 @@ function importPeopleFromCsv(branch, rows) {
       existingNode.age = normalizeNumericField(row["年齢"]);
       existingNode.tenure = normalizeNumericField(row["勤続"]);
       existingNode.joinYear = normalizeNumericField(row["入社"]);
-      existingNode.historyEntries = historyEntries;
       moveNodeToParent(branch, existingNode.id, parent.id);
       summary.updated += 1;
       return;
@@ -2903,7 +2962,7 @@ function importPeopleFromCsv(branch, rows) {
       age: normalizeNumericField(row["年齢"]),
       tenure: normalizeNumericField(row["勤続"]),
       joinYear: normalizeNumericField(row["入社"]),
-      historyEntries,
+      historyEntries: [],
       photo: "",
       tags: [],
       reports: [],
@@ -2920,7 +2979,7 @@ function handleExport() {
   const fileDate = new Date().toISOString().slice(0, 10);
   const fileName = `${branch?.name ?? "支店組織図"}-人物データ-${fileDate}.csv`;
   const csvRows = [
-    ["支店ID", "支店名", "人物ID", "姓", "名", "役職", "所属", "年齢", "勤続", "入社", "営業所ID", "営業所名", "親ID", "親名", "経歴"],
+    ["支店名", "営業所名", "姓", "名", "役職", "所属", "年齢", "勤続", "入社"],
     ...buildExcelRows(branch),
   ];
   const blob = new Blob([`\uFEFF${stringifyCsv(csvRows)}`], {
