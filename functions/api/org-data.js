@@ -28,7 +28,7 @@ async function ensureDatabase(env) {
 
   await env.ORG_DB.exec(`
     CREATE TABLE IF NOT EXISTS org_state (
-      id INTEGER PRIMARY KEY CHECK (id = 1),
+      id INTEGER PRIMARY KEY,
       payload TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
