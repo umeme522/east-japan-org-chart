@@ -964,7 +964,7 @@ function sortReportIdsForDisplay(node, nodes) {
   const inlineLeader = getInlineUnitLeader(node, nodes);
   const displayReportIds = node.reports.filter((reportId) => reportId !== inlineLeader?.id);
 
-  if (node.id === state.scopeNodeId && isOfficeNode(node) && inlineLeader?.reports?.length) {
+  if (isOfficeNode(node) && inlineLeader?.reports?.length) {
     inlineLeader.reports.forEach((reportId) => {
       if (!displayReportIds.includes(reportId)) {
         displayReportIds.push(reportId);
