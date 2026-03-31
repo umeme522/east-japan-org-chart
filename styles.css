@@ -875,17 +875,17 @@ textarea {
 
 .member-inline-row {
   display: grid;
-  grid-template-columns: minmax(54px, 0.32fr) minmax(0, 1fr) auto;
-  align-items: center;
+  grid-template-columns: minmax(54px, 0.34fr) minmax(0, 1fr);
+  align-items: start;
   column-gap: 6px;
   min-width: 0;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .member-inline-row.has-meta .member-name-button {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .member-role {
@@ -910,8 +910,10 @@ textarea {
   justify-self: stretch;
   cursor: pointer;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  line-height: 1.3;
 }
 
 .member-name-button:hover,
@@ -1634,22 +1636,10 @@ textarea {
 
   .member-inline-row {
     display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "role edit"
-      "name edit";
+    grid-template-columns: minmax(48px, 0.34fr) minmax(0, 1fr);
     gap: 5px;
     align-items: start;
     white-space: normal;
-  }
-
-  .member-role {
-    grid-area: role;
-  }
-
-  .member-edit-button {
-    grid-area: edit;
-    justify-self: start;
   }
 
   .member-inline-row.has-meta .member-name-button {
@@ -1658,10 +1648,11 @@ textarea {
   }
 
   .member-name-button {
-    grid-area: name;
+    grid-column: 2;
   }
 
   .member-role {
+    grid-column: 1;
     font-size: 0.7rem;
     line-height: 1.2;
   }

@@ -2438,12 +2438,10 @@ function renderMemberGrid(branch) {
       <div class="member-inline-row${person.title ? " has-meta" : ""}">
         ${person.title ? `<p class="member-role">${person.title}</p>` : ""}
         <button type="button" class="member-name-button">${person.name}</button>
-        <button type="button" class="member-edit-button">編集</button>
       </div>
     `;
 
     card.querySelector(".member-name-button").addEventListener("click", () => selectNode(branch.id, person.id));
-    card.querySelector(".member-edit-button").addEventListener("click", () => openProfileEditor(branch.id, person.id));
     elements.memberGrid.appendChild(card);
   });
 }
