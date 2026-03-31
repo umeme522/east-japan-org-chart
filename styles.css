@@ -378,7 +378,8 @@ textarea {
 }
 
 .chart-frame {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: 14px 10px 16px;
   border: 1px solid rgba(31, 106, 67, 0.16);
   border-radius: 24px;
@@ -409,8 +410,8 @@ textarea {
 .chart-scale-shell {
   display: flex;
   justify-content: center;
-  width: 100%;
-  min-width: 0;
+  width: max-content;
+  min-width: 100%;
 }
 
 .chart-scale-content {
