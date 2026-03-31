@@ -2354,9 +2354,10 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
   const toneClass = node.kind === "person" && !isRoot ? ` role-tone-${roleWeight(node.title)}` : "";
   const hasInlineLeader = Boolean(inlineLeader);
   const isExecutive = node.kind === "person" && /(支店長|副支店長)/.test(normalizeText(node.title));
+  const isOfficeWithLeader = isOfficeNode(node) && hasInlineLeader;
 
   card.type = "button";
-  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${isExecutive ? " is-executive" : ""}${toneClass}`;
+  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${isOfficeWithLeader ? " office-inline-stacked" : ""}${isExecutive ? " is-executive" : ""}${toneClass}`;
   card.innerHTML = `
     <div class="node-card-header">
       <div class="node-inline-row${hasInlineMeta ? " has-meta" : ""}${hasInlineLeader ? " has-leader" : ""}">

@@ -642,6 +642,10 @@ textarea {
   width: 258px;
 }
 
+.node-card.office-inline-stacked {
+  width: 168px;
+}
+
 .node-card.is-leaf {
   width: 138px;
 }
@@ -671,6 +675,11 @@ textarea {
   align-items: stretch;
   gap: 10px;
   padding-right: 16px;
+}
+
+.node-card.office-inline-stacked .node-inline-row.has-leader {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
 }
 
 .node-inline-main {
@@ -722,6 +731,10 @@ textarea {
   border-radius: 12px;
   border: 1px solid rgba(217, 119, 42, 0.18);
   background: rgba(217, 119, 42, 0.12);
+}
+
+.node-card.office-inline-stacked .node-inline-leader {
+  width: 100%;
 }
 
 .node-inline-leader-role {
