@@ -765,14 +765,14 @@ textarea {
 
 .member-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(176px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(212px, 1fr));
+  gap: 10px;
 }
 
 .member-card {
   display: grid;
   gap: 4px;
-  padding: 12px 13px;
+  padding: 11px 12px 11px 13px;
   border-radius: 16px;
   border: 1px solid rgba(102, 111, 104, 0.14);
   background: linear-gradient(180deg, rgba(253, 253, 250, 0.99) 0%, rgba(238, 241, 237, 0.98) 100%);
@@ -874,9 +874,9 @@ textarea {
 
 .member-inline-row {
   display: grid;
-  grid-template-columns: minmax(68px, 0.46fr) minmax(0, 0.54fr) auto;
+  grid-template-columns: minmax(54px, 0.32fr) minmax(0, 1fr) auto;
   align-items: center;
-  column-gap: 8px;
+  column-gap: 6px;
   min-width: 0;
   white-space: nowrap;
 }
@@ -888,7 +888,7 @@ textarea {
 }
 
 .member-role {
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 700;
   color: var(--muted);
   text-align: left;
@@ -903,11 +903,14 @@ textarea {
   border: 0;
   background: transparent;
   color: var(--text);
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 700;
   text-align: left;
   justify-self: stretch;
   cursor: pointer;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .member-name-button:hover,
@@ -917,12 +920,12 @@ textarea {
 
 .member-edit-button {
   justify-self: end;
-  padding: 4px 8px;
+  padding: 3px 6px;
   border-radius: 999px;
   border: 1px solid rgba(31, 106, 67, 0.18);
   background: rgba(255, 255, 255, 0.92);
   color: var(--accent-deep);
-  font-size: 0.74rem;
+  font-size: 0.66rem;
   font-weight: 700;
   cursor: pointer;
 }
