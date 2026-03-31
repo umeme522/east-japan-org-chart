@@ -412,6 +412,7 @@ textarea {
   justify-content: center;
   width: max-content;
   min-width: 100%;
+  padding-inline: 18px;
 }
 
 .chart-scale-content {
@@ -700,6 +701,14 @@ textarea {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.node-card.unit .node-title,
+.node-card.has-inline-leader .node-title {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.25;
 }
 
 .node-inline-leader {
