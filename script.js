@@ -2,6 +2,7 @@ const STORAGE_KEY = "east-japan-org-chart-data";
 const STORAGE_VERSION = 1;
 const SERVER_DATA_ENDPOINT = "/api/org-data";
 const BUNDLED_UPDATED_AT = "2026-03-31T00:00:00.000Z";
+const ORG_DRAG_ENABLED = false;
 const EDIT_ROLE_OPTIONS = ["", "支店長", "副支店長", "部長", "所長", "副長", "係長", "スタッフ"];
 const EDIT_AGE_OPTIONS = Array.from({ length: 82 }, (_, index) => String(index + 18));
 const EDIT_TENURE_OPTIONS = Array.from({ length: 61 }, (_, index) => String(index));
@@ -1854,6 +1855,13 @@ function syncCreateParentOptions(branch, targetId, preferredParentId = "") {
   }
 }
 
+function populateCreateSelectFields(defaults = {}) {
+  setSelectOptions(elements.createTitle, buildEditRoleOptions(defaults.title), normalizeText(defaults.title));
+  setSelectOptions(elements.createAge, buildNumericSelectOptions(EDIT_AGE_OPTIONS, defaults.age), normalizeNumericField(defaults.age));
+  setSelectOptions(elements.createJoinYear, buildNumericSelectOptions(EDIT_JOIN_YEAR_OPTIONS, defaults.joinYear), normalizeNumericField(defaults.joinYear));
+  setSelectOptions(elements.createTenure, buildNumericSelectOptions(EDIT_TENURE_OPTIONS, defaults.tenure), normalizeNumericField(defaults.tenure));
+}
+
 function expandPathToNode(branch, nodeId) {
   const parents = buildParentMap(branch);
   const nodes = nodeMap(branch);
@@ -2345,9 +2353,10 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
   const isLeaf = reportIds.length === 0;
   const toneClass = node.kind === "person" && !isRoot ? ` role-tone-${roleWeight(node.title)}` : "";
   const hasInlineLeader = Boolean(inlineLeader);
+  const isExecutive = node.kind === "person" && /(支店長|副支店長)/.test(normalizeText(node.title));
 
   card.type = "button";
-  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${toneClass}`;
+  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${isExecutive ? " is-executive" : ""}${toneClass}`;
   card.innerHTML = `
     <div class="node-card-header">
       <div class="node-inline-row${hasInlineMeta ? " has-meta" : ""}${hasInlineLeader ? " has-leader" : ""}">
@@ -2365,7 +2374,9 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
       ${canToggle ? `<span class="node-toggle-indicator">${isExpanded ? "-" : "+"}</span>` : ""}
     </div>
   `;
-  card.addEventListener("pointerdown", (event) => beginNodeDrag(event, branch.id, node.id, parentId));
+  if (ORG_DRAG_ENABLED) {
+    card.addEventListener("pointerdown", (event) => beginNodeDrag(event, branch.id, node.id, parentId));
+  }
   card.addEventListener("click", (event) => handleNodeClick(event, branch.id, node.id));
   item.appendChild(card);
 
@@ -2536,6 +2547,7 @@ function clearCreateFormFields() {
   }
 
   elements.createForm.reset();
+  populateCreateSelectFields();
   if (elements.createDepartment) {
     elements.createDepartment.value = "";
   }
@@ -2561,6 +2573,7 @@ function populateCreateForm(branch, node) {
     defaultTarget?.id ?? ""
   );
   syncCreateParentOptions(branch, elements.createOffice.value, defaultParentId);
+  populateCreateSelectFields();
   elements.createStatus.textContent = state.createStatus;
 }
 
@@ -3339,8 +3352,10 @@ if (elements.openCreateButton) {
 window.addEventListener("resize", () => {
   window.requestAnimationFrame(fitOrgChartToFrame);
 });
-window.addEventListener("pointermove", handleNodePointerMove);
-window.addEventListener("pointerup", finishNodeDrag);
-window.addEventListener("pointercancel", cancelNodeDrag);
+if (ORG_DRAG_ENABLED) {
+  window.addEventListener("pointermove", handleNodePointerMove);
+  window.addEventListener("pointerup", finishNodeDrag);
+  window.addEventListener("pointercancel", cancelNodeDrag);
+}
 
 initializeApp();

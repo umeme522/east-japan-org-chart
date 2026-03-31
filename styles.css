@@ -542,8 +542,8 @@ textarea {
   cursor: pointer;
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
   position: relative;
-  touch-action: none;
-  user-select: none;
+  touch-action: manipulation;
+  user-select: auto;
 }
 
 .node-card::before {
@@ -574,10 +574,18 @@ textarea {
 
 .node-card.is-root {
   width: 156px;
+  --executive-half-width: 78px;
   min-height: 48px;
   background: var(--accent-deep);
   border-color: rgba(16, 61, 41, 0.9);
   box-shadow: 0 18px 32px rgba(16, 61, 41, 0.2);
+}
+
+.node-card.is-executive {
+  --executive-half-width: 72px;
+  position: sticky;
+  left: calc(50% - var(--executive-half-width));
+  z-index: 6;
 }
 
 .node-card.is-root::before {
@@ -1758,6 +1766,11 @@ textarea {
   .node-card.is-root {
     width: 100%;
     min-height: 56px;
+  }
+
+  .node-card.is-executive {
+    position: relative;
+    left: auto;
   }
 
   .node-card.is-leaf {
