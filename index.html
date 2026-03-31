@@ -49,7 +49,12 @@
 
       <section class="panel panel-members">
         <details class="member-disclosure" id="memberDisclosure" open>
-          <summary>メンバー</summary>
+          <summary>
+            <span class="member-summary-row">
+              <span>メンバー</span>
+              <button id="openCreateButton" type="button" class="secondary-button member-create-button">新規追加</button>
+            </span>
+          </summary>
           <section class="member-grid-section">
             <div id="memberGrid" class="member-grid" aria-live="polite"></div>
           </section>

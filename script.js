@@ -1338,6 +1338,7 @@ const elements = {
   resetButton: document.getElementById("resetButton"),
   excelImportInput: document.getElementById("excelImportInput"),
   actionStatus: document.getElementById("actionStatus"),
+  openCreateButton: document.getElementById("openCreateButton"),
   memberGrid: document.getElementById("memberGrid"),
   search: document.getElementById("memberSearch"),
   profileEmpty: document.getElementById("profileEmpty"),
@@ -2720,6 +2721,26 @@ function openProfileEditor(branchId, nodeId) {
   }
 }
 
+function openCreatePanel() {
+  const branch = getActiveBranch();
+  if (!branch) {
+    return;
+  }
+
+  const nodes = nodeMap(branch);
+  const selected = nodes.get(state.selectedNodeId) ?? nodes.get(state.scopeNodeId) ?? nodes.get(branch.rootId);
+  if (selected) {
+    populateCreateForm(branch, selected);
+  }
+
+  state.createStatus = "";
+  if (elements.profileCreator) {
+    elements.profileCreator.open = true;
+    elements.profileCreator.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  render();
+}
+
 function handleCloseEditPanel() {
   if (elements.profileEditor) {
     elements.profileEditor.open = false;
@@ -3314,6 +3335,13 @@ if (elements.createParent) {
 }
 if (elements.closeEditPanel) {
   elements.closeEditPanel.addEventListener("click", handleCloseEditPanel);
+}
+if (elements.openCreateButton) {
+  elements.openCreateButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    openCreatePanel();
+  });
 }
 window.addEventListener("resize", () => {
   window.requestAnimationFrame(fitOrgChartToFrame);
