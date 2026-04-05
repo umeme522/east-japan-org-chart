@@ -1394,21 +1394,76 @@ function countPeopleInBranches(branchList = []) {
   );
 }
 
+function countMojibakeChars(value) {
+  return (normalizeText(value).match(/[?？�]/g) ?? []).length;
+}
+
+function collectBranchTextSamples(branchList = []) {
+  const samples = [];
+
+  branchList.forEach((branch) => {
+    samples.push(branch?.name, branch?.location, branch?.division, branch?.overview);
+
+    (branch?.nodes ?? []).forEach((node) => {
+      samples.push(
+        node?.name,
+        node?.title,
+        node?.department,
+        node?.description,
+        node?.lastName,
+        node?.firstName
+      );
+      getNodeTitles(node).forEach((title) => samples.push(title));
+      (node?.historyEntries ?? []).forEach((entry) => {
+        samples.push(entry?.year, entry?.location);
+      });
+      (node?.hobbies ?? []).forEach((item) => samples.push(item));
+      (node?.tags ?? []).forEach((item) => samples.push(item));
+    });
+  });
+
+  return samples.map((sample) => normalizeText(sample)).filter(Boolean);
+}
+
+function looksCorruptedBranches(branchList = []) {
+  if (!Array.isArray(branchList) || branchList.length === 0) {
+    return false;
+  }
+
+  const criticalSamples = branchList.flatMap((branch) => {
+    const rootNode = (branch?.nodes ?? []).find((node) => node.id === branch?.rootId);
+    return [branch?.name, rootNode?.name, rootNode?.title];
+  });
+
+  if (criticalSamples.some((sample) => /[?？�]{2,}/.test(normalizeText(sample)))) {
+    return true;
+  }
+
+  const mojibakeCount = collectBranchTextSamples(branchList).reduce(
+    (sum, sample) => sum + countMojibakeChars(sample),
+    0
+  );
+
+  return mojibakeCount >= 8;
+}
+
 function shouldPreferBundledData(localUpdatedAt = "") {
   return parseUpdatedAt(localUpdatedAt) < parseUpdatedAt(BUNDLED_UPDATED_AT);
 }
 
 const storedPayload = loadStoredPayload();
 const bundledBranches = loadBranches(DEFAULT_BRANCHES);
-let branches = loadBranches(storedPayload);
-if (window.location.protocol !== "file:" && shouldPreferBundledData(storedPayload?.updatedAt)) {
+const storedBranches = loadBranches(storedPayload);
+const storedLooksCorrupted = looksCorruptedBranches(storedBranches);
+let branches = storedLooksCorrupted ? bundledBranches : storedBranches;
+if (!storedLooksCorrupted && window.location.protocol !== "file:" && shouldPreferBundledData(storedPayload?.updatedAt)) {
   branches = bundledBranches;
 }
 const initialBranch = branches[0] ?? { id: "", rootId: "" };
 const persistence = {
   mode: SERVER_DATA_ENDPOINT ? "server" : "local",
   serverReachable: false,
-  localUpdatedAt: normalizeText(storedPayload?.updatedAt),
+  localUpdatedAt: storedLooksCorrupted ? BUNDLED_UPDATED_AT : normalizeText(storedPayload?.updatedAt),
   serverUpdatedAt: "",
 };
 
@@ -1690,7 +1745,10 @@ async function syncBranchesFromServer(options = {}) {
     persistence.serverReachable = true;
     persistence.serverUpdatedAt = normalizeText(serverState.updatedAt);
 
-    if (parseUpdatedAt(serverState.updatedAt) > parseUpdatedAt(persistence.localUpdatedAt)) {
+    if (
+      looksCorruptedBranches(branches) ||
+      parseUpdatedAt(serverState.updatedAt) > parseUpdatedAt(persistence.localUpdatedAt)
+    ) {
       applyServerState(serverState);
     }
   } catch {
@@ -3536,6 +3594,10 @@ function fitOrgChartToFrame() {
 }
 
 async function initializeApp() {
+  if (storedLooksCorrupted) {
+    writeStorageSnapshot(branches, BUNDLED_UPDATED_AT);
+  }
+
   render();
 
   if (persistence.mode !== "server") {
@@ -3675,7 +3737,14 @@ window.addEventListener("storage", (event) => {
     const parsedBranches = parseBranches(payload);
     const updatedAt = normalizeText(payload?.updatedAt);
 
-    if (!parsedBranches || parseUpdatedAt(updatedAt) <= parseUpdatedAt(persistence.localUpdatedAt)) {
+    if (!parsedBranches || looksCorruptedBranches(parsedBranches)) {
+      return;
+    }
+
+    if (
+      !looksCorruptedBranches(branches) &&
+      parseUpdatedAt(updatedAt) <= parseUpdatedAt(persistence.localUpdatedAt)
+    ) {
       return;
     }
 
