@@ -1405,7 +1405,7 @@ function buildSnapshotPayload(branchList, updatedAt = "") {
   return {
     version: STORAGE_VERSION,
     updatedAt: normalizeText(updatedAt) || new Date().toISOString(),
-    branches: cloneBranches(branchList),
+    branches: Array.isArray(branchList) ? branchList : [],
   };
 }
 
@@ -1689,6 +1689,7 @@ const state = {
   createStatus: "",
   actionStatus: "",
   isImporting: false,
+  isSaving: false,
   ignoreNodeClickUntil: 0,
 };
 
@@ -1743,6 +1744,7 @@ const elements = {
   profileEditButton: document.getElementById("profileEditButton"),
   profileEditor: document.getElementById("profileEditor"),
   profileForm: document.getElementById("profileForm"),
+  profileSaveButton: document.getElementById("profileSaveButton"),
   editLastName: document.getElementById("editLastName"),
   editFirstName: document.getElementById("editFirstName"),
   editTitle: document.getElementById("editTitle"),
@@ -1840,6 +1842,13 @@ async function saveBranches() {
     return true;
   }
 
+  const controller = typeof AbortController === "function" ? new AbortController() : null;
+  const timeoutId = controller
+    ? window.setTimeout(() => {
+        controller.abort();
+      }, 12000)
+    : 0;
+
   try {
     const response = await window.fetch(SERVER_DATA_ENDPOINT, {
       method: "PUT",
@@ -1847,6 +1856,7 @@ async function saveBranches() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
+      signal: controller?.signal,
     });
 
     const result = await response.json().catch(() => null);
@@ -1864,6 +1874,10 @@ async function saveBranches() {
     state.editStatus = "共有データの保存に失敗しました。";
     setActionStatus("共有保存に失敗しました。サーバー接続を確認してください。");
     return false;
+  } finally {
+    if (timeoutId) {
+      window.clearTimeout(timeoutId);
+    }
   }
 }
 
@@ -1945,7 +1959,7 @@ function applyServerState(serverState) {
 async function syncBranchesFromServer(options = {}) {
   const { force = false } = options;
 
-  if (persistence.mode !== "server" || syncInFlight || state.isImporting) {
+  if (persistence.mode !== "server" || syncInFlight || state.isImporting || state.isSaving) {
     return;
   }
 
@@ -3063,6 +3077,10 @@ function populateEditForm(node) {
     elements.editPhoto.value = "";
   }
   elements.editStatus.textContent = state.editStatus;
+  if (elements.profileSaveButton) {
+    elements.profileSaveButton.disabled = state.isSaving;
+    elements.profileSaveButton.textContent = state.isSaving ? "保存中..." : "保存";
+  }
 
   if (node.kind === "person") {
     toggleEditFormFields("person");
@@ -3136,6 +3154,10 @@ function updateNode(branchId, nodeId, updater) {
 async function handleProfileSave(event) {
   event.preventDefault();
 
+  if (state.isSaving) {
+    return;
+  }
+
   const branch = getActiveBranch();
   if (!branch) {
     return;
@@ -3157,48 +3179,59 @@ async function handleProfileSave(event) {
     return;
   }
 
-  const updates = {
-    name: displayName,
-    title: "",
-    titles: [],
-    department: elements.editDepartment.value.trim() || selected.department,
-  };
-
-  const selectedTitles = collectRoleValues(elements.editTitle, elements.editTitleSecondary);
-  updates.title = selectedTitles[0] || "";
-  updates.titles = selectedTitles;
-
-  if (selected.kind === "person") {
-    updates.lastName = lastName;
-    updates.firstName = firstName;
-    updates.age = normalizeNumericField(elements.editAge.value);
-    updates.joinYear = normalizeNumericField(elements.editJoinYear.value);
-    updates.tenure = normalizeNumericField(elements.editTenure.value);
-    updates.historyEntries = collectHistoryEntries(elements.editHistoryRows);
-    const nextPhoto = await readImageFileAsDataUrl(elements.editPhoto?.files?.[0]);
-    updates.photo = nextPhoto || selected.photo || "";
-  }
-
-  updateNode(branch.id, selected.id, updates);
-
-  if (selected.kind === "person") {
-    const targetUnit = findUnitByLabel(branch, updates.department);
-    const targetParent = resolveParentForPersonPlacement(branch, targetUnit, {
-      ...selected,
-      ...updates,
-    });
-
-    if (targetParent) {
-      moveNodeToParent(branch, selected.id, targetParent.id);
-    }
-  }
-
-  const saved = await saveBranches();
-  state.editStatus = saved ? "" : "共有保存に失敗しました。";
-  if (saved) {
-    clearActionStatus();
-  }
+  state.isSaving = true;
+  state.editStatus = "保存中...";
   render();
+
+  try {
+    const updates = {
+      name: displayName,
+      title: "",
+      titles: [],
+      department: elements.editDepartment.value.trim() || selected.department,
+    };
+
+    const selectedTitles = collectRoleValues(elements.editTitle, elements.editTitleSecondary);
+    updates.title = selectedTitles[0] || "";
+    updates.titles = selectedTitles;
+
+    if (selected.kind === "person") {
+      updates.lastName = lastName;
+      updates.firstName = firstName;
+      updates.age = normalizeNumericField(elements.editAge.value);
+      updates.joinYear = normalizeNumericField(elements.editJoinYear.value);
+      updates.tenure = normalizeNumericField(elements.editTenure.value);
+      updates.historyEntries = collectHistoryEntries(elements.editHistoryRows);
+      const nextPhoto = await readImageFileAsDataUrl(elements.editPhoto?.files?.[0]);
+      updates.photo = nextPhoto || selected.photo || "";
+    }
+
+    updateNode(branch.id, selected.id, updates);
+
+    if (selected.kind === "person") {
+      const targetUnit = findUnitByLabel(branch, updates.department);
+      const targetParent = resolveParentForPersonPlacement(branch, targetUnit, {
+        ...selected,
+        ...updates,
+      });
+
+      if (targetParent) {
+        moveNodeToParent(branch, selected.id, targetParent.id);
+      }
+    }
+
+    const saved = await saveBranches();
+    state.editStatus = saved ? "" : "共有保存に失敗しました。";
+    if (saved) {
+      clearActionStatus();
+    }
+  } catch {
+    state.editStatus = "保存に失敗しました。";
+    setActionStatus("保存に失敗しました。");
+  } finally {
+    state.isSaving = false;
+    render();
+  }
 }
 
 async function handleCreatePerson(event) {
