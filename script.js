@@ -41,6 +41,7 @@ const DEFAULT_BRANCHES = [
         kind: "person",
         name: "堀内 芳人",
         title: "副支店長",
+        titles: ["副支店長", "部長"],
         department: "支店統括",
         age: "48歳",
         tenure: "22年",
@@ -70,7 +71,7 @@ const DEFAULT_BRANCHES = [
         history: "",
         hobbies: [],
         tags: [],
-        reports: ["office-101", "office-102", "office-103", "office-104", "office-105"],
+        reports: ["office-101", "office-102", "office-103", "office-104", "office-105", "office-106"],
       },
       {
         id: "office-101",
@@ -263,6 +264,16 @@ const DEFAULT_BRANCHES = [
         history: "",
         hobbies: [],
         tags: [],
+        reports: [],
+      },
+      {
+        id: "office-106",
+        kind: "unit",
+        name: "南多摩",
+        title: "",
+        department: "業務1部",
+        description: "業務1部配下です。",
+        tags: ["組織"],
         reports: [],
       },
       {
@@ -1099,13 +1110,13 @@ function buildNumericSelectOptions(values, currentValue = "", emptyLabel = "未�
 
 function buildAffiliation(branch, node) {
   if (node?.kind === "person") {
+    if (node?.department && node.department !== branch?.name) {
+      return node.department;
+    }
+
     const office = findOfficeForNode(branch, node.id);
     if (office?.name && office.name !== branch?.name) {
       return office.name;
-    }
-
-    if (node?.department && node.department !== branch?.name) {
-      return node.department;
     }
 
     return branch?.name ?? "";
@@ -1256,8 +1267,18 @@ function migrateEastJapanBranch(branch) {
 
     dept1.reports = [dept1Manager.id, ...officeIds];
     dept1Manager.title = "部長";
+    dept1Manager.titles = ["部長"];
     dept1Manager.department = "業務1部";
     dept1Manager.reports = [];
+  }
+
+  const viceManager = branch.nodes.find((node) => node.id === "east-japan-2");
+  if (viceManager) {
+    viceManager.name = "堀内 芳人";
+    viceManager.lastName = "堀内";
+    viceManager.firstName = "芳人";
+    viceManager.title = "副支店長";
+    viceManager.titles = ["副支店長", "部長"];
   }
 
   upsertBranchNode(branch, {
@@ -1267,6 +1288,7 @@ function migrateEastJapanBranch(branch) {
     lastName: "藤原",
     firstName: "邦康",
     title: "部長",
+    titles: ["部長"],
     department: "業務2部",
     age: "",
     joinYear: "",
@@ -1281,10 +1303,11 @@ function migrateEastJapanBranch(branch) {
   upsertBranchNode(branch, {
     id: "dept-3-manager",
     kind: "person",
-    name: "堀内 義人",
+    name: "堀内 芳人",
     lastName: "堀内",
-    firstName: "義人",
+    firstName: "芳人",
     title: "部長",
+    titles: ["部長", "副支店長"],
     department: "業務3部",
     age: "",
     joinYear: "",
@@ -1304,6 +1327,23 @@ function migrateEastJapanBranch(branch) {
   const dept3 = branch.nodes.find((node) => node.id === "dept-3");
   if (dept3) {
     dept3.reports = ["dept-3-manager", ...dept3.reports.filter((reportId) => reportId !== "dept-3-manager")];
+  }
+
+  if (!branch.nodes.some((node) => node.id === "office-106")) {
+    upsertBranchNode(branch, {
+      id: "office-106",
+      kind: "unit",
+      name: "南多摩",
+      title: "",
+      department: "業務1部",
+      description: "業務1部配下です。",
+      tags: ["組織"],
+      reports: [],
+    });
+  }
+
+  if (dept1) {
+    dept1.reports = [...new Set([...dept1.reports, "office-106"])];
   }
 
   return branch;
@@ -2832,6 +2872,19 @@ async function handleProfileSave(event) {
   }
 
   updateNode(branch.id, selected.id, updates);
+
+  if (selected.kind === "person") {
+    const targetUnit = findUnitByLabel(branch, updates.department);
+    const targetParent = resolveParentForPersonPlacement(branch, targetUnit, {
+      ...selected,
+      ...updates,
+    });
+
+    if (targetParent) {
+      moveNodeToParent(branch, selected.id, targetParent.id);
+    }
+  }
+
   const saved = await saveBranches();
   state.editStatus = saved ? "" : "共有保存に失敗しました。";
   if (saved) {
@@ -3176,6 +3229,41 @@ function findOfficeFromRow(branch, row, existingNode = null) {
   return existingNode
     ? findOfficeForNode(branch, existingNode.id) ?? findCreateTargetForNode(branch, existingNode.id)
     : null;
+}
+
+function findUnitByLabel(branch, value) {
+  const label = normalizeText(value);
+  if (!label) {
+    return null;
+  }
+
+  if (label === branch.name) {
+    return nodeMap(branch).get(branch.rootId) ?? null;
+  }
+
+  return branch.nodes.find((node) => node.kind === "unit" && node.name === label) ?? null;
+}
+
+function resolveParentForPersonPlacement(branch, targetUnit, personLikeNode) {
+  if (!targetUnit) {
+    return null;
+  }
+
+  const inlineLeader = getInlineUnitLeader(targetUnit, nodeMap(branch));
+  const roleText = getRoleText(personLikeNode);
+
+  if (!inlineLeader) {
+    return targetUnit;
+  }
+
+  if (
+    normalizeText(inlineLeader.name) === normalizeText(personLikeNode?.name) ||
+    /(所長|署長|部長|支店長|副支店長)/.test(roleText)
+  ) {
+    return targetUnit;
+  }
+
+  return inlineLeader;
 }
 
 function findExistingPersonForImport(branch, targetUnit, displayName, lastName, firstName) {

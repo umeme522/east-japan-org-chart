@@ -37,6 +37,10 @@
           "kind": "person",
           "name": "堀内 芳人",
           "title": "副支店長",
+          "titles": [
+            "副支店長",
+            "部長"
+          ],
           "department": "支店統括",
           "age": "48歳",
           "tenure": "22年",
@@ -72,15 +76,19 @@
             "office-102",
             "office-103",
             "office-104",
-            "office-105"
+            "office-105",
+            "office-106"
           ]
         },
         {
           "id": "dept-1-manager",
           "kind": "person",
           "name": "西原 達也",
-          "title": "??",
-          "department": "??1?",
+          "title": "部長",
+          "titles": [
+            "部長"
+          ],
+          "department": "業務1部",
           "age": "",
           "tenure": "",
           "history": "",
@@ -267,6 +275,18 @@
           "reports": [
             "office-105-manaka"
           ]
+        },
+        {
+          "id": "office-106",
+          "kind": "unit",
+          "name": "南多摩",
+          "title": "",
+          "department": "業務1部",
+          "description": "業務1部配下です。",
+          "tags": [
+            "組織"
+          ],
+          "reports": []
         },
         {
           "id": "office-105-manaka",
@@ -906,11 +926,14 @@
         {
           "id": "dept-2-manager",
           "kind": "person",
-          "name": "?? ??",
-          "lastName": "??",
-          "firstName": "??",
-          "title": "??",
-          "department": "??2?",
+          "name": "藤原 邦康",
+          "lastName": "藤原",
+          "firstName": "邦康",
+          "title": "部長",
+          "titles": [
+            "部長"
+          ],
+          "department": "業務2部",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -923,11 +946,15 @@
         {
           "id": "dept-3-manager",
           "kind": "person",
-          "name": "?? ??",
-          "lastName": "??",
-          "firstName": "??",
-          "title": "??",
-          "department": "??3?",
+          "name": "堀内 芳人",
+          "lastName": "堀内",
+          "firstName": "芳人",
+          "title": "部長",
+          "titles": [
+            "部長",
+            "副支店長"
+          ],
+          "department": "業務3部",
           "age": "",
           "joinYear": "",
           "tenure": "",

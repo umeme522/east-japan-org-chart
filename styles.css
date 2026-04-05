@@ -1821,9 +1821,18 @@ textarea {
     gap: 6px;
   }
 
+  .node-card.office-inline-stacked .node-inline-row.has-leader {
+    grid-template-columns: minmax(0, 1fr) minmax(84px, auto);
+    gap: 6px;
+  }
+
   .node-inline-leader {
     min-height: 28px;
     padding: 0 6px;
+  }
+
+  .node-card.office-inline-stacked .node-inline-leader {
+    width: auto;
   }
 
   .node-inline-leader-role {
