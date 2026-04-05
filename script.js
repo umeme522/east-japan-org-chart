@@ -1447,23 +1447,204 @@ function looksCorruptedBranches(branchList = []) {
   return mojibakeCount >= 8;
 }
 
-function shouldPreferBundledData(localUpdatedAt = "") {
-  return parseUpdatedAt(localUpdatedAt) < parseUpdatedAt(BUNDLED_UPDATED_AT);
+function hasMeaningfulText(value) {
+  return normalizeText(value) !== "";
+}
+
+function looksCorruptedText(value) {
+  return /[?？�]{2,}/.test(normalizeText(value));
+}
+
+function mergeTextValue(primaryValue, localValue, options = {}) {
+  const { preferLocal = false } = options;
+  const primaryText = normalizeText(primaryValue);
+  const localText = normalizeText(localValue);
+
+  if (looksCorruptedText(primaryText) && hasMeaningfulText(localText)) {
+    return localText;
+  }
+
+  if (looksCorruptedText(localText)) {
+    return primaryText;
+  }
+
+  if (preferLocal && hasMeaningfulText(localText)) {
+    return localText;
+  }
+
+  return primaryText || localText;
+}
+
+function mergeStringArrayValue(primaryValue, localValue, options = {}) {
+  const { preferLocal = false } = options;
+  const primaryItems = normalizeStringArray(primaryValue);
+  const localItems = normalizeStringArray(localValue);
+
+  if (preferLocal && localItems.length > 0) {
+    return localItems;
+  }
+
+  return primaryItems.length > 0 ? primaryItems : localItems;
+}
+
+function mergeHistoryEntriesValue(primaryValue, localValue, options = {}) {
+  const { preferLocal = false } = options;
+  const primaryItems = normalizeHistoryEntries(primaryValue);
+  const localItems = normalizeHistoryEntries(localValue);
+
+  if (preferLocal && localItems.length > 0) {
+    return localItems;
+  }
+
+  return primaryItems.length > 0 ? primaryItems : localItems;
+}
+
+function mergeTitlesValue(primaryNode, localNode, options = {}) {
+  const { preferLocal = false } = options;
+  const primaryTitles = getNodeTitles(primaryNode);
+  const localTitles = getNodeTitles(localNode);
+
+  if (preferLocal && localTitles.length > 0 && !looksCorruptedText(localTitles.join(" "))) {
+    return localTitles;
+  }
+
+  if (primaryTitles.length > 0 && !looksCorruptedText(primaryTitles.join(" "))) {
+    return primaryTitles;
+  }
+
+  return localTitles;
+}
+
+function mergeReportIds(primaryReports = [], localReports = [], preferLocal = false) {
+  const merged = [];
+  const sources = preferLocal
+    ? [normalizeReports(localReports), normalizeReports(primaryReports)]
+    : [normalizeReports(primaryReports), normalizeReports(localReports)];
+
+  sources.forEach((reportIds) => {
+    reportIds.forEach((reportId) => {
+      if (!merged.includes(reportId)) {
+        merged.push(reportId);
+      }
+    });
+  });
+
+  return merged;
+}
+
+function mergeNormalizedNode(primaryNode, localNode, options = {}) {
+  const { preferLocalEditable = false } = options;
+
+  if (!primaryNode) {
+    return cloneBranches([localNode])[0] ?? null;
+  }
+
+  if (!localNode) {
+    return cloneBranches([primaryNode])[0] ?? null;
+  }
+
+  const merged = cloneBranches([primaryNode])[0];
+  merged.kind = primaryNode.kind;
+  merged.reports = mergeReportIds(primaryNode.reports, localNode.reports, preferLocalEditable);
+
+  if (merged.kind === "person") {
+    merged.lastName = mergeTextValue(primaryNode.lastName, localNode.lastName, { preferLocal: preferLocalEditable });
+    merged.firstName = mergeTextValue(primaryNode.firstName, localNode.firstName, { preferLocal: preferLocalEditable });
+    merged.name = buildDisplayName(merged.lastName, merged.firstName, mergeTextValue(primaryNode.name, localNode.name, { preferLocal: preferLocalEditable }));
+    merged.department = mergeTextValue(primaryNode.department, localNode.department, { preferLocal: preferLocalEditable });
+    merged.photo = mergeTextValue(primaryNode.photo, localNode.photo, { preferLocal: preferLocalEditable });
+    merged.age = mergeTextValue(primaryNode.age, localNode.age, { preferLocal: preferLocalEditable });
+    merged.joinYear = mergeTextValue(primaryNode.joinYear, localNode.joinYear, { preferLocal: preferLocalEditable });
+    merged.tenure = mergeTextValue(primaryNode.tenure, localNode.tenure, { preferLocal: preferLocalEditable });
+    merged.historyEntries = mergeHistoryEntriesValue(primaryNode.historyEntries, localNode.historyEntries, { preferLocal: preferLocalEditable });
+    merged.hobbies = mergeStringArrayValue(primaryNode.hobbies, localNode.hobbies, { preferLocal: preferLocalEditable });
+    merged.tags = mergeStringArrayValue(primaryNode.tags, localNode.tags, { preferLocal: preferLocalEditable });
+    merged.titles = mergeTitlesValue(primaryNode, localNode, { preferLocal: preferLocalEditable });
+    merged.title = merged.titles[0] || "";
+    return merged;
+  }
+
+  merged.name = mergeTextValue(primaryNode.name, localNode.name);
+  merged.title = mergeTextValue(primaryNode.title, localNode.title);
+  merged.department = mergeTextValue(primaryNode.department, localNode.department);
+  merged.description = mergeTextValue(primaryNode.description, localNode.description);
+  merged.tags = mergeStringArrayValue(primaryNode.tags, localNode.tags);
+  return merged;
+}
+
+function mergeBranchData(primaryBranch, localBranch, options = {}) {
+  if (!primaryBranch) {
+    return cloneBranches([localBranch])[0] ?? null;
+  }
+
+  if (!localBranch) {
+    return cloneBranches([primaryBranch])[0] ?? null;
+  }
+
+  const merged = cloneBranches([primaryBranch])[0];
+  const primaryNodeMap = new Map(primaryBranch.nodes.map((node) => [node.id, node]));
+  const localNodeMap = new Map(localBranch.nodes.map((node) => [node.id, node]));
+  const mergedNodes = [];
+
+  primaryBranch.nodes.forEach((primaryNode) => {
+    mergedNodes.push(mergeNormalizedNode(primaryNode, localNodeMap.get(primaryNode.id), options));
+  });
+
+  localBranch.nodes.forEach((localNode) => {
+    if (!primaryNodeMap.has(localNode.id)) {
+      mergedNodes.push(cloneBranches([localNode])[0]);
+    }
+  });
+
+  const validIds = new Set(mergedNodes.map((node) => node.id));
+  mergedNodes.forEach((node) => {
+    const primaryNode = primaryNodeMap.get(node.id);
+    const localNode = localNodeMap.get(node.id);
+    node.reports = mergeReportIds(primaryNode?.reports, localNode?.reports, options.preferLocalEditable).filter(
+      (reportId) => validIds.has(reportId) && reportId !== node.id
+    );
+  });
+
+  merged.name = mergeTextValue(primaryBranch.name, localBranch.name);
+  merged.location = mergeTextValue(primaryBranch.location, localBranch.location);
+  merged.division = mergeTextValue(primaryBranch.division, localBranch.division);
+  merged.overview = mergeTextValue(primaryBranch.overview, localBranch.overview);
+  merged.rootId = validIds.has(primaryBranch.rootId) ? primaryBranch.rootId : localBranch.rootId;
+  merged.nodes = mergedNodes;
+  return merged;
+}
+
+function mergeBranchLists(primaryBranches = [], localBranches = [], options = {}) {
+  const localBranchMap = new Map((localBranches ?? []).map((branch) => [branch.id, branch]));
+  const mergedBranches = (primaryBranches ?? []).map((primaryBranch) =>
+    mergeBranchData(primaryBranch, localBranchMap.get(primaryBranch.id), options)
+  );
+
+  (localBranches ?? []).forEach((localBranch) => {
+    if (!mergedBranches.some((branch) => branch?.id === localBranch.id)) {
+      mergedBranches.push(cloneBranches([localBranch])[0]);
+    }
+  });
+
+  return mergedBranches.filter(Boolean);
 }
 
 const storedPayload = loadStoredPayload();
 const bundledBranches = loadBranches(DEFAULT_BRANCHES);
 const storedBranches = loadBranches(storedPayload);
-const storedLooksCorrupted = looksCorruptedBranches(storedBranches);
-let branches = storedLooksCorrupted ? bundledBranches : storedBranches;
-if (!storedLooksCorrupted && window.location.protocol !== "file:" && shouldPreferBundledData(storedPayload?.updatedAt)) {
+const storedUpdatedAt = normalizeText(storedPayload?.updatedAt);
+const preferStoredEditable = parseUpdatedAt(storedUpdatedAt) >= parseUpdatedAt(BUNDLED_UPDATED_AT);
+let branches = mergeBranchLists(bundledBranches, storedBranches, {
+  preferLocalEditable: preferStoredEditable,
+});
+if (!branches.length) {
   branches = bundledBranches;
 }
 const initialBranch = branches[0] ?? { id: "", rootId: "" };
 const persistence = {
   mode: SERVER_DATA_ENDPOINT ? "server" : "local",
   serverReachable: false,
-  localUpdatedAt: storedLooksCorrupted ? BUNDLED_UPDATED_AT : normalizeText(storedPayload?.updatedAt),
+  localUpdatedAt: storedUpdatedAt || BUNDLED_UPDATED_AT,
   serverUpdatedAt: "",
 };
 
@@ -1693,8 +1874,11 @@ function applyServerState(serverState) {
   const previousSearchTerm = state.searchTerm;
   const knownNodeIds = new Set(serverState.branches.flatMap((branch) => branch.nodes.map((node) => node.id)));
 
-  branches = cloneBranches(serverState.branches);
-  writeStorageSnapshot(branches, serverState.updatedAt);
+  const preferLocalEditable = parseUpdatedAt(persistence.localUpdatedAt) > parseUpdatedAt(serverState.updatedAt);
+  const mergedUpdatedAt = preferLocalEditable ? persistence.localUpdatedAt || serverState.updatedAt : serverState.updatedAt;
+  branches = mergeBranchLists(serverState.branches, branches, { preferLocalEditable });
+  writeStorageSnapshot(branches, mergedUpdatedAt);
+  persistence.localUpdatedAt = normalizeText(mergedUpdatedAt);
 
   const branch = getBranch(previousBranchId) ?? branches[0];
   if (!branch) {
@@ -1747,7 +1931,8 @@ async function syncBranchesFromServer(options = {}) {
 
     if (
       looksCorruptedBranches(branches) ||
-      parseUpdatedAt(serverState.updatedAt) > parseUpdatedAt(persistence.localUpdatedAt)
+      parseUpdatedAt(serverState.updatedAt) > parseUpdatedAt(persistence.localUpdatedAt) ||
+      parseUpdatedAt(persistence.localUpdatedAt) > parseUpdatedAt(serverState.updatedAt)
     ) {
       applyServerState(serverState);
     }
@@ -3594,10 +3779,6 @@ function fitOrgChartToFrame() {
 }
 
 async function initializeApp() {
-  if (storedLooksCorrupted) {
-    writeStorageSnapshot(branches, BUNDLED_UPDATED_AT);
-  }
-
   render();
 
   if (persistence.mode !== "server") {
@@ -3614,12 +3795,6 @@ async function initializeApp() {
     setActionStatus("");
   } catch {
     persistence.serverReachable = false;
-    if (shouldPreferBundledData(persistence.localUpdatedAt)) {
-      branches = bundledBranches;
-      resetView(branches[0]?.id);
-      writeStorageSnapshot(branches, BUNDLED_UPDATED_AT);
-      render();
-    }
     setActionStatus("");
     renderActionStatus();
   }
