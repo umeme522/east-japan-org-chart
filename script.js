@@ -26,8 +26,10 @@ const DEFAULT_BRANCHES = [
       {
         id: "east-japan-1",
         kind: "person",
-        name: "木暮 知之",
-        title: "東日本支店長",
+        name: "大久保",
+        lastName: "大久保",
+        firstName: "",
+        title: "支店長",
         department: "支店統括",
         age: "52歳",
         tenure: "28年",
