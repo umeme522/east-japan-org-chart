@@ -3059,8 +3059,12 @@ function renderProfile(branch) {
     elements.profileDescriptionValue.textContent = "";
   }
 
-  populateEditForm(selected);
-  populateCreateForm(branch, selected);
+  if (elements.profileEditor?.open) {
+    populateEditForm(selected);
+  }
+  if (elements.profileCreator?.open) {
+    populateCreateForm(branch, selected);
+  }
 }
 
 function populateEditForm(node) {
@@ -3188,6 +3192,7 @@ async function handleProfileSave(event) {
   state.isSaving = true;
   state.editStatus = "保存中...";
   render();
+  await waitForNextPaint();
 
   try {
     const updates = {
