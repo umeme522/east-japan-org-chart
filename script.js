@@ -482,6 +482,12 @@ const DEFAULT_BRANCHES = [
         name: "業務3部",
         title: "",
         department: "東日本支店",
+        managerName: "堀内 芳人",
+        managerLastName: "堀内",
+        managerFirstName: "芳人",
+        managerTitle: "部長",
+        managerTitles: ["部長", "副支店長"],
+        managerLinkedId: "east-japan-2",
         description: "副支店長配下の業務3部です。",
         tags: ["組織"],
         reports: ["office-301", "office-302", "office-303", "office-304", "office-305", "office-306"],
@@ -990,6 +996,27 @@ function getInlineUnitLeader(node, nodes) {
     return null;
   }
 
+  if (node?.managerName) {
+    const linkedNode = normalizeText(node.managerLinkedId) ? nodes.get(node.managerLinkedId) : null;
+    const managerLastName = normalizeText(node.managerLastName);
+    const managerFirstName = normalizeText(node.managerFirstName);
+    const managerName = buildDisplayName(managerLastName, managerFirstName, node.managerName);
+    const managerTitles = normalizeTitles(node.managerTitles, node.managerTitle);
+
+    return {
+      id: linkedNode?.id || `${node.id}-manager`,
+      linkedNodeId: linkedNode?.id || "",
+      kind: "person",
+      name: managerName,
+      lastName: managerLastName,
+      firstName: managerFirstName,
+      title: managerTitles[0] || "",
+      titles: managerTitles,
+      department: node.name,
+      reports: linkedNode?.reports ?? [],
+    };
+  }
+
   if (isDepartmentUnitNode(node)) {
     return (
       node.reports
@@ -1162,6 +1189,12 @@ function normalizeNode(node, index) {
     normalized.photo = normalizeText(node?.photo);
   } else {
     normalized.description = normalizeText(node?.description);
+    normalized.managerName = normalizeText(node?.managerName);
+    normalized.managerLastName = normalizeText(node?.managerLastName);
+    normalized.managerFirstName = normalizeText(node?.managerFirstName);
+    normalized.managerTitle = normalizeText(node?.managerTitle);
+    normalized.managerTitles = normalizeTitles(node?.managerTitles, node?.managerTitle);
+    normalized.managerLinkedId = normalizeText(node?.managerLinkedId);
   }
 
   return normalized;
@@ -1300,25 +1333,6 @@ function migrateEastJapanBranch(branch) {
     reports: [],
   });
 
-  upsertBranchNode(branch, {
-    id: "dept-3-manager",
-    kind: "person",
-    name: "堀内 芳人",
-    lastName: "堀内",
-    firstName: "芳人",
-    title: "部長",
-    titles: ["部長", "副支店長"],
-    department: "業務3部",
-    age: "",
-    joinYear: "",
-    tenure: "",
-    history: "",
-    historyEntries: [],
-    hobbies: [],
-    tags: [],
-    reports: [],
-  });
-
   const dept2 = branch.nodes.find((node) => node.id === "dept-2");
   if (dept2) {
     dept2.reports = ["dept-2-manager", ...dept2.reports.filter((reportId) => reportId !== "dept-2-manager")];
@@ -1326,8 +1340,16 @@ function migrateEastJapanBranch(branch) {
 
   const dept3 = branch.nodes.find((node) => node.id === "dept-3");
   if (dept3) {
-    dept3.reports = ["dept-3-manager", ...dept3.reports.filter((reportId) => reportId !== "dept-3-manager")];
+    dept3.managerName = "堀内 芳人";
+    dept3.managerLastName = "堀内";
+    dept3.managerFirstName = "芳人";
+    dept3.managerTitle = "部長";
+    dept3.managerTitles = ["部長", "副支店長"];
+    dept3.managerLinkedId = "east-japan-2";
+    dept3.reports = dept3.reports.filter((reportId) => reportId !== "dept-3-manager");
   }
+
+  branch.nodes = branch.nodes.filter((node) => node.id !== "dept-3-manager");
 
   if (!branch.nodes.some((node) => node.id === "office-106")) {
     upsertBranchNode(branch, {
@@ -1569,6 +1591,15 @@ function mergeNormalizedNode(primaryNode, localNode, options = {}) {
   merged.department = mergeTextValue(primaryNode.department, localNode.department);
   merged.description = mergeTextValue(primaryNode.description, localNode.description);
   merged.tags = mergeStringArrayValue(primaryNode.tags, localNode.tags);
+  merged.managerName = mergeTextValue(primaryNode.managerName, localNode.managerName);
+  merged.managerLastName = mergeTextValue(primaryNode.managerLastName, localNode.managerLastName);
+  merged.managerFirstName = mergeTextValue(primaryNode.managerFirstName, localNode.managerFirstName);
+  merged.managerTitle = mergeTextValue(primaryNode.managerTitle, localNode.managerTitle);
+  merged.managerTitles = mergeTitlesValue(
+    { title: primaryNode.managerTitle, titles: primaryNode.managerTitles },
+    { title: localNode.managerTitle, titles: localNode.managerTitles }
+  );
+  merged.managerLinkedId = mergeTextValue(primaryNode.managerLinkedId, localNode.managerLinkedId);
   return merged;
 }
 
@@ -2272,6 +2303,41 @@ function setSelectOptions(select, options, preferredValue = "") {
   return selectedValue;
 }
 
+function buildAffiliationOptions(branch, preferredValue = "") {
+  if (!branch) {
+    return [];
+  }
+
+  const seen = new Set();
+  const options = [];
+  const pushOption = (value, label = value) => {
+    const normalizedValue = normalizeText(value);
+    if (!normalizedValue || seen.has(normalizedValue)) {
+      return;
+    }
+    seen.add(normalizedValue);
+    options.push({ value: normalizedValue, label: normalizeText(label) || normalizedValue });
+  };
+
+  pushOption(branch.name, branch.name);
+  pushOption("支店統括", "支店統括");
+  branch.nodes.forEach((node) => {
+    if (node.kind === "unit") {
+      pushOption(node.name, node.name);
+    }
+  });
+
+  const normalizedPreferredValue = normalizeText(preferredValue);
+  if (normalizedPreferredValue && !seen.has(normalizedPreferredValue)) {
+    options.splice(1, 0, {
+      value: normalizedPreferredValue,
+      label: normalizedPreferredValue,
+    });
+  }
+
+  return options;
+}
+
 function syncCreateParentOptions(branch, targetId, preferredParentId = "") {
   const targets = createTargetNodes(branch);
   const fallbackTarget = targets[0] ?? null;
@@ -2283,8 +2349,7 @@ function syncCreateParentOptions(branch, targetId, preferredParentId = "") {
       elements.createParent.innerHTML = "";
     }
     if (elements.createDepartment) {
-      elements.createDepartment.value = "";
-      elements.createDepartment.placeholder = "所属";
+      setSelectOptions(elements.createDepartment, [{ value: "", label: "所属" }], "");
     }
     if (elements.createParentHint) {
       elements.createParentHint.textContent = "";
@@ -2302,8 +2367,7 @@ function syncCreateParentOptions(branch, targetId, preferredParentId = "") {
     elements.createOffice.value = targetNode.id;
   }
   if (elements.createDepartment) {
-    elements.createDepartment.value = departmentName;
-    elements.createDepartment.placeholder = departmentName || "所属";
+    setSelectOptions(elements.createDepartment, buildAffiliationOptions(branch, departmentName), departmentName);
   }
   if (elements.createParentHint) {
     elements.createParentHint.textContent = "";
@@ -2392,7 +2456,7 @@ function handleNodeClick(event, branchId, nodeId) {
   const nodes = nodeMap(branch);
   const inlineLeader = getInlineUnitLeader(node, nodes);
   if (inlineLeader && event?.target?.closest(".node-inline-leader")) {
-    selectNode(branchId, inlineLeader.id);
+    selectNode(branchId, inlineLeader.linkedNodeId || inlineLeader.id);
     return;
   }
 
@@ -2983,6 +3047,7 @@ function renderProfile(branch) {
 }
 
 function populateEditForm(node) {
+  const branch = getActiveBranch();
   const nameParts = splitNameParts(node.name, node.lastName, node.firstName);
   elements.editLastName.value = nameParts.lastName;
   elements.editFirstName.value = nameParts.firstName;
@@ -2993,7 +3058,7 @@ function populateEditForm(node) {
     elements.editAddTitleButton,
     node.titles ?? node.title
   );
-  elements.editDepartment.value = node.department ?? "";
+  setSelectOptions(elements.editDepartment, buildAffiliationOptions(branch, node.department), node.department ?? "");
   if (elements.editPhoto) {
     elements.editPhoto.value = "";
   }
@@ -3023,7 +3088,7 @@ function clearCreateFormFields() {
   populateCreateSelectFields();
   setSecondaryRoleVisibility(elements.createTitleSecondaryField, elements.createAddTitleButton, false);
   if (elements.createDepartment) {
-    elements.createDepartment.value = "";
+    setSelectOptions(elements.createDepartment, [{ value: "", label: "所属" }], "");
   }
 }
 
@@ -3480,7 +3545,7 @@ function findUnitByLabel(branch, value) {
     return null;
   }
 
-  if (label === branch.name) {
+  if (label === branch.name || label === "支店統括") {
     return nodeMap(branch).get(branch.rootId) ?? null;
   }
 

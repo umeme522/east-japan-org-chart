@@ -584,12 +584,20 @@
           "name": "業務3部",
           "title": "",
           "department": "東日本支店",
+          "managerName": "堀内 芳人",
+          "managerLastName": "堀内",
+          "managerFirstName": "芳人",
+          "managerTitle": "部長",
+          "managerTitles": [
+            "部長",
+            "副支店長"
+          ],
+          "managerLinkedId": "east-japan-2",
           "description": "副支店長配下の業務3部です。",
           "tags": [
             "組織"
           ],
           "reports": [
-            "dept-3-manager",
             "office-301",
             "office-302",
             "office-303",
@@ -934,27 +942,6 @@
             "部長"
           ],
           "department": "業務2部",
-          "age": "",
-          "joinYear": "",
-          "tenure": "",
-          "history": "",
-          "historyEntries": [],
-          "hobbies": [],
-          "tags": [],
-          "reports": []
-        },
-        {
-          "id": "dept-3-manager",
-          "kind": "person",
-          "name": "堀内 芳人",
-          "lastName": "堀内",
-          "firstName": "芳人",
-          "title": "部長",
-          "titles": [
-            "部長",
-            "副支店長"
-          ],
-          "department": "業務3部",
           "age": "",
           "joinYear": "",
           "tenure": "",
