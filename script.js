@@ -3230,7 +3230,6 @@ async function handleProfileSave(event) {
     state.editStatus = saved ? "" : "共有保存に失敗しました。";
     if (saved) {
       clearActionStatus();
-      handleCloseEditPanel();
     }
   } catch {
     state.editStatus = "保存に失敗しました。";
@@ -3238,11 +3237,6 @@ async function handleProfileSave(event) {
   } finally {
     state.isSaving = false;
     render();
-    if (persistence.mode === "server") {
-      window.setTimeout(() => {
-        syncBranchesFromServer({ force: true });
-      }, 0);
-    }
   }
 }
 
