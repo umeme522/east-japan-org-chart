@@ -1745,6 +1745,7 @@ const elements = {
   profileEditor: document.getElementById("profileEditor"),
   profileForm: document.getElementById("profileForm"),
   profileSaveButton: document.getElementById("profileSaveButton"),
+  deleteProfileButton: document.getElementById("deleteProfileButton"),
   editLastName: document.getElementById("editLastName"),
   editFirstName: document.getElementById("editFirstName"),
   editTitle: document.getElementById("editTitle"),
@@ -3081,6 +3082,9 @@ function populateEditForm(node) {
     elements.profileSaveButton.disabled = state.isSaving;
     elements.profileSaveButton.textContent = state.isSaving ? "保存中..." : "保存";
   }
+  if (elements.deleteProfileButton) {
+    elements.deleteProfileButton.disabled = state.isSaving || !branch || node.id === branch.rootId;
+  }
 
   if (node.kind === "person") {
     toggleEditFormFields("person");
@@ -3228,6 +3232,56 @@ async function handleProfileSave(event) {
   } catch {
     state.editStatus = "保存に失敗しました。";
     setActionStatus("保存に失敗しました。");
+  } finally {
+    state.isSaving = false;
+    render();
+  }
+}
+
+async function handleDeleteProfile() {
+  if (state.isSaving) {
+    return;
+  }
+
+  const branch = getActiveBranch();
+  if (!branch) {
+    return;
+  }
+
+  const nodes = nodeMap(branch);
+  const selected = nodes.get(state.selectedNodeId);
+  if (!selected || selected.id === branch.rootId) {
+    return;
+  }
+
+  const subtreeIds = collectSubtreeNodeIds(branch, selected.id);
+  const targetCount = subtreeIds.size;
+  const label = selected.kind === "unit" ? `${selected.name} を削除` : `${selected.name} を削除`;
+  const detail = targetCount > 1 ? `配下 ${targetCount - 1} 件も削除されます。` : "この操作は元に戻せません。";
+  if (!window.confirm(`${label}\n${detail}`)) {
+    return;
+  }
+
+  state.isSaving = true;
+  state.editStatus = "削除中...";
+  render();
+
+  try {
+    const removed = removeNodeSubtree(branch, selected.id);
+    if (!removed) {
+      state.editStatus = "削除できませんでした。";
+      return;
+    }
+
+    const saved = await saveBranches();
+    state.editStatus = saved ? "" : "共有保存に失敗しました。";
+    if (saved) {
+      clearActionStatus();
+      handleCloseEditPanel();
+    }
+  } catch {
+    state.editStatus = "削除に失敗しました。";
+    setActionStatus("削除に失敗しました。");
   } finally {
     state.isSaving = false;
     render();
@@ -3413,6 +3467,82 @@ function moveNodeToParent(branch, childId, nextParentId) {
     removeChildFromParent(branch, currentParentId, childId);
   }
   addChildToParent(branch, nextParentId, childId);
+}
+
+function collectSubtreeNodeIds(branch, rootId) {
+  const nodes = nodeMap(branch);
+  const collected = new Set();
+  const stack = [rootId];
+
+  while (stack.length > 0) {
+    const currentId = stack.pop();
+    if (!currentId || collected.has(currentId)) {
+      continue;
+    }
+
+    const currentNode = nodes.get(currentId);
+    if (!currentNode) {
+      continue;
+    }
+
+    collected.add(currentId);
+    currentNode.reports.forEach((childId) => {
+      stack.push(childId);
+    });
+  }
+
+  return collected;
+}
+
+function removeNodeSubtree(branch, rootId) {
+  if (!branch || !rootId || rootId === branch.rootId) {
+    return false;
+  }
+
+  const existingNode = nodeMap(branch).get(rootId);
+  if (!existingNode) {
+    return false;
+  }
+
+  const subtreeIds = collectSubtreeNodeIds(branch, rootId);
+  const parents = buildParentMap(branch);
+  const parentId = parents.get(rootId);
+
+  if (parentId) {
+    removeChildFromParent(branch, parentId, rootId);
+  }
+
+  branch.nodes = branch.nodes
+    .filter((node) => !subtreeIds.has(node.id))
+    .map((node) => {
+      if (node.kind !== "unit") {
+        return node;
+      }
+
+      const managerLinkedId = normalizeText(node.managerLinkedId);
+      if (!managerLinkedId || !subtreeIds.has(managerLinkedId)) {
+        return node;
+      }
+
+      return {
+        ...node,
+        managerLinkedId: "",
+      };
+    });
+
+  if (!state.scopeNodeId || subtreeIds.has(state.scopeNodeId)) {
+    state.scopeNodeId = branch.rootId;
+  }
+
+  const updatedNodes = nodeMap(branch);
+  const fallbackSelection = parentId && updatedNodes.has(parentId)
+    ? parentId
+    : firstPersonInScope(branch, state.scopeNodeId)?.id ?? branch.rootId;
+  state.selectedNodeId = updatedNodes.has(fallbackSelection)
+    ? fallbackSelection
+    : firstPersonInScope(branch, branch.rootId)?.id ?? branch.rootId;
+
+  return true;
 }
 
 function reorderNodeWithinParent(branchId, parentId, nodeId, targetId, placeAfter = false) {
@@ -3934,6 +4064,9 @@ elements.addEditHistoryRow.addEventListener("click", () => {
   appendHistoryRow(elements.editHistoryRows);
 });
 elements.profileForm.addEventListener("submit", handleProfileSave);
+if (elements.deleteProfileButton) {
+  elements.deleteProfileButton.addEventListener("click", handleDeleteProfile);
+}
 if (elements.createForm) {
   elements.createForm.addEventListener("submit", handleCreatePerson);
 }
