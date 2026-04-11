@@ -3386,9 +3386,11 @@ async function handleCreatePerson(event) {
 
 function openProfileEditor(branchId, nodeId) {
   state.editStatus = "";
-  selectNode(branchId, nodeId);
   if (elements.profileEditor) {
     elements.profileEditor.open = true;
+  }
+  selectNode(branchId, nodeId);
+  if (elements.profileEditor) {
     elements.profileEditor.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 }
