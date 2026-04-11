@@ -1789,10 +1789,6 @@ initializeExpandedDepartments();
 
 function initializeExpandedDepartments() {
   state.expandedDepartmentIds = new Set();
-  const branch = getBranch(state.activeBranchId) ?? branches[0];
-  if (branch?.nodes?.some((node) => node.id === 'dept-1')) {
-    state.expandedDepartmentIds.add('dept-1');
-  }
 }
 
 function clearActionStatus() {
