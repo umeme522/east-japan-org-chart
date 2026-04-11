@@ -182,7 +182,6 @@
           "tags": [],
           "reports": [
             "office-102-yamagata",
-            "office-102-fujii",
             "office-102-miyake"
           ]
         },
@@ -191,7 +190,7 @@
           "kind": "person",
           "name": "山縣",
           "title": "スタッフ",
-          "department": "安曇野",
+          "department": "青梅流通",
           "age": "",
           "tenure": "",
           "history": "",
@@ -902,7 +901,8 @@
           "hobbies": [],
           "tags": [],
           "reports": [
-            "office-306-kishikawa"
+            "office-306-kishikawa",
+            "office-102-fujii"
           ]
         },
         {

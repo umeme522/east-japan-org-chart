@@ -145,14 +145,14 @@ const DEFAULT_BRANCHES = [
         history: "",
         hobbies: [],
         tags: [],
-        reports: ["office-102-yamagata", "office-102-fujii", "office-102-miyake"],
+        reports: ["office-102-yamagata", "office-102-miyake"],
       },
       {
         id: "office-102-yamagata",
         kind: "person",
         name: "山縣",
         title: "スタッフ",
-        department: "安曇野",
+        department: "青梅流通",
         age: "",
         tenure: "",
         history: "",
@@ -747,7 +747,7 @@ const DEFAULT_BRANCHES = [
         history: "",
         hobbies: [],
         tags: [],
-        reports: ["office-306-kishikawa"],
+        reports: ["office-306-kishikawa", "office-102-fujii"],
       },
       {
         id: "office-306-kishikawa",
@@ -1548,20 +1548,9 @@ function mergeTitlesValue(primaryNode, localNode, options = {}) {
 }
 
 function mergeReportIds(primaryReports = [], localReports = [], preferLocal = false) {
-  const merged = [];
-  const sources = preferLocal
-    ? [normalizeReports(localReports), normalizeReports(primaryReports)]
-    : [normalizeReports(primaryReports), normalizeReports(localReports)];
-
-  sources.forEach((reportIds) => {
-    reportIds.forEach((reportId) => {
-      if (!merged.includes(reportId)) {
-        merged.push(reportId);
-      }
-    });
-  });
-
-  return merged;
+  const preferredReports = normalizeReports(preferLocal ? localReports : primaryReports);
+  const fallbackReports = normalizeReports(preferLocal ? primaryReports : localReports);
+  return preferredReports.length > 0 ? preferredReports : fallbackReports;
 }
 
 function mergeNormalizedNode(primaryNode, localNode, options = {}) {
