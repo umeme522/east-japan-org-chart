@@ -1492,16 +1492,16 @@ function mergeTextValue(primaryValue, localValue, options = {}) {
   const primaryText = normalizeText(primaryValue);
   const localText = normalizeText(localValue);
 
+  if (preferLocal && !looksCorruptedText(localText) && localValue !== undefined) {
+    return localText;
+  }
+
   if (looksCorruptedText(primaryText) && hasMeaningfulText(localText)) {
     return localText;
   }
 
   if (looksCorruptedText(localText)) {
     return primaryText;
-  }
-
-  if (preferLocal && hasMeaningfulText(localText)) {
-    return localText;
   }
 
   return primaryText || localText;
@@ -1512,7 +1512,7 @@ function mergeStringArrayValue(primaryValue, localValue, options = {}) {
   const primaryItems = normalizeStringArray(primaryValue);
   const localItems = normalizeStringArray(localValue);
 
-  if (preferLocal && localItems.length > 0) {
+  if (preferLocal && Array.isArray(localValue)) {
     return localItems;
   }
 
@@ -1524,7 +1524,7 @@ function mergeHistoryEntriesValue(primaryValue, localValue, options = {}) {
   const primaryItems = normalizeHistoryEntries(primaryValue);
   const localItems = normalizeHistoryEntries(localValue);
 
-  if (preferLocal && localItems.length > 0) {
+  if (preferLocal && Array.isArray(localValue)) {
     return localItems;
   }
 
@@ -1536,7 +1536,7 @@ function mergeTitlesValue(primaryNode, localNode, options = {}) {
   const primaryTitles = getNodeTitles(primaryNode);
   const localTitles = getNodeTitles(localNode);
 
-  if (preferLocal && localTitles.length > 0 && !looksCorruptedText(localTitles.join(" "))) {
+  if (preferLocal && !looksCorruptedText(localTitles.join(" "))) {
     return localTitles;
   }
 
