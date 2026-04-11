@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-03-30T00:00:00.000Z",
+  "updatedAt": "2026-04-11T07:51:49.738Z",
   "branches": [
     {
       "id": "east-japan",
@@ -13,26 +13,33 @@
         {
           "id": "east-japan-1",
           "kind": "person",
-          "name": "大久保",
-          "lastName": "大久保",
-          "firstName": "",
+          "name": "大久保 祐介",
           "title": "支店長",
-          "department": "支店統括",
-          "age": "52歳",
-          "tenure": "28年",
-          "history": "首都圏の責任者と東日本エリア統括を経て、支店長に就任。",
-          "hobbies": [
-            "ゴルフ",
-            "歴史散策"
+          "titles": [
+            "支店長"
           ],
+          "department": "支店統括",
           "tags": [
             "支店運営",
             "組織管理",
             "営業統括"
           ],
           "reports": [
-            "east-japan-2"
-          ]
+            "east-japan-2",
+            "east-japan-1"
+          ],
+          "lastName": "大久保",
+          "firstName": "祐介",
+          "age": "52",
+          "joinYear": "",
+          "tenure": "28",
+          "historyEntries": [],
+          "hobbies": [
+            "ゴルフ",
+            "歴史散策"
+          ],
+          "photo": "",
+          "history": ""
         },
         {
           "id": "east-japan-2",
@@ -44,13 +51,6 @@
             "部長"
           ],
           "department": "支店統括",
-          "age": "48歳",
-          "tenure": "22年",
-          "history": "現場運営と業務管理を歴任し、現在は副支店長として各部を統括。",
-          "hobbies": [
-            "釣り",
-            "ドライブ"
-          ],
           "tags": [
             "支店運営補佐",
             "組織管理",
@@ -60,15 +60,31 @@
             "dept-1",
             "dept-2",
             "dept-3"
-          ]
+          ],
+          "lastName": "堀内",
+          "firstName": "芳人",
+          "age": "48",
+          "joinYear": "",
+          "tenure": "22",
+          "historyEntries": [
+            {
+              "year": "",
+              "location": "現場運営と業務管理を歴任し、現在は副支店長として各部を統括。"
+            }
+          ],
+          "hobbies": [
+            "釣り",
+            "ドライブ"
+          ],
+          "photo": ""
         },
         {
           "id": "dept-1",
           "kind": "unit",
           "name": "業務1部",
           "title": "",
+          "titles": [],
           "department": "東日本支店",
-          "description": "副支店長配下の業務1部です。",
           "tags": [
             "組織"
           ],
@@ -80,7 +96,14 @@
             "office-104",
             "office-105",
             "office-106"
-          ]
+          ],
+          "description": "副支店長配下���業務1部です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "dept-1-manager",
@@ -91,254 +114,382 @@
             "部長"
           ],
           "department": "業務1部",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "西原",
+          "firstName": "達也",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-101",
           "kind": "unit",
           "name": "武蔵野",
           "title": "",
+          "titles": [],
           "department": "業務1部",
-          "description": "業務1部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-101-mera"
-          ]
+          ],
+          "description": "業務1部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-101-mera",
           "kind": "person",
           "name": "米良",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "武蔵野",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-101-nakane"
-          ]
+          ],
+          "lastName": "米良",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-101-nakane",
           "kind": "person",
           "name": "中根",
           "title": "係長",
+          "titles": [
+            "係長"
+          ],
           "department": "武蔵野",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-101-toshida"
-          ]
+          ],
+          "lastName": "中根",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-101-toshida",
           "kind": "person",
           "name": "土志田",
           "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
           "department": "武蔵野",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "土志田",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-102",
           "kind": "unit",
           "name": "安曇野",
           "title": "",
+          "titles": [],
           "department": "業務1部",
-          "description": "業務1部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-102-suzuki"
-          ]
+          ],
+          "description": "業務1部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-102-suzuki",
           "kind": "person",
           "name": "鈴木",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "安曇野",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-102-yamagata",
             "office-102-miyake"
-          ]
+          ],
+          "lastName": "鈴木",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-102-yamagata",
           "kind": "person",
           "name": "山縣",
           "title": "スタッフ",
-          "department": "青梅流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
+          "titles": [
+            "スタッフ"
+          ],
+          "department": "安曇野",
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "山縣",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-102-fujii",
           "kind": "person",
           "name": "藤井",
           "title": "スタッフ",
-          "department": "安曇野",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
+          "titles": [
+            "スタッフ"
+          ],
+          "department": "青梅流通",
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "藤井",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-102-miyake",
           "kind": "person",
           "name": "三宅",
           "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
           "department": "安曇野",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "三宅",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-103",
           "kind": "unit",
           "name": "富士見",
           "title": "",
+          "titles": [],
           "department": "業務1部",
-          "description": "業務1部配下です。",
           "tags": [
             "組織"
           ],
-          "reports": []
+          "reports": [
+            "person-mnl85lwh",
+            "person-mnesx2en"
+          ],
+          "description": "業務1部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-104",
           "kind": "unit",
           "name": "白州",
           "title": "",
+          "titles": [],
           "department": "業務1部",
-          "description": "業務1部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-104-mitsui"
-          ]
+          ],
+          "description": "業務1部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-104-mitsui",
           "kind": "person",
-          "name": "三井",
+          "name": "三井 快",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "白州",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "三井",
+          "firstName": "快",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-105",
           "kind": "unit",
           "name": "白州水",
           "title": "",
+          "titles": [],
           "department": "業務1部",
-          "description": "業務1部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-105-manaka"
-          ]
+          ],
+          "description": "業務1部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-106",
           "kind": "unit",
           "name": "南多摩",
           "title": "",
+          "titles": [],
           "department": "業務1部",
-          "description": "業務1部配下です。",
           "tags": [
             "組織"
           ],
-          "reports": []
+          "reports": [
+            "person-mnl86uj6"
+          ],
+          "description": "業務1部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-105-manaka",
           "kind": "person",
           "name": "真中",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "白州水",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-105-suzuki"
-          ]
+          ],
+          "lastName": "真中",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-105-suzuki",
           "kind": "person",
           "name": "鈴木",
           "title": "係長",
+          "titles": [
+            "係長"
+          ],
           "department": "白州水",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-105-endo"
-          ]
+          ],
+          "lastName": "鈴木",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-105-endo",
           "kind": "person",
           "name": "遠藤",
           "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
           "department": "白州水",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "遠藤",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "dept-2",
           "kind": "unit",
           "name": "業務2部",
           "title": "",
+          "titles": [],
           "department": "東日本支店",
-          "description": "副支店長配下の業務2部です。",
           "tags": [
             "組織"
           ],
@@ -350,71 +501,120 @@
             "office-204",
             "office-205",
             "office-206"
-          ]
+          ],
+          "description": "副支店長配下の業務2部です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-201",
           "kind": "unit",
           "name": "栃木北",
           "title": "",
+          "titles": [],
           "department": "業務2部",
-          "description": "業務2部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-201-negi"
-          ]
+          ],
+          "description": "業務2部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-201-negi",
           "kind": "person",
           "name": "根木",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "栃木北",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [
+            "person-mnl89hn2",
+            "person-mnet3a2p"
+          ],
+          "lastName": "根木",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-202",
           "kind": "unit",
           "name": "栃木",
           "title": "",
+          "titles": [],
           "department": "業務2部",
-          "description": "業務2部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "tochigi-1"
-          ]
+          ],
+          "description": "業務2部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "tochigi-1",
           "kind": "person",
           "name": "藤原 邦康",
           "title": "署長",
+          "titles": [
+            "署長"
+          ],
           "department": "栃木",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
-            "tochigi-2"
-          ]
+            "tochigi-2",
+            "tochigi-3"
+          ],
+          "lastName": "藤原",
+          "firstName": "邦康",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "tochigi-2",
           "kind": "person",
           "name": "梅原 裕太郎",
-          "title": "",
+          "title": "係長",
+          "titles": [
+            "係長"
+          ],
           "department": "栃木",
+          "tags": [],
+          "reports": [
+            "tochigi-3"
+          ],
+          "lastName": "梅原",
+          "firstName": "裕太郎",
           "age": "",
+          "joinYear": "",
           "tenure": "",
           "historyEntries": [
             {
@@ -423,178 +623,252 @@
             }
           ],
           "hobbies": [],
-          "tags": [],
-          "reports": [
-            "tochigi-3"
-          ]
+          "photo": ""
         },
         {
           "id": "tochigi-3",
           "kind": "person",
           "name": "市川 輝",
-          "title": "",
+          "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
           "department": "栃木",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "市川",
+          "firstName": "輝",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-203",
           "kind": "unit",
           "name": "羽生とちぎ",
           "title": "",
+          "titles": [],
           "department": "業務2部",
-          "description": "業務2部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-203-miki"
-          ]
+          ],
+          "description": "業務2部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-203-miki",
           "kind": "person",
           "name": "三喜",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "羽生とちぎ",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [
+            "person-mnl87x38"
+          ],
+          "lastName": "三喜",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-204",
           "kind": "unit",
           "name": "群馬",
           "title": "",
+          "titles": [],
           "department": "業務2部",
-          "description": "業務2部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
-            "office-204-kitou"
-          ]
+            "office-204-kitou",
+            "person-mnl87k4l",
+            "person-mnet4jdm"
+          ],
+          "description": "業務2部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-204-kitou",
           "kind": "person",
           "name": "鬼頭",
           "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
           "department": "群馬",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "鬼頭",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-205",
           "kind": "unit",
           "name": "渋川",
           "title": "",
+          "titles": [],
           "department": "業務2部",
-          "description": "業務2部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-205-hiroyama"
-          ]
+          ],
+          "description": "業務2部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-205-hiroyama",
           "kind": "person",
           "name": "弘山",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "渋川",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [
+            "person-mnl88l25",
+            "person-mnet53q0"
+          ],
+          "lastName": "弘山",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-206",
           "kind": "unit",
           "name": "利根川",
           "title": "",
+          "titles": [],
           "department": "業務2部",
-          "description": "業務2部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-206-kataoka"
-          ]
+          ],
+          "description": "業務2部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-206-kataoka",
           "kind": "person",
           "name": "片岡",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "利根川",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-206-maezawa"
-          ]
+          ],
+          "lastName": "片岡",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-206-maezawa",
           "kind": "person",
-          "name": "前澤",
+          "name": "前澤 ちひろ",
           "title": "係長",
+          "titles": [
+            "係長"
+          ],
           "department": "利根川",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-206-shinyashiki"
-          ]
+          ],
+          "lastName": "前澤",
+          "firstName": "ちひろ",
+          "age": "30",
+          "joinYear": "2018",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-206-shinyashiki",
           "kind": "person",
           "name": "新屋敷",
           "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
           "department": "利根川",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [
+            "person-mnl88znr"
+          ],
+          "lastName": "新屋敷",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "dept-3",
           "kind": "unit",
           "name": "業務3部",
           "title": "",
+          "titles": [],
           "department": "東日本支店",
-          "managerName": "堀内 芳人",
-          "managerLastName": "堀内",
-          "managerFirstName": "芳人",
-          "managerTitle": "部長",
-          "managerTitles": [
-            "部長",
-            "副支店長"
-          ],
-          "managerLinkedId": "east-japan-2",
-          "description": "副支店長配下の業務3部です。",
           "tags": [
             "組織"
           ],
@@ -605,353 +879,745 @@
             "office-304",
             "office-305",
             "office-306"
-          ]
+          ],
+          "description": "副支店長配下の業務3部です。",
+          "managerName": "堀内 芳人",
+          "managerLastName": "堀内",
+          "managerFirstName": "芳人",
+          "managerTitle": "部長",
+          "managerTitles": [
+            "部長",
+            "副支店長"
+          ],
+          "managerLinkedId": "east-japan-2"
         },
         {
           "id": "office-301",
           "kind": "unit",
           "name": "群馬藤岡",
           "title": "",
+          "titles": [],
           "department": "業務3部",
-          "description": "業務3部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-301-nishi"
-          ]
+          ],
+          "description": "業務3部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-301-nishi",
           "kind": "person",
-          "name": "西",
+          "name": "西本 幸佑",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "群馬藤岡",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-301-watanabe"
-          ]
+          ],
+          "lastName": "西本",
+          "firstName": "幸佑",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-301-watanabe",
           "kind": "person",
           "name": "渡辺",
           "title": "副長",
+          "titles": [
+            "副長"
+          ],
           "department": "群馬藤岡",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "渡辺",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-302",
           "kind": "unit",
           "name": "海老名流通",
           "title": "",
+          "titles": [],
           "department": "業務3部",
-          "description": "業務3部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-302-nishihata"
-          ]
+          ],
+          "description": "業務3部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-302-nishihata",
           "kind": "person",
-          "name": "西畑",
+          "name": "西畑 匡績",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "海老名流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-302-nose"
-          ]
+          ],
+          "lastName": "西畑",
+          "firstName": "匡績",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-302-nose",
           "kind": "person",
           "name": "能勢",
           "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
           "department": "海老名流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "能勢",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-303",
           "kind": "unit",
           "name": "北関東流通",
           "title": "",
+          "titles": [],
           "department": "業務3部",
-          "description": "業務3部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-303-kawai"
-          ]
+          ],
+          "description": "業務3部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-303-kawai",
           "kind": "person",
           "name": "川井",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "北関東流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-303-nakahara",
             "office-303-ikeda",
             "office-303-sato"
-          ]
+          ],
+          "lastName": "川井",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-303-nakahara",
           "kind": "person",
           "name": "中原",
           "title": "副長",
+          "titles": [
+            "副長"
+          ],
           "department": "北関東流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "中原",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-303-ikeda",
           "kind": "person",
           "name": "池田",
           "title": "副長",
+          "titles": [
+            "副長"
+          ],
           "department": "北関東流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "池田",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-303-sato",
           "kind": "person",
           "name": "佐藤",
           "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
           "department": "北関東流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "佐藤",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-304",
           "kind": "unit",
           "name": "神奈川綾瀬",
           "title": "",
+          "titles": [],
           "department": "業務3部",
-          "description": "業務3部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-304-onishi-chief"
-          ]
+          ],
+          "description": "業務3部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-304-onishi-chief",
           "kind": "person",
-          "name": "大西",
+          "name": "大友",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "神奈川綾瀬",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-304-taira"
-          ]
+          ],
+          "lastName": "大友",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-304-taira",
           "kind": "person",
           "name": "平良",
           "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
           "department": "神奈川綾瀬",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "平良",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-305",
           "kind": "unit",
           "name": "国立流通",
           "title": "",
+          "titles": [],
           "department": "業務3部",
-          "description": "業務3部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-305-yasuda"
-          ]
+          ],
+          "description": "業務3部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-305-yasuda",
           "kind": "person",
-          "name": "安田",
+          "name": "安田 忠愛",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "国立流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-305-kurishima"
-          ]
+          ],
+          "lastName": "安田",
+          "firstName": "忠愛",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-305-kurishima",
           "kind": "person",
           "name": "栗嶋",
           "title": "副長",
+          "titles": [
+            "副長"
+          ],
           "department": "国立流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-305-tajiri"
-          ]
+          ],
+          "lastName": "栗嶋",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-305-tajiri",
           "kind": "person",
           "name": "田尻",
           "title": "係長",
+          "titles": [
+            "係長"
+          ],
           "department": "国立流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-305-seki"
-          ]
+          ],
+          "lastName": "田尻",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-305-seki",
           "kind": "person",
           "name": "関",
           "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
           "department": "国立流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "関",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-306",
           "kind": "unit",
           "name": "青梅流通",
           "title": "",
+          "titles": [],
           "department": "業務3部",
-          "description": "業務3部配下です。",
           "tags": [
             "組織"
           ],
           "reports": [
             "office-306-hara"
-          ]
+          ],
+          "description": "業務3部配下です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
         },
         {
           "id": "office-306-hara",
           "kind": "person",
-          "name": "原",
+          "name": "原 翔平",
           "title": "所長",
+          "titles": [
+            "所長"
+          ],
           "department": "青梅流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-306-kishikawa",
             "office-102-fujii"
-          ]
+          ],
+          "lastName": "原",
+          "firstName": "翔平",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-306-kishikawa",
           "kind": "person",
           "name": "岸川",
           "title": "係長",
+          "titles": [
+            "係長"
+          ],
           "department": "青梅流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
           "reports": [
             "office-306-onishi"
-          ]
+          ],
+          "lastName": "岸川",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "office-306-onishi",
           "kind": "person",
           "name": "大西",
           "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
           "department": "青梅流通",
-          "age": "",
-          "tenure": "",
-          "history": "",
-          "hobbies": [],
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "大西",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         },
         {
           "id": "dept-2-manager",
           "kind": "person",
           "name": "藤原 邦康",
-          "lastName": "藤原",
-          "firstName": "邦康",
           "title": "部長",
           "titles": [
             "部長"
           ],
           "department": "業務2部",
+          "tags": [],
+          "reports": [],
+          "lastName": "藤原",
+          "firstName": "邦康",
           "age": "",
           "joinYear": "",
           "tenure": "",
-          "history": "",
           "historyEntries": [],
           "hobbies": [],
+          "photo": "",
+          "history": ""
+        },
+        {
+          "id": "person-mnl85lwh",
+          "kind": "person",
+          "name": "浅利 順一",
+          "title": "所長",
+          "titles": [
+            "所長"
+          ],
+          "department": "富士見",
           "tags": [],
-          "reports": []
+          "reports": [],
+          "lastName": "浅利",
+          "firstName": "順一",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnl86uj6",
+          "kind": "person",
+          "name": "滝下",
+          "title": "所長",
+          "titles": [
+            "所長"
+          ],
+          "department": "南多摩",
+          "tags": [],
+          "reports": [],
+          "lastName": "滝下",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnl87k4l",
+          "kind": "person",
+          "name": "植野",
+          "title": "所長",
+          "titles": [
+            "所長"
+          ],
+          "department": "群馬",
+          "tags": [],
+          "reports": [],
+          "lastName": "植野",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnl87x38",
+          "kind": "person",
+          "name": "輪千",
+          "title": "係長",
+          "titles": [
+            "係長"
+          ],
+          "department": "羽生とちぎ",
+          "tags": [],
+          "reports": [],
+          "lastName": "輪千",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnl88l25",
+          "kind": "person",
+          "name": "出澤",
+          "title": "副長",
+          "titles": [
+            "副長"
+          ],
+          "department": "渋川",
+          "tags": [],
+          "reports": [],
+          "lastName": "出澤",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnl88znr",
+          "kind": "person",
+          "name": "大原",
+          "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
+          "department": "利根川",
+          "tags": [],
+          "reports": [],
+          "lastName": "大原",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnl89hn2",
+          "kind": "person",
+          "name": "東 誠",
+          "title": "副長",
+          "titles": [
+            "副長"
+          ],
+          "department": "栃木北",
+          "tags": [],
+          "reports": [],
+          "lastName": "東",
+          "firstName": "誠",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnesx2en",
+          "kind": "person",
+          "name": "三上 俊",
+          "title": "副長",
+          "titles": [
+            "副長"
+          ],
+          "department": "富士見",
+          "tags": [],
+          "reports": [],
+          "lastName": "三上",
+          "firstName": "俊",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnet3a2p",
+          "kind": "person",
+          "name": "東 誠",
+          "title": "副長",
+          "titles": [
+            "副長"
+          ],
+          "department": "栃木北",
+          "tags": [],
+          "reports": [],
+          "lastName": "東",
+          "firstName": "誠",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnet4jdm",
+          "kind": "person",
+          "name": "植野",
+          "title": "所長",
+          "titles": [
+            "所長"
+          ],
+          "department": "群馬",
+          "tags": [],
+          "reports": [],
+          "lastName": "植野",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnet53q0",
+          "kind": "person",
+          "name": "出澤 草併",
+          "title": "副長",
+          "titles": [
+            "副���"
+          ],
+          "department": "渋川",
+          "tags": [],
+          "reports": [],
+          "lastName": "出澤",
+          "firstName": "草併",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
         }
       ]
     }

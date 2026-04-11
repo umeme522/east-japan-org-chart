@@ -3175,6 +3175,14 @@ async function handleProfileSave(event) {
   const lastName = elements.editLastName.value.trim();
   const firstName = elements.editFirstName.value.trim();
   const displayName = buildDisplayName(lastName, firstName, selected.name) || selected.name;
+  const nextDepartment = normalizeText(elements.editDepartment.value) || selected.department;
+  const selectedTitles = collectRoleValues(elements.editTitle, elements.editTitleSecondary);
+  const nextAge = normalizeNumericField(elements.editAge.value);
+  const nextJoinYear = normalizeNumericField(elements.editJoinYear.value);
+  const nextTenure = normalizeNumericField(elements.editTenure.value);
+  const nextHistoryEntries = collectHistoryEntries(elements.editHistoryRows);
+  const nextHistory = serializeHistoryEntries(nextHistoryEntries);
+  const nextPhotoFile = elements.editPhoto?.files?.[0] ?? null;
 
   if (selected.kind === "person" && !displayName) {
     state.editStatus = "氏名を入力してください。";
@@ -3192,21 +3200,21 @@ async function handleProfileSave(event) {
       name: displayName,
       title: "",
       titles: [],
-      department: elements.editDepartment.value.trim() || selected.department,
+      department: nextDepartment,
     };
 
-    const selectedTitles = collectRoleValues(elements.editTitle, elements.editTitleSecondary);
     updates.title = selectedTitles[0] || "";
     updates.titles = selectedTitles;
 
     if (selected.kind === "person") {
       updates.lastName = lastName;
       updates.firstName = firstName;
-      updates.age = normalizeNumericField(elements.editAge.value);
-      updates.joinYear = normalizeNumericField(elements.editJoinYear.value);
-      updates.tenure = normalizeNumericField(elements.editTenure.value);
-      updates.historyEntries = collectHistoryEntries(elements.editHistoryRows);
-      const nextPhoto = await readImageFileAsDataUrl(elements.editPhoto?.files?.[0]);
+      updates.age = nextAge;
+      updates.joinYear = nextJoinYear;
+      updates.tenure = nextTenure;
+      updates.historyEntries = nextHistoryEntries;
+      updates.history = nextHistory;
+      const nextPhoto = await readImageFileAsDataUrl(nextPhotoFile);
       updates.photo = nextPhoto || selected.photo || "";
     }
 
