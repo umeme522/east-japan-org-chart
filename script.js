@@ -33,7 +33,7 @@ const DEFAULT_BRANCHES = [
         department: "支店統括",
         age: "52歳",
         tenure: "28年",
-        history: "首都圏の責任者と東日本エリア統括を経て、東日本支店長に就任。",
+        history: "首都圏の責任者と東日本エリア統括を経て、支店長に就任。",
         hobbies: ["ゴルフ", "歴史散策"],
         tags: ["支店運営", "組織管理", "営業統括"],
         reports: ["east-japan-2"],
@@ -886,10 +886,18 @@ function normalizeNumericField(value) {
   return digits ? digits.join("") : "";
 }
 
+function normalizeRoleLabel(value) {
+  const normalized = normalizeText(value);
+  if (normalized === "東日本支店長") {
+    return "支店長";
+  }
+  return normalized;
+}
+
 function splitRoleText(value) {
   return normalizeText(value)
     .split(/\s*(?:\/|／|\||｜)\s*/)
-    .map((entry) => normalizeText(entry))
+    .map((entry) => normalizeRoleLabel(entry))
     .filter(Boolean);
 }
 
