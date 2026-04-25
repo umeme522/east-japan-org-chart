@@ -927,11 +927,11 @@ function roleWeight(title) {
     return 0;
   }
 
-  if (normalized.includes("支店長")) {
-    return 7;
-  }
   if (normalized.includes("副支店長")) {
     return 6;
+  }
+  if (normalized.includes("支店長")) {
+    return 7;
   }
   if (normalized.includes("部長")) {
     return 5;
