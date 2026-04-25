@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-25T07:51:33.131Z",
+  "updatedAt": "2026-04-25T07:58:45.190Z",
   "branches": [
     {
       "id": "east-japan",
@@ -73,7 +73,7 @@
           ],
           "hobbies": [
             "釣り",
-            "ドライブ"
+            "��ライブ"
           ],
           "photo": ""
         },
@@ -170,7 +170,7 @@
         {
           "id": "office-101-nakane",
           "kind": "person",
-          "name": "中根",
+          "name": "中根 寛哉",
           "title": "係長",
           "titles": [
             "係長"
@@ -180,8 +180,8 @@
           "reports": [
             "office-101-toshida"
           ],
-          "lastName": "中根",
-          "firstName": "",
+          "lastName": "���根",
+          "firstName": "寛哉",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -233,7 +233,7 @@
         {
           "id": "office-102-suzuki",
           "kind": "person",
-          "name": "鈴木 秀和",
+          "name": "鈴��� 秀和",
           "title": "所長",
           "titles": [
             "所長"
@@ -444,7 +444,7 @@
         {
           "id": "office-105-suzuki",
           "kind": "person",
-          "name": "鈴木",
+          "name": "鈴木 大貴",
           "title": "係長",
           "titles": [
             "係長"
@@ -455,7 +455,7 @@
             "office-105-endo"
           ],
           "lastName": "鈴木",
-          "firstName": "",
+          "firstName": "大貴",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -502,7 +502,7 @@
             "office-205",
             "office-206"
           ],
-          "description": "副支店長配下の業���2部です。",
+          "description": "副支店長配下の業務2部です。",
           "managerName": "",
           "managerLastName": "",
           "managerFirstName": "",
@@ -920,7 +920,9 @@
           ],
           "department": "群馬藤岡",
           "tags": [],
-          "reports": [],
+          "reports": [
+            "person-moe1ribt"
+          ],
           "lastName": "渡辺",
           "firstName": "洋治郎",
           "age": "",
@@ -928,8 +930,7 @@
           "tenure": "",
           "historyEntries": [],
           "hobbies": [],
-          "photo": "",
-          "history": ""
+          "photo": ""
         },
         {
           "id": "office-302",
@@ -1007,7 +1008,7 @@
           "reports": [
             "office-303-kawai"
           ],
-          "description": "���務3部配下です。",
+          "description": "業務3部配下です。",
           "managerName": "",
           "managerLastName": "",
           "managerFirstName": "",
@@ -1042,7 +1043,7 @@
         {
           "id": "office-303-nakahara",
           "kind": "person",
-          "name": "中原",
+          "name": "中原 由貴",
           "title": "副長",
           "titles": [
             "副長"
@@ -1051,7 +1052,7 @@
           "tags": [],
           "reports": [],
           "lastName": "中原",
-          "firstName": "",
+          "firstName": "由貴",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1062,7 +1063,7 @@
         {
           "id": "office-303-ikeda",
           "kind": "person",
-          "name": "池田",
+          "name": "池田 和哉",
           "title": "副長",
           "titles": [
             "副長"
@@ -1071,7 +1072,7 @@
           "tags": [],
           "reports": [],
           "lastName": "池田",
-          "firstName": "",
+          "firstName": "和哉",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1114,7 +1115,7 @@
           "reports": [
             "office-304-onishi-chief"
           ],
-          "description": "業��3部配下です。",
+          "description": "業務3部配下です。",
           "managerName": "",
           "managerLastName": "",
           "managerFirstName": "",
@@ -1196,9 +1197,10 @@
           "department": "国立流通",
           "tags": [],
           "reports": [
-            "office-305-kurishima"
+            "office-305-kurishima",
+            "office-305-tajiri"
           ],
-          "lastName": "安田",
+          "lastName": "���田",
           "firstName": "忠愛",
           "age": "",
           "joinYear": "",
@@ -1210,7 +1212,7 @@
         {
           "id": "office-305-kurishima",
           "kind": "person",
-          "name": "栗嶋",
+          "name": "栗嶋 龍作",
           "title": "副長",
           "titles": [
             "副長"
@@ -1221,7 +1223,7 @@
             "office-305-tajiri"
           ],
           "lastName": "栗嶋",
-          "firstName": "",
+          "firstName": "龍作",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1232,7 +1234,7 @@
         {
           "id": "office-305-tajiri",
           "kind": "person",
-          "name": "田尻",
+          "name": "田尻 泰悠",
           "title": "係長",
           "titles": [
             "係長"
@@ -1243,7 +1245,7 @@
             "office-305-seki"
           ],
           "lastName": "田尻",
-          "firstName": "",
+          "firstName": "泰悠",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1729,19 +1731,19 @@
         {
           "id": "branch-admin",
           "kind": "unit",
-          "name": "?????",
+          "name": "支店総務部",
           "title": "",
           "titles": [],
-          "department": "?????",
-          "description": "????????",
+          "department": "東日本支店",
           "tags": [
-            "??"
+            "組織"
           ],
           "reports": [
             "branch-admin-inoue",
             "branch-admin-kitaura",
             "branch-admin-matsumura"
           ],
+          "description": "支店総務部です。",
           "managerName": "",
           "managerLastName": "",
           "managerFirstName": "",
@@ -1752,58 +1754,84 @@
         {
           "id": "branch-admin-inoue",
           "kind": "person",
-          "name": "?? ??",
-          "lastName": "??",
-          "firstName": "??",
-          "title": "",
-          "titles": [],
-          "department": "?????",
+          "name": "井上 珠美",
+          "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
+          "department": "支店総務部",
+          "tags": [],
+          "reports": [],
+          "lastName": "井上",
+          "firstName": "珠美",
           "age": "",
           "joinYear": "",
           "tenure": "",
-          "history": "",
           "historyEntries": [],
           "hobbies": [],
-          "tags": [],
-          "reports": [],
-          "photo": ""
+          "photo": "",
+          "history": ""
         },
         {
           "id": "branch-admin-kitaura",
           "kind": "person",
-          "name": "?? ??",
-          "lastName": "??",
-          "firstName": "??",
-          "title": "",
-          "titles": [],
-          "department": "?????",
+          "name": "北浦 愛梨",
+          "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
+          "department": "支店総務部",
+          "tags": [],
+          "reports": [],
+          "lastName": "北浦",
+          "firstName": "愛梨",
           "age": "",
           "joinYear": "",
           "tenure": "",
-          "history": "",
           "historyEntries": [],
           "hobbies": [],
-          "tags": [],
-          "reports": [],
-          "photo": ""
+          "photo": "",
+          "history": ""
         },
         {
           "id": "branch-admin-matsumura",
           "kind": "person",
-          "name": "?? ??",
-          "lastName": "??",
-          "firstName": "??",
-          "title": "",
-          "titles": [],
-          "department": "?????",
+          "name": "松村 結花",
+          "title": "課長",
+          "titles": [
+            "課長"
+          ],
+          "department": "支店総務部",
+          "tags": [],
+          "reports": [],
+          "lastName": "松村",
+          "firstName": "結花",
           "age": "",
           "joinYear": "",
           "tenure": "",
-          "history": "",
           "historyEntries": [],
           "hobbies": [],
+          "photo": "",
+          "history": ""
+        },
+        {
+          "id": "person-moe1ribt",
+          "kind": "person",
+          "name": "藤田 塁",
+          "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
+          "department": "群馬藤岡",
           "tags": [],
           "reports": [],
+          "lastName": "藤田",
+          "firstName": "塁",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
           "photo": ""
         }
       ]

@@ -1285,7 +1285,8 @@ function parseBranches(data) {
   return normalized.length > 0 ? normalized : null;
 }
 
-function upsertBranchNode(branch, node) {
+function upsertBranchNode(branch, node, options = {}) {
+  const { preferExisting = false } = options;
   const index = branch.nodes.findIndex((entry) => entry.id === node.id);
   if (index === -1) {
     branch.nodes.push(node);
@@ -1293,8 +1294,8 @@ function upsertBranchNode(branch, node) {
   }
 
   branch.nodes[index] = {
-    ...branch.nodes[index],
-    ...node,
+    ...(preferExisting ? node : branch.nodes[index]),
+    ...(preferExisting ? branch.nodes[index] : node),
   };
 }
 
@@ -1345,7 +1346,7 @@ function migrateEastJapanBranch(branch) {
     hobbies: [],
     tags: [],
     reports: [],
-  });
+  }, { preferExisting: true });
 
   const dept2 = branch.nodes.find((node) => node.id === "dept-2");
   if (dept2) {
@@ -1391,7 +1392,7 @@ function migrateEastJapanBranch(branch) {
     description: "支店総務部です。",
     tags: ["組織"],
     reports: ["branch-admin-inoue", "branch-admin-kitaura", "branch-admin-matsumura"],
-  });
+  }, { preferExisting: true });
 
   upsertBranchNode(branch, {
     id: "branch-admin-inoue",
@@ -1410,7 +1411,7 @@ function migrateEastJapanBranch(branch) {
     hobbies: [],
     tags: [],
     reports: [],
-  });
+  }, { preferExisting: true });
 
   upsertBranchNode(branch, {
     id: "branch-admin-kitaura",
@@ -1429,7 +1430,7 @@ function migrateEastJapanBranch(branch) {
     hobbies: [],
     tags: [],
     reports: [],
-  });
+  }, { preferExisting: true });
 
   upsertBranchNode(branch, {
     id: "branch-admin-matsumura",
@@ -1448,7 +1449,7 @@ function migrateEastJapanBranch(branch) {
     hobbies: [],
     tags: [],
     reports: [],
-  });
+  }, { preferExisting: true });
 
   if (rootNode) {
     const existingReports = rootNode.reports.filter((reportId) => reportId && reportId !== rootNode.id);
