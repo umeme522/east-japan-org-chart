@@ -1300,6 +1300,7 @@ function migrateEastJapanBranch(branch) {
     return branch;
   }
 
+  const rootNode = branch.nodes.find((node) => node.id === branch.rootId);
   const dept1 = branch.nodes.find((node) => node.id === "dept-1");
   const dept1Manager = branch.nodes.find((node) => node.id === "dept-1-manager");
   if (dept1 && dept1Manager) {
@@ -1376,6 +1377,83 @@ function migrateEastJapanBranch(branch) {
 
   if (dept1) {
     dept1.reports = [...new Set([...dept1.reports, "office-106"])];
+  }
+
+  upsertBranchNode(branch, {
+    id: "branch-admin",
+    kind: "unit",
+    name: "支店総務部",
+    title: "",
+    department: "東日本支店",
+    description: "支店総務部です。",
+    tags: ["組織"],
+    reports: ["branch-admin-inoue", "branch-admin-kitaura", "branch-admin-matsumura"],
+  });
+
+  upsertBranchNode(branch, {
+    id: "branch-admin-inoue",
+    kind: "person",
+    name: "井上 珠美",
+    lastName: "井上",
+    firstName: "珠美",
+    title: "",
+    titles: [],
+    department: "支店総務部",
+    age: "",
+    joinYear: "",
+    tenure: "",
+    history: "",
+    historyEntries: [],
+    hobbies: [],
+    tags: [],
+    reports: [],
+  });
+
+  upsertBranchNode(branch, {
+    id: "branch-admin-kitaura",
+    kind: "person",
+    name: "北浦 愛梨",
+    lastName: "北浦",
+    firstName: "愛梨",
+    title: "",
+    titles: [],
+    department: "支店総務部",
+    age: "",
+    joinYear: "",
+    tenure: "",
+    history: "",
+    historyEntries: [],
+    hobbies: [],
+    tags: [],
+    reports: [],
+  });
+
+  upsertBranchNode(branch, {
+    id: "branch-admin-matsumura",
+    kind: "person",
+    name: "松村 結花",
+    lastName: "松村",
+    firstName: "結花",
+    title: "",
+    titles: [],
+    department: "支店総務部",
+    age: "",
+    joinYear: "",
+    tenure: "",
+    history: "",
+    historyEntries: [],
+    hobbies: [],
+    tags: [],
+    reports: [],
+  });
+
+  if (rootNode) {
+    const existingReports = rootNode.reports.filter((reportId) => reportId && reportId !== rootNode.id);
+    rootNode.reports = [
+      "east-japan-2",
+      "branch-admin",
+      ...existingReports.filter((reportId) => !["east-japan-2", "branch-admin"].includes(reportId)),
+    ];
   }
 
   return branch;
@@ -1687,7 +1765,6 @@ const state = {
   editStatus: "",
   createStatus: "",
   actionStatus: "",
-  isImporting: false,
   isSaving: false,
   ignoreNodeClickUntil: 0,
 };
@@ -1715,10 +1792,7 @@ const elements = {
   chartFrame: document.querySelector(".chart-frame"),
   chartTitle: document.getElementById("chartTitle"),
   orgChart: document.getElementById("orgChart"),
-  excelExportButton: document.getElementById("excelExportButton"),
-  excelImportButton: document.getElementById("excelImportButton"),
   resetButton: document.getElementById("resetButton"),
-  excelImportInput: document.getElementById("excelImportInput"),
   actionStatus: document.getElementById("actionStatus"),
   openCreateButton: document.getElementById("openCreateButton"),
   memberGrid: document.getElementById("memberGrid"),
@@ -1955,7 +2029,7 @@ function applyServerState(serverState) {
 async function syncBranchesFromServer(options = {}) {
   const { force = false } = options;
 
-  if (persistence.mode !== "server" || syncInFlight || state.isImporting || state.isSaving) {
+  if (persistence.mode !== "server" || syncInFlight || state.isSaving) {
     return;
   }
 
@@ -2639,21 +2713,8 @@ function cancelNodeDrag(event) {
 function renderActionStatus() {
   if (elements.actionStatus) {
     elements.actionStatus.textContent = state.actionStatus;
-    if (state.isImporting) {
-      elements.actionStatus.dataset.state = "busy";
-    } else {
-      delete elements.actionStatus.dataset.state;
-    }
+    delete elements.actionStatus.dataset.state;
   }
-}
-
-function syncImportButtonState() {
-  if (!elements.excelImportButton) {
-    return;
-  }
-
-  elements.excelImportButton.disabled = state.isImporting;
-  elements.excelImportButton.textContent = state.isImporting ? "インポート中..." : "インポート";
 }
 
 function waitForNextPaint() {
@@ -3602,116 +3663,6 @@ function stringifyCsv(rows) {
   return rows.map((row) => row.map((value) => csvEscape(value)).join(",")).join("\r\n");
 }
 
-function parseCsv(text) {
-  const rows = [];
-  let row = [];
-  let value = "";
-  let index = 0;
-  let inQuotes = false;
-
-  while (index < text.length) {
-    const character = text[index];
-
-    if (inQuotes) {
-      if (character === "\"") {
-        if (text[index + 1] === "\"") {
-          value += "\"";
-          index += 1;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        value += character;
-      }
-    } else if (character === "\"") {
-      inQuotes = true;
-    } else if (character === ",") {
-      row.push(value);
-      value = "";
-    } else if (character === "\n") {
-      row.push(value.replace(/\r$/, ""));
-      rows.push(row);
-      row = [];
-      value = "";
-    } else {
-      value += character;
-    }
-
-    index += 1;
-  }
-
-  if (value || row.length > 0) {
-    row.push(value.replace(/\r$/, ""));
-    rows.push(row);
-  }
-
-  return rows.filter((currentRow) => currentRow.some((cell) => normalizeText(cell)));
-}
-
-function csvToObjects(text) {
-  const rows = parseCsv(text.replace(/^\uFEFF/, ""));
-  if (rows.length === 0) {
-    return [];
-  }
-
-  const headers = rows[0].map((header) => normalizeText(header));
-  return rows.slice(1).map((row) => {
-    const entry = {};
-    headers.forEach((header, columnIndex) => {
-      entry[header] = normalizeText(row[columnIndex] ?? "");
-    });
-    return entry;
-  });
-}
-
-function findOfficeFromRow(branch, row, existingNode = null) {
-  const resolveScopeNode = (value) => {
-    const label = normalizeText(value);
-    if (!label) {
-      return null;
-    }
-
-    if (label === branch.name) {
-      return nodeMap(branch).get(branch.rootId) ?? null;
-    }
-
-    const exactUnit = branch.nodes.find((node) => node.kind === "unit" && node.name === label);
-    if (exactUnit) {
-      return exactUnit;
-    }
-
-    const tail = label
-      .split("/")
-      .map((part) => normalizeText(part))
-      .filter(Boolean)
-      .pop();
-
-    if (!tail) {
-      return null;
-    }
-
-    if (tail === branch.name) {
-      return nodeMap(branch).get(branch.rootId) ?? null;
-    }
-
-    return branch.nodes.find((node) => node.kind === "unit" && node.name === tail) ?? null;
-  };
-
-  const officeTarget = resolveScopeNode(row["営業所名"]);
-  if (officeTarget) {
-    return officeTarget;
-  }
-
-  const departmentTarget = resolveScopeNode(row["所属"]);
-  if (departmentTarget) {
-    return departmentTarget;
-  }
-
-  return existingNode
-    ? findOfficeForNode(branch, existingNode.id) ?? findCreateTargetForNode(branch, existingNode.id)
-    : null;
-}
-
 function findUnitByLabel(branch, value) {
   const label = normalizeText(value);
   if (!label) {
@@ -3747,213 +3698,6 @@ function resolveParentForPersonPlacement(branch, targetUnit, personLikeNode) {
   return inlineLeader;
 }
 
-function findExistingPersonForImport(branch, targetUnit, displayName, lastName, firstName) {
-  const normalizedName = buildDisplayName(lastName, firstName, displayName);
-  if (!normalizedName) {
-    return null;
-  }
-
-  const candidates = personNodes(branch).filter((node) => node.name === normalizedName);
-  if (candidates.length === 0) {
-    return null;
-  }
-
-  if (!targetUnit) {
-    return candidates.length === 1 ? candidates[0] : null;
-  }
-
-  return (
-    candidates.find((candidate) => {
-      const candidateUnit = findOfficeForNode(branch, candidate.id) ?? findCreateTargetForNode(branch, candidate.id);
-      return candidateUnit?.id === targetUnit.id;
-    }) ?? null
-  );
-}
-
-function resolveParentFromImport(branch, targetUnit, row, existingNode = null) {
-  if (!targetUnit) {
-    return null;
-  }
-
-  const hasLegacyParentColumns = normalizeText(row["親ID"]) || normalizeText(row["親名"]);
-  if (existingNode && !hasLegacyParentColumns) {
-    const parents = buildParentMap(branch);
-    const currentParent = nodeMap(branch).get(parents.get(existingNode.id));
-    const currentUnit = findOfficeForNode(branch, existingNode.id) ?? findCreateTargetForNode(branch, existingNode.id);
-    if (currentParent && currentUnit?.id === targetUnit.id) {
-      return currentParent;
-    }
-  }
-
-  const roleText = normalizeText(row["役職"]);
-  const inlineLeader = getInlineUnitLeader(targetUnit, nodeMap(branch));
-  const rowName = buildDisplayName(row["姓"], row["名"], row["氏名"]);
-
-  if (!inlineLeader) {
-    return targetUnit;
-  }
-
-  if (inlineLeader.name === rowName || /(所長|署長|部長|支店長)/.test(roleText)) {
-    return targetUnit;
-  }
-
-  return inlineLeader;
-}
-
-function buildExcelRows(branch) {
-  return personNodes(branch).map((person) => {
-    const targetNode = findCreateTargetForNode(branch, person.id);
-    const placementName = createTargetLabel(branch, targetNode) || normalizeText(person.department) || branch.name;
-
-    return [
-      branch.name,
-      placementName,
-      person.lastName ?? "",
-      person.firstName ?? "",
-      getRoleText(person),
-      person.age ?? "",
-      person.tenure ?? "",
-      person.joinYear ?? "",
-    ];
-  });
-}
-
-function importPeopleFromCsv(branch, rows) {
-  const summary = { created: 0, updated: 0, skipped: 0 };
-
-  rows.forEach((row) => {
-    const lastName = normalizeText(row["姓"]);
-    const firstName = normalizeText(row["名"]);
-    const displayName = buildDisplayName(lastName, firstName, row["氏名"]);
-    let existingNode = null;
-    let office = findOfficeFromRow(branch, row);
-
-    const personId = normalizeText(row["人物ID"]);
-    if (personId) {
-      existingNode = branch.nodes.find((node) => node.id === personId && node.kind === "person") ?? null;
-      if (!office) {
-        office = findOfficeFromRow(branch, row, existingNode);
-      }
-    }
-
-    if (!existingNode) {
-      existingNode = findExistingPersonForImport(branch, office, displayName, lastName, firstName);
-      if (!office && existingNode) {
-        office = findOfficeFromRow(branch, row, existingNode);
-      }
-    }
-
-    if (!office || (!displayName && !existingNode)) {
-      summary.skipped += 1;
-      return;
-    }
-
-    const parent = resolveParentFromImport(branch, office, row, existingNode);
-    if (!parent) {
-      summary.skipped += 1;
-      return;
-    }
-
-    if (existingNode) {
-      const nextTitles = normalizeTitles(row["役職"]);
-      existingNode.lastName = lastName;
-      existingNode.firstName = firstName;
-      existingNode.name = displayName || existingNode.name;
-      existingNode.title = nextTitles[0] || "";
-      existingNode.titles = nextTitles;
-      existingNode.department = normalizeText(row["営業所名"]) || normalizeText(row["所属"]) || createTargetLabel(branch, office);
-      existingNode.age = normalizeNumericField(row["年齢"]);
-      existingNode.tenure = normalizeNumericField(row["勤続"]);
-      existingNode.joinYear = normalizeNumericField(row["入社"]);
-      moveNodeToParent(branch, existingNode.id, parent.id);
-      summary.updated += 1;
-      return;
-    }
-
-    const newNodeId = personId || createNodeId(branch, "person");
-    const nextTitles = normalizeTitles(row["役職"]);
-    branch.nodes.push({
-      id: newNodeId,
-      kind: "person",
-      name: displayName,
-      lastName,
-      firstName,
-      title: nextTitles[0] || "",
-      titles: nextTitles,
-      department: normalizeText(row["営業所名"]) || normalizeText(row["所属"]) || createTargetLabel(branch, office),
-      age: normalizeNumericField(row["年齢"]),
-      tenure: normalizeNumericField(row["勤続"]),
-      joinYear: normalizeNumericField(row["入社"]),
-      historyEntries: [],
-      photo: "",
-      tags: [],
-      reports: [],
-    });
-    addChildToParent(branch, parent.id, newNodeId);
-    summary.created += 1;
-  });
-
-  return summary;
-}
-
-function handleExport() {
-  const branch = getActiveBranch();
-  const fileDate = new Date().toISOString().slice(0, 10);
-  const fileName = `${branch?.name ?? "支店組織図"}-人物データ-${fileDate}.csv`;
-  const csvRows = [
-    ["支店名", "営業所名", "姓", "名", "役職", "年齢", "勤続", "入社"],
-    ...buildExcelRows(branch),
-  ];
-  const blob = new Blob([`\uFEFF${stringifyCsv(csvRows)}`], {
-    type: "text/csv;charset=utf-8",
-  });
-  const url = window.URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.URL.revokeObjectURL(url);
-
-  setActionStatus("");
-  renderActionStatus();
-}
-
-async function handleImportFile(event) {
-  const [file] = event.target.files ?? [];
-  if (!file || state.isImporting) {
-    return;
-  }
-
-  state.isImporting = true;
-  state.actionStatus = "インポート中...";
-  syncImportButtonState();
-  renderActionStatus();
-
-  try {
-    await waitForNextPaint();
-    const text = await file.text();
-    const rows = csvToObjects(text);
-    const branch = getActiveBranch();
-    const summary = importPeopleFromCsv(branch, rows);
-    const saved = await saveBranches();
-    state.actionStatus = saved
-      ? `インポート完了 更新${summary.updated}件 追加${summary.created}件 スキップ${summary.skipped}件`
-      : `インポート完了 更新${summary.updated}件 追加${summary.created}件 スキップ${summary.skipped}件 共有保存に失敗しました。`;
-    render();
-  } catch {
-    setActionStatus("インポートに失敗しました。");
-    renderActionStatus();
-  } finally {
-    state.isImporting = false;
-    syncImportButtonState();
-    renderActionStatus();
-    event.target.value = "";
-  }
-}
-
 async function handleReset() {
   const confirmed = window.confirm("編集内容を初期状態に戻します。よろしいですか。");
   if (!confirmed) {
@@ -3973,7 +3717,6 @@ function render() {
     return;
   }
 
-  syncImportButtonState();
   renderActionStatus();
   renderHeroStats();
   renderBranchTabs();
@@ -4043,17 +3786,6 @@ elements.search.addEventListener("input", (event) => {
   clearActionStatus();
   render();
 });
-
-if (elements.excelExportButton) {
-  elements.excelExportButton.addEventListener("click", handleExport);
-}
-
-if (elements.excelImportButton && elements.excelImportInput) {
-  elements.excelImportButton.addEventListener("click", () => {
-    elements.excelImportInput.click();
-  });
-  elements.excelImportInput.addEventListener("change", handleImportFile);
-}
 
 if (elements.resetButton) {
   elements.resetButton.addEventListener("click", handleReset);
@@ -4144,7 +3876,7 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 window.addEventListener("storage", (event) => {
-  if (event.key !== STORAGE_KEY || !event.newValue || state.isImporting) {
+  if (event.key !== STORAGE_KEY || !event.newValue) {
     return;
   }
 

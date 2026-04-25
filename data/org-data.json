@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-11T07:51:49.738Z",
+  "updatedAt": "2026-04-25T07:51:33.131Z",
   "branches": [
     {
       "id": "east-japan",
@@ -20,26 +20,25 @@
           ],
           "department": "支店統括",
           "tags": [
-            "支店運営",
+            "支���運営",
             "組織管理",
             "営業統括"
           ],
           "reports": [
             "east-japan-2",
-            "east-japan-1"
+            "branch-admin"
           ],
           "lastName": "大久保",
           "firstName": "祐介",
-          "age": "52",
+          "age": "",
           "joinYear": "",
-          "tenure": "28",
+          "tenure": "",
           "historyEntries": [],
           "hobbies": [
             "ゴルフ",
             "歴史散策"
           ],
-          "photo": "",
-          "history": ""
+          "photo": ""
         },
         {
           "id": "east-japan-2",
@@ -97,7 +96,7 @@
             "office-105",
             "office-106"
           ],
-          "description": "副支店長配下���業務1部です。",
+          "description": "副支店長配下の業務1部です。",
           "managerName": "",
           "managerLastName": "",
           "managerFirstName": "",
@@ -149,7 +148,7 @@
         {
           "id": "office-101-mera",
           "kind": "person",
-          "name": "米良",
+          "name": "米良 真拓",
           "title": "所長",
           "titles": [
             "所長"
@@ -160,7 +159,7 @@
             "office-101-nakane"
           ],
           "lastName": "米良",
-          "firstName": "",
+          "firstName": "真拓",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -234,7 +233,7 @@
         {
           "id": "office-102-suzuki",
           "kind": "person",
-          "name": "鈴木",
+          "name": "鈴木 秀和",
           "title": "所長",
           "titles": [
             "所長"
@@ -246,7 +245,7 @@
             "office-102-miyake"
           ],
           "lastName": "鈴木",
-          "firstName": "",
+          "firstName": "秀和",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -422,7 +421,7 @@
         {
           "id": "office-105-manaka",
           "kind": "person",
-          "name": "真中",
+          "name": "真上 将生",
           "title": "所長",
           "titles": [
             "所長"
@@ -430,10 +429,11 @@
           "department": "白州水",
           "tags": [],
           "reports": [
-            "office-105-suzuki"
+            "office-105-suzuki",
+            "office-105-endo"
           ],
-          "lastName": "真中",
-          "firstName": "",
+          "lastName": "真上",
+          "firstName": "将生",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -466,7 +466,7 @@
         {
           "id": "office-105-endo",
           "kind": "person",
-          "name": "遠藤",
+          "name": "遠藤 聖人",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -475,7 +475,7 @@
           "tags": [],
           "reports": [],
           "lastName": "遠藤",
-          "firstName": "",
+          "firstName": "聖人",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -502,7 +502,7 @@
             "office-205",
             "office-206"
           ],
-          "description": "副支店長配下の業務2部です。",
+          "description": "副支店長配下の業���2部です。",
           "managerName": "",
           "managerLastName": "",
           "managerFirstName": "",
@@ -534,7 +534,7 @@
         {
           "id": "office-201-negi",
           "kind": "person",
-          "name": "根木",
+          "name": "根岸 一雄",
           "title": "所長",
           "titles": [
             "所長"
@@ -542,11 +542,10 @@
           "department": "栃木北",
           "tags": [],
           "reports": [
-            "person-mnl89hn2",
-            "person-mnet3a2p"
+            "person-mnl89hn2"
           ],
-          "lastName": "根木",
-          "firstName": "",
+          "lastName": "根岸",
+          "firstName": "一雄",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -578,19 +577,18 @@
         {
           "id": "tochigi-1",
           "kind": "person",
-          "name": "藤原 邦康",
-          "title": "署長",
+          "name": "村井 拳",
+          "title": "所長",
           "titles": [
-            "署長"
+            "所長"
           ],
           "department": "栃木",
           "tags": [],
           "reports": [
-            "tochigi-2",
-            "tochigi-3"
+            "tochigi-2"
           ],
-          "lastName": "藤原",
-          "firstName": "邦康",
+          "lastName": "村井",
+          "firstName": "拳",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -609,7 +607,7 @@
           "department": "栃木",
           "tags": [],
           "reports": [
-            "tochigi-3"
+            "person-mnu1xipa"
           ],
           "lastName": "梅原",
           "firstName": "裕太郎",
@@ -622,26 +620,6 @@
               "location": "西多摩営業所"
             }
           ],
-          "hobbies": [],
-          "photo": ""
-        },
-        {
-          "id": "tochigi-3",
-          "kind": "person",
-          "name": "市川 輝",
-          "title": "スタッフ",
-          "titles": [
-            "スタッフ"
-          ],
-          "department": "栃木",
-          "tags": [],
-          "reports": [],
-          "lastName": "市川",
-          "firstName": "輝",
-          "age": "",
-          "joinYear": "",
-          "tenure": "",
-          "historyEntries": [],
           "hobbies": [],
           "photo": ""
         },
@@ -669,7 +647,7 @@
         {
           "id": "office-203-miki",
           "kind": "person",
-          "name": "三喜",
+          "name": "三喜 康孝",
           "title": "所長",
           "titles": [
             "所長"
@@ -680,7 +658,7 @@
             "person-mnl87x38"
           ],
           "lastName": "三喜",
-          "firstName": "",
+          "firstName": "康孝",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -700,8 +678,7 @@
           ],
           "reports": [
             "office-204-kitou",
-            "person-mnl87k4l",
-            "person-mnet4jdm"
+            "person-mnl87k4l"
           ],
           "description": "業務2部配下です。",
           "managerName": "",
@@ -755,7 +732,7 @@
         {
           "id": "office-205-hiroyama",
           "kind": "person",
-          "name": "弘山",
+          "name": "弘山 舜",
           "title": "所長",
           "titles": [
             "所長"
@@ -763,11 +740,10 @@
           "department": "渋川",
           "tags": [],
           "reports": [
-            "person-mnl88l25",
             "person-mnet53q0"
           ],
           "lastName": "弘山",
-          "firstName": "",
+          "firstName": "舜",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -799,7 +775,7 @@
         {
           "id": "office-206-kataoka",
           "kind": "person",
-          "name": "片岡",
+          "name": "片岡 勇貴",
           "title": "所長",
           "titles": [
             "所長"
@@ -810,7 +786,7 @@
             "office-206-maezawa"
           ],
           "lastName": "片岡",
-          "firstName": "",
+          "firstName": "勇貴",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -937,7 +913,7 @@
         {
           "id": "office-301-watanabe",
           "kind": "person",
-          "name": "渡辺",
+          "name": "渡辺 洋治郎",
           "title": "副長",
           "titles": [
             "副長"
@@ -946,13 +922,14 @@
           "tags": [],
           "reports": [],
           "lastName": "渡辺",
-          "firstName": "",
+          "firstName": "洋治郎",
           "age": "",
           "joinYear": "",
           "tenure": "",
           "historyEntries": [],
           "hobbies": [],
-          "photo": ""
+          "photo": "",
+          "history": ""
         },
         {
           "id": "office-302",
@@ -1030,7 +1007,7 @@
           "reports": [
             "office-303-kawai"
           ],
-          "description": "業務3部配下です。",
+          "description": "���務3部配下です。",
           "managerName": "",
           "managerLastName": "",
           "managerFirstName": "",
@@ -1041,7 +1018,7 @@
         {
           "id": "office-303-kawai",
           "kind": "person",
-          "name": "川井",
+          "name": "川井 邦彦",
           "title": "所長",
           "titles": [
             "所長"
@@ -1054,7 +1031,7 @@
             "office-303-sato"
           ],
           "lastName": "川井",
-          "firstName": "",
+          "firstName": "邦彦",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1112,7 +1089,9 @@
           ],
           "department": "北関東流通",
           "tags": [],
-          "reports": [],
+          "reports": [
+            "person-mnu216hz"
+          ],
           "lastName": "佐藤",
           "firstName": "",
           "age": "",
@@ -1135,7 +1114,7 @@
           "reports": [
             "office-304-onishi-chief"
           ],
-          "description": "業務3部配下です。",
+          "description": "業��3部配下です。",
           "managerName": "",
           "managerLastName": "",
           "managerFirstName": "",
@@ -1146,7 +1125,7 @@
         {
           "id": "office-304-onishi-chief",
           "kind": "person",
-          "name": "大友",
+          "name": "大友 俊也",
           "title": "所長",
           "titles": [
             "所長"
@@ -1157,7 +1136,7 @@
             "office-304-taira"
           ],
           "lastName": "大友",
-          "firstName": "",
+          "firstName": "俊也",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1168,7 +1147,7 @@
         {
           "id": "office-304-taira",
           "kind": "person",
-          "name": "平良",
+          "name": "平良 一和",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -1177,7 +1156,7 @@
           "tags": [],
           "reports": [],
           "lastName": "平良",
-          "firstName": "",
+          "firstName": "一和",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1325,7 +1304,8 @@
           "tags": [],
           "reports": [
             "office-306-kishikawa",
-            "office-102-fujii"
+            "office-102-fujii",
+            "office-306-onishi"
           ],
           "lastName": "原",
           "firstName": "翔平",
@@ -1339,7 +1319,7 @@
         {
           "id": "office-306-kishikawa",
           "kind": "person",
-          "name": "岸川",
+          "name": "岸川 陽平",
           "title": "係長",
           "titles": [
             "係長"
@@ -1350,18 +1330,23 @@
             "office-306-onishi"
           ],
           "lastName": "岸川",
-          "firstName": "",
+          "firstName": "陽平",
           "age": "",
-          "joinYear": "",
-          "tenure": "",
-          "historyEntries": [],
+          "joinYear": "2017",
+          "tenure": "9",
+          "historyEntries": [
+            {
+              "year": "2017",
+              "location": "栃木"
+            }
+          ],
           "hobbies": [],
           "photo": ""
         },
         {
           "id": "office-306-onishi",
           "kind": "person",
-          "name": "大西",
+          "name": "大西 和哉",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -1370,7 +1355,7 @@
           "tags": [],
           "reports": [],
           "lastName": "大西",
-          "firstName": "",
+          "firstName": "和哉",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1422,16 +1407,18 @@
         {
           "id": "person-mnl86uj6",
           "kind": "person",
-          "name": "滝下",
+          "name": "滝下 直樹",
           "title": "所長",
           "titles": [
             "所長"
           ],
           "department": "南多摩",
           "tags": [],
-          "reports": [],
+          "reports": [
+            "person-mnu20750"
+          ],
           "lastName": "滝下",
-          "firstName": "",
+          "firstName": "直樹",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1442,7 +1429,7 @@
         {
           "id": "person-mnl87k4l",
           "kind": "person",
-          "name": "植野",
+          "name": "植野 明寛",
           "title": "所長",
           "titles": [
             "所長"
@@ -1451,7 +1438,7 @@
           "tags": [],
           "reports": [],
           "lastName": "植野",
-          "firstName": "",
+          "firstName": "明寛",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1471,26 +1458,6 @@
           "tags": [],
           "reports": [],
           "lastName": "輪千",
-          "firstName": "",
-          "age": "",
-          "joinYear": "",
-          "tenure": "",
-          "historyEntries": [],
-          "hobbies": [],
-          "photo": ""
-        },
-        {
-          "id": "person-mnl88l25",
-          "kind": "person",
-          "name": "出澤",
-          "title": "副長",
-          "titles": [
-            "副長"
-          ],
-          "department": "渋川",
-          "tags": [],
-          "reports": [],
-          "lastName": "出澤",
           "firstName": "",
           "age": "",
           "joinYear": "",
@@ -1560,6 +1527,126 @@
           "photo": ""
         },
         {
+          "id": "person-mnet53q0",
+          "kind": "person",
+          "name": "出澤 草併",
+          "title": "副長",
+          "titles": [
+            "副長"
+          ],
+          "department": "渋川",
+          "tags": [],
+          "reports": [],
+          "lastName": "出澤",
+          "firstName": "草併",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnu1xipa",
+          "kind": "person",
+          "name": "市川 輝",
+          "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
+          "department": "栃木",
+          "tags": [],
+          "reports": [],
+          "lastName": "市川",
+          "firstName": "輝",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnu20750",
+          "kind": "person",
+          "name": "中丸",
+          "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
+          "department": "南多摩",
+          "tags": [],
+          "reports": [],
+          "lastName": "中丸",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnu216hz",
+          "kind": "person",
+          "name": "原",
+          "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
+          "department": "北関東流通",
+          "tags": [],
+          "reports": [],
+          "lastName": "原",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "tochigi-3",
+          "kind": "person",
+          "name": "市川 輝",
+          "title": "スタッフ",
+          "titles": [
+            "スタッフ"
+          ],
+          "department": "栃木",
+          "tags": [],
+          "reports": [],
+          "lastName": "市川",
+          "firstName": "輝",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnl88l25",
+          "kind": "person",
+          "name": "出澤",
+          "title": "副長",
+          "titles": [
+            "副長"
+          ],
+          "department": "渋川",
+          "tags": [],
+          "reports": [],
+          "lastName": "出澤",
+          "firstName": "",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
           "id": "person-mnet3a2p",
           "kind": "person",
           "name": "東 誠",
@@ -1600,23 +1687,123 @@
           "photo": ""
         },
         {
-          "id": "person-mnet53q0",
+          "id": "person-mnet3zeg",
           "kind": "person",
-          "name": "出澤 草併",
-          "title": "副長",
+          "name": "輪千",
+          "title": "係長",
           "titles": [
-            "副���"
+            "係長"
           ],
-          "department": "渋川",
+          "department": "羽生とちぎ",
           "tags": [],
           "reports": [],
-          "lastName": "出澤",
-          "firstName": "草併",
+          "lastName": "輪千",
+          "firstName": "",
           "age": "",
           "joinYear": "",
           "tenure": "",
           "historyEntries": [],
           "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "person-mnet53mh",
+          "kind": "person",
+          "name": "出澤 草栟",
+          "title": "副長",
+          "titles": [
+            "副長"
+          ],
+          "department": "渋川",
+          "tags": [],
+          "reports": [],
+          "lastName": "出澤",
+          "firstName": "草栟",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "photo": ""
+        },
+        {
+          "id": "branch-admin",
+          "kind": "unit",
+          "name": "?????",
+          "title": "",
+          "titles": [],
+          "department": "?????",
+          "description": "????????",
+          "tags": [
+            "??"
+          ],
+          "reports": [
+            "branch-admin-inoue",
+            "branch-admin-kitaura",
+            "branch-admin-matsumura"
+          ],
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
+        },
+        {
+          "id": "branch-admin-inoue",
+          "kind": "person",
+          "name": "?? ??",
+          "lastName": "??",
+          "firstName": "??",
+          "title": "",
+          "titles": [],
+          "department": "?????",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "history": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "tags": [],
+          "reports": [],
+          "photo": ""
+        },
+        {
+          "id": "branch-admin-kitaura",
+          "kind": "person",
+          "name": "?? ??",
+          "lastName": "??",
+          "firstName": "??",
+          "title": "",
+          "titles": [],
+          "department": "?????",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "history": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "tags": [],
+          "reports": [],
+          "photo": ""
+        },
+        {
+          "id": "branch-admin-matsumura",
+          "kind": "person",
+          "name": "?? ??",
+          "lastName": "??",
+          "firstName": "??",
+          "title": "",
+          "titles": [],
+          "department": "?????",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "history": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "tags": [],
+          "reports": [],
           "photo": ""
         }
       ]
