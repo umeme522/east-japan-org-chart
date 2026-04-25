@@ -966,6 +966,51 @@ function getRoleWeight(node) {
   return Math.max(...titles.map((title) => roleWeight(title)));
 }
 
+function roleToneKey(title) {
+  const normalized = normalizeText(title);
+  if (!normalized) {
+    return "base";
+  }
+  if (normalized.includes("副支店長")) {
+    return "deputy-chief";
+  }
+  if (normalized.includes("支店長")) {
+    return "branch-chief";
+  }
+  if (normalized.includes("部長")) {
+    return "director";
+  }
+  if (normalized.includes("所長")) {
+    return "office-chief";
+  }
+  if (normalized.includes("課長")) {
+    return "section-chief";
+  }
+  if (normalized.includes("副長")) {
+    return "assistant-chief";
+  }
+  if (normalized.includes("署長")) {
+    return "office-chief";
+  }
+  if (normalized.includes("係長")) {
+    return "leader";
+  }
+  if (normalized.includes("スタッフ")) {
+    return "staff";
+  }
+  return "base";
+}
+
+function getRoleToneKey(node) {
+  const titles = getNodeTitles(node);
+  if (titles.length === 0) {
+    return "base";
+  }
+
+  const topTitle = [...titles].sort((left, right) => roleWeight(right) - roleWeight(left))[0];
+  return roleToneKey(topTitle);
+}
+
 function comparePeopleForDisplay(leftNode, rightNode) {
   return (
     getRoleWeight(rightNode) - getRoleWeight(leftNode) ||
@@ -2955,7 +3000,7 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
   const isActive = node.id === state.selectedNodeId;
   const isRoot = node.id === scopeRootId;
   const isLeaf = reportIds.length === 0;
-  const toneClass = node.kind === "person" && !isRoot ? ` role-tone-${getRoleWeight(node)}` : "";
+  const toneClass = node.kind === "person" && !isRoot ? ` role-tone-${getRoleToneKey(node)}` : "";
   const hasInlineLeader = Boolean(inlineLeader);
   const isExecutive = node.kind === "person" && /(支店長|副支店長)/.test(getRoleText(node));
   const isOfficeWithLeader = isOfficeNode(node) && hasInlineLeader;
@@ -3049,7 +3094,7 @@ function renderMemberGrid(branch) {
   people.forEach((person) => {
     const card = document.createElement("article");
     const roleText = getPrimaryTitle(person);
-    const toneClass = ` tone-${Math.max(getRoleWeight(person), 0)}`;
+    const toneClass = ` tone-${getRoleToneKey(person)}`;
     card.className = `member-card${person.id === state.selectedNodeId ? " active" : ""}${toneClass}`;
     card.innerHTML = `
       <div class="member-inline-row${roleText ? " has-meta" : ""}">
