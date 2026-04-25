@@ -3048,7 +3048,7 @@ function renderMemberGrid(branch) {
 
   people.forEach((person) => {
     const card = document.createElement("article");
-    const roleText = getRoleText(person);
+    const roleText = getPrimaryTitle(person);
     const toneClass = ` tone-${Math.max(getRoleWeight(person), 0)}`;
     card.className = `member-card${person.id === state.selectedNodeId ? " active" : ""}${toneClass}`;
     card.innerHTML = `
