@@ -1096,6 +1096,41 @@ function getInlineUnitLeader(node, nodes) {
   return null;
 }
 
+function isDescendantReportId(nodes, ancestorId, targetId, visited = new Set()) {
+  if (!ancestorId || !targetId || ancestorId === targetId || visited.has(ancestorId)) {
+    return false;
+  }
+
+  visited.add(ancestorId);
+  const ancestor = nodes.get(ancestorId);
+  if (!ancestor) {
+    return false;
+  }
+
+  for (const childId of ancestor.reports ?? []) {
+    if (childId === targetId) {
+      return true;
+    }
+    if (isDescendantReportId(nodes, childId, targetId, visited)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function pruneNestedReportIds(reportIds, nodes) {
+  const uniqueReportIds = Array.from(new Set(reportIds));
+  return uniqueReportIds.filter((reportId, index) => {
+    return !uniqueReportIds.some((otherId, otherIndex) => {
+      if (index === otherIndex) {
+        return false;
+      }
+      return isDescendantReportId(nodes, otherId, reportId);
+    });
+  });
+}
+
 function sortReportIdsForDisplay(node, nodes) {
   const inlineLeader = getInlineUnitLeader(node, nodes);
   const displayReportIds = node.reports.filter((reportId) => reportId !== inlineLeader?.id);
@@ -1108,7 +1143,7 @@ function sortReportIdsForDisplay(node, nodes) {
     });
   }
 
-  const reports = displayReportIds
+  const reports = pruneNestedReportIds(displayReportIds, nodes)
     .map((reportId, index) => ({
       reportId,
       index,
