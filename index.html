@@ -101,6 +101,10 @@
               <span>所属</span>
               <select id="createDepartment"></select>
             </label>
+            <label class="edit-field">
+              <span>社員番号</span>
+              <input id="createEmployeeNumber" type="text" inputmode="numeric" placeholder="社員番号">
+            </label>
             <label class="edit-field edit-field-wide">
               <span>顔写真</span>
               <input id="createPhoto" type="file" accept="image/*">
@@ -140,26 +144,30 @@
           </div>
 
           <dl class="profile-simple-list">
-            <div id="profileRoleRow" class="profile-simple-wide">
-              <dt>役職</dt>
-              <dd id="profileRoleValue"></dd>
-            </div>
-            <div id="profileAffiliationRow" class="profile-simple-wide">
-              <dt>所属</dt>
-              <dd id="profileAffiliationValue"></dd>
-            </div>
-            <div id="profilePersonMetaRow" class="profile-stat-grid">
+            <div id="profilePersonInfoRow" class="profile-stat-grid profile-stat-grid-compact">
+              <div class="profile-stat">
+                <dt>所属</dt>
+                <dd id="profileAffiliationValue"></dd>
+              </div>
+              <div class="profile-stat">
+                <dt>役職</dt>
+                <dd id="profileRoleValue"></dd>
+              </div>
+              <div class="profile-stat">
+                <dt>社員番号</dt>
+                <dd id="profileEmployeeNumberValue"></dd>
+              </div>
               <div class="profile-stat">
                 <dt>年齢</dt>
                 <dd id="profileAgeValue"></dd>
               </div>
               <div class="profile-stat">
-                <dt>入社</dt>
-                <dd id="profileJoinYearValue"></dd>
-              </div>
-              <div class="profile-stat">
                 <dt>勤続</dt>
                 <dd id="profileTenureValue"></dd>
+              </div>
+              <div class="profile-stat">
+                <dt>入社</dt>
+                <dd id="profileJoinYearValue"></dd>
               </div>
             </div>
             <div class="profile-simple-wide" id="profileDescriptionRow">
@@ -193,6 +201,10 @@
               <label class="edit-field">
                 <span>所属</span>
                 <select id="editDepartment"></select>
+              </label>
+              <label class="edit-field" id="editEmployeeNumberField">
+                <span>社員番号</span>
+                <input id="editEmployeeNumber" type="text" inputmode="numeric" placeholder="社員番号">
               </label>
               <label class="edit-field edit-field-wide" id="editPhotoField">
                 <span>顔写真</span>

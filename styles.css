@@ -1096,21 +1096,19 @@ textarea {
   gap: 12px;
 }
 
+.profile-stat-grid-compact {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px 12px;
+}
+
 .profile-stat {
   display: flex;
   align-items: center;
   gap: 6px;
   min-width: 0;
-  padding: 8px 10px;
+  padding: 7px 9px;
   border-radius: 14px;
-}
-
-#profilePersonMetaRow .profile-stat:nth-child(2) {
-  order: 3;
-}
-
-#profilePersonMetaRow .profile-stat:nth-child(3) {
-  order: 2;
 }
 
 .profile-simple-list dt {
@@ -1134,18 +1132,32 @@ textarea {
   margin-left: auto;
   white-space: nowrap;
   font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-#profilePersonMetaRow .profile-stat:nth-child(1) {
+#profilePersonInfoRow .profile-stat:nth-child(1) {
   background: rgba(31, 109, 71, 0.08);
 }
 
-#profilePersonMetaRow .profile-stat:nth-child(2) {
+#profilePersonInfoRow .profile-stat:nth-child(2) {
   background: rgba(217, 119, 42, 0.09);
 }
 
-#profilePersonMetaRow .profile-stat:nth-child(3) {
+#profilePersonInfoRow .profile-stat:nth-child(3) {
   background: rgba(102, 111, 104, 0.1);
+}
+
+#profilePersonInfoRow .profile-stat:nth-child(4) {
+  background: rgba(31, 109, 71, 0.08);
+}
+
+#profilePersonInfoRow .profile-stat:nth-child(5) {
+  background: rgba(102, 111, 104, 0.1);
+}
+
+#profilePersonInfoRow .profile-stat:nth-child(6) {
+  background: rgba(217, 119, 42, 0.09);
 }
 
 .history-list {
@@ -1262,14 +1274,12 @@ textarea {
   padding: 12px 0 2px;
 }
 
-#profileRoleRow,
-#profileAffiliationRow,
-#profilePersonMetaRow,
+#profilePersonInfoRow,
 #profileDescriptionRow {
   min-width: 0;
 }
 
-#profilePersonMetaRow,
+#profilePersonInfoRow,
 #profileDescriptionRow,
 .profile-simple-wide.full {
   grid-column: 1 / -1;
@@ -1928,6 +1938,10 @@ textarea {
     padding: 10px 11px;
   }
 
+  .profile-stat-grid-compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .profile-stat {
     gap: 4px;
     padding: 8px 9px;
@@ -1947,7 +1961,8 @@ textarea {
   }
 
   #profileRoleValue,
-  #profileAffiliationValue {
+  #profileAffiliationValue,
+  #profileEmployeeNumberValue {
     font-size: 0.84rem;
   }
 

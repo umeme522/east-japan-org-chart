@@ -1271,6 +1271,7 @@ function normalizeNode(node, index) {
   if (kind === "person") {
     normalized.lastName = nameParts.lastName;
     normalized.firstName = nameParts.firstName;
+    normalized.employeeNumber = normalizeText(node?.employeeNumber);
     const joinYear = normalizeNumericField(node?.joinYear);
     const rawAge = normalizeNumericField(node?.age);
     const looksLikeJoinYear = /^(?:19|20)\d{2}$/.test(rawAge);
@@ -1735,6 +1736,7 @@ function mergeNormalizedNode(primaryNode, localNode, options = {}) {
     merged.firstName = mergeTextValue(primaryNode.firstName, localNode.firstName, { preferLocal: preferLocalEditable });
     merged.name = buildDisplayName(merged.lastName, merged.firstName, mergeTextValue(primaryNode.name, localNode.name, { preferLocal: preferLocalEditable }));
     merged.department = mergeTextValue(primaryNode.department, localNode.department, { preferLocal: preferLocalEditable });
+    merged.employeeNumber = mergeTextValue(primaryNode.employeeNumber, localNode.employeeNumber, { preferLocal: preferLocalEditable });
     merged.photo = mergeTextValue(primaryNode.photo, localNode.photo, { preferLocal: preferLocalEditable });
     merged.age = mergeTextValue(primaryNode.age, localNode.age, { preferLocal: preferLocalEditable });
     merged.joinYear = mergeTextValue(primaryNode.joinYear, localNode.joinYear, { preferLocal: preferLocalEditable });
@@ -1887,11 +1889,10 @@ const elements = {
   profilePhoto: document.getElementById("profilePhoto"),
   profilePhotoImage: document.getElementById("profilePhotoImage"),
   profileName: document.getElementById("profileName"),
-  profileRoleRow: document.getElementById("profileRoleRow"),
   profileRoleValue: document.getElementById("profileRoleValue"),
-  profileAffiliationRow: document.getElementById("profileAffiliationRow"),
   profileAffiliationValue: document.getElementById("profileAffiliationValue"),
-  profilePersonMetaRow: document.getElementById("profilePersonMetaRow"),
+  profilePersonInfoRow: document.getElementById("profilePersonInfoRow"),
+  profileEmployeeNumberValue: document.getElementById("profileEmployeeNumberValue"),
   profileAgeValue: document.getElementById("profileAgeValue"),
   profileJoinYearValue: document.getElementById("profileJoinYearValue"),
   profileTenureValue: document.getElementById("profileTenureValue"),
@@ -1910,6 +1911,8 @@ const elements = {
   editTitleSecondary: document.getElementById("editTitleSecondary"),
   editAddTitleButton: document.getElementById("editAddTitleButton"),
   editDepartment: document.getElementById("editDepartment"),
+  editEmployeeNumberField: document.getElementById("editEmployeeNumberField"),
+  editEmployeeNumber: document.getElementById("editEmployeeNumber"),
   editPhotoField: document.getElementById("editPhotoField"),
   editPhoto: document.getElementById("editPhoto"),
   editAgeField: document.getElementById("editAgeField"),
@@ -1936,6 +1939,7 @@ const elements = {
   createTitleSecondary: document.getElementById("createTitleSecondary"),
   createAddTitleButton: document.getElementById("createAddTitleButton"),
   createDepartment: document.getElementById("createDepartment"),
+  createEmployeeNumber: document.getElementById("createEmployeeNumber"),
   createPhoto: document.getElementById("createPhoto"),
   createAge: document.getElementById("createAge"),
   createJoinYear: document.getElementById("createJoinYear"),
@@ -2927,6 +2931,9 @@ function toggleEditFormFields(kind) {
   if (elements.editPhotoField) {
     elements.editPhotoField.hidden = !isPerson;
   }
+  if (elements.editEmployeeNumberField) {
+    elements.editEmployeeNumberField.hidden = !isPerson;
+  }
   if (!isPerson) {
     setSecondaryRoleVisibility(elements.editTitleSecondaryField, elements.editAddTitleButton, false);
   }
@@ -3170,29 +3177,25 @@ function renderProfile(branch) {
       elements.profilePhotoImage.alt = "";
     }
   }
-  elements.profileAffiliationRow.hidden = false;
-  elements.profileAffiliationRow.classList.remove("full");
   const affiliation = buildAffiliation(branch, selected) || "未設定";
-  elements.profileAffiliationValue.textContent = affiliation;
-  elements.profileAffiliationValue.title = affiliation;
 
   if (selected.kind === "person") {
     const roleText = getRoleText(selected) || "未設定";
-    elements.profileRoleRow.hidden = false;
-    elements.profileRoleRow.classList.remove("full");
     elements.profileRoleValue.textContent = roleText;
     elements.profileRoleValue.title = roleText;
-    elements.profilePersonMetaRow.hidden = false;
+    elements.profilePersonInfoRow.hidden = false;
+    elements.profileAffiliationValue.textContent = affiliation;
+    elements.profileAffiliationValue.title = affiliation;
+    elements.profileEmployeeNumberValue.textContent = selected.employeeNumber || "未設定";
+    elements.profileEmployeeNumberValue.title = selected.employeeNumber || "未設定";
     elements.profileAgeValue.textContent = selected.age || "未設定";
-    elements.profileJoinYearValue.textContent = selected.joinYear || "未設定";
     elements.profileTenureValue.textContent = selected.tenure || "未設定";
+    elements.profileJoinYearValue.textContent = selected.joinYear || "未設定";
     elements.profileDescriptionRow.hidden = false;
     elements.profileDescriptionLabel.textContent = "経歴";
     renderHistoryDisplay(elements.profileDescriptionValue, selected.historyEntries ?? []);
   } else {
-    elements.profileRoleRow.hidden = true;
-    elements.profilePersonMetaRow.hidden = true;
-    elements.profileAffiliationRow.classList.add("full");
+    elements.profilePersonInfoRow.hidden = true;
     elements.profileDescriptionRow.hidden = true;
     elements.profileDescriptionValue.textContent = "";
   }
@@ -3218,6 +3221,9 @@ function populateEditForm(node) {
     node.titles ?? node.title
   );
   setSelectOptions(elements.editDepartment, buildAffiliationOptions(branch, node.department), node.department ?? "");
+  if (elements.editEmployeeNumber) {
+    elements.editEmployeeNumber.value = node.kind === "person" ? (node.employeeNumber ?? "") : "";
+  }
   if (elements.editPhoto) {
     elements.editPhoto.value = "";
   }
@@ -3239,6 +3245,9 @@ function populateEditForm(node) {
     elements.editHistoryFieldLabel.textContent = "経歴";
   } else {
     toggleEditFormFields("unit");
+    if (elements.editEmployeeNumber) {
+      elements.editEmployeeNumber.value = "";
+    }
     setSelectOptions(elements.editAge, buildNumericSelectOptions(EDIT_AGE_OPTIONS), "");
     setSelectOptions(elements.editJoinYear, buildNumericSelectOptions(EDIT_JOIN_YEAR_OPTIONS), "");
     setSelectOptions(elements.editTenure, buildNumericSelectOptions(EDIT_TENURE_OPTIONS), "");
@@ -3322,6 +3331,7 @@ async function handleProfileSave(event) {
   const displayName = buildDisplayName(lastName, firstName, selected.name) || selected.name;
   const nextDepartment = normalizeText(elements.editDepartment.value) || selected.department;
   const selectedTitles = collectRoleValues(elements.editTitle, elements.editTitleSecondary);
+  const nextEmployeeNumber = normalizeText(elements.editEmployeeNumber?.value);
   const nextAge = normalizeNumericField(elements.editAge.value);
   const nextJoinYear = normalizeNumericField(elements.editJoinYear.value);
   const nextTenure = normalizeNumericField(elements.editTenure.value);
@@ -3354,6 +3364,7 @@ async function handleProfileSave(event) {
     if (selected.kind === "person") {
       updates.lastName = lastName;
       updates.firstName = firstName;
+      updates.employeeNumber = nextEmployeeNumber;
       updates.age = nextAge;
       updates.joinYear = nextJoinYear;
       updates.tenure = nextTenure;
@@ -3491,6 +3502,7 @@ async function handleCreatePerson(event) {
     department:
       elements.createDepartment?.value.trim() ||
       createDepartmentName(branch, targetNode, parent),
+    employeeNumber: normalizeText(elements.createEmployeeNumber?.value),
     age: normalizeNumericField(elements.createAge?.value),
     joinYear: normalizeNumericField(elements.createJoinYear?.value),
     tenure: normalizeNumericField(elements.createTenure?.value),
