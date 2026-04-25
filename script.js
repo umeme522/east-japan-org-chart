@@ -6,7 +6,7 @@ const SERVER_DATA_ENDPOINT = USE_REMOTE_SYNC_ENDPOINT ? PUBLIC_SYNC_ENDPOINT : "
 const SERVER_SYNC_INTERVAL_MS = 8000;
 const BUNDLED_UPDATED_AT = "2026-03-31T00:00:00.000Z";
 const ORG_DRAG_ENABLED = false;
-const EDIT_ROLE_OPTIONS = ["", "支店長", "副支店長", "部長", "所長", "副長", "課長", "係長", "スタッフ"];
+const EDIT_ROLE_OPTIONS = ["", "支店長", "副支店長", "部長", "所長", "課長", "副長", "係長", "スタッフ"];
 const EDIT_AGE_OPTIONS = Array.from({ length: 82 }, (_, index) => String(index + 18));
 const EDIT_TENURE_OPTIONS = Array.from({ length: 61 }, (_, index) => String(index));
 const EDIT_JOIN_YEAR_OPTIONS = Array.from(
@@ -939,11 +939,11 @@ function roleWeight(title) {
   if (normalized.includes("所長")) {
     return 4;
   }
+  if (normalized.includes("課長")) {
+    return 3.5;
+  }
   if (normalized.includes("副長")) {
     return 3;
-  }
-  if (normalized.includes("課長")) {
-    return 2.5;
   }
   if (normalized.includes("署長")) {
     return 2.25;
