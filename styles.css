@@ -834,15 +834,15 @@ textarea {
 
 .member-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(212px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(186px, 1fr));
+  gap: 8px;
 }
 
 .member-card {
   display: grid;
   gap: 4px;
-  padding: 11px 12px 11px 13px;
-  border-radius: 16px;
+  padding: 10px 10px 10px 12px;
+  border-radius: 14px;
   border: 1px solid rgba(102, 111, 104, 0.14);
   background: linear-gradient(180deg, rgba(253, 253, 250, 0.99) 0%, rgba(238, 241, 237, 0.98) 100%);
   box-shadow: var(--shadow-soft);
@@ -983,9 +983,9 @@ textarea {
 
 .member-inline-row {
   display: grid;
-  grid-template-columns: minmax(54px, 0.34fr) minmax(0, 1fr);
+  grid-template-columns: minmax(48px, 0.31fr) minmax(0, 1fr);
   align-items: start;
-  column-gap: 6px;
+  column-gap: 5px;
   min-width: 0;
   white-space: normal;
 }
