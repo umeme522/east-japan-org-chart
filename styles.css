@@ -770,7 +770,7 @@ textarea {
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
-  gap: 5px;
+  gap: 4px;
   width: 100%;
 }
 
@@ -783,6 +783,11 @@ textarea {
   color: var(--ink);
   line-height: 1.15;
   text-align: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
