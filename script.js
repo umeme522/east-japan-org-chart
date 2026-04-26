@@ -3345,10 +3345,8 @@ function renderMemberGrid(branch) {
     const toneClass = ` tone-${getRoleToneKey(person)}`;
     card.className = `member-card${person.id === state.selectedNodeId ? " active" : ""}${toneClass}`;
     card.innerHTML = `
-      <div class="member-role-slot">
+      <div class="member-inline-row${roleText ? " has-meta" : ""}">
         <p class="member-role">${roleText || "未設定"}</p>
-      </div>
-      <div class="member-name-slot">
         <button type="button" class="member-name-button">${person.name}</button>
       </div>
     `;
