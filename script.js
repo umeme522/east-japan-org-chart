@@ -1182,10 +1182,11 @@ function pruneNestedReportIds(reportIds, nodes) {
 function sortReportIdsForDisplay(node, nodes) {
   const inlineLeader = getInlineUnitLeader(node, nodes);
   const inlineLeaderNode = inlineLeader?.linkedNodeId ? nodes.get(inlineLeader.linkedNodeId) : null;
+  const inlineLeaderReports = inlineLeaderNode?.reports ?? inlineLeader?.reports ?? [];
   const officeChildIds = isOfficeNode(node) && inlineLeader
     ? [
         ...node.reports.filter((reportId) => reportId !== inlineLeader.id),
-        ...(inlineLeaderNode?.reports ?? []),
+        ...inlineLeaderReports,
       ]
     : node.reports.filter((reportId) => reportId !== inlineLeader?.id);
 
