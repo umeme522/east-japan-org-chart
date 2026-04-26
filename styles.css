@@ -836,6 +836,7 @@ textarea {
 
 .node-card.office-inline-stacked .node-inline-leader {
   width: 100%;
+  pointer-events: none;
 }
 
 .node-inline-leader-role {
