@@ -611,9 +611,9 @@ textarea {
   width: 156px;
   --executive-half-width: 78px;
   min-height: 48px;
-  background: var(--accent-strong);
-  border-color: rgba(31, 106, 67, 0.55);
-  box-shadow: 0 18px 32px rgba(31, 106, 67, 0.14);
+  background: rgba(77, 160, 115, 0.92);
+  border-color: rgba(58, 130, 92, 0.58);
+  box-shadow: 0 18px 32px rgba(31, 106, 67, 0.12);
 }
 
 .node-card.is-executive {
@@ -665,13 +665,13 @@ textarea {
 
 .node-card.role-tone-office-chief,
 .node-card.role-tone-section-chief {
-  background: rgba(235, 247, 239, 0.99);
-  border-color: rgba(52, 145, 90, 0.44);
+  background: rgba(243, 250, 245, 0.99);
+  border-color: rgba(96, 173, 121, 0.34);
 }
 
 .node-card.role-tone-office-chief::before,
 .node-card.role-tone-section-chief::before {
-  background: rgba(42, 140, 84, 0.9);
+  background: rgba(82, 165, 112, 0.82);
 }
 
 .node-card.role-tone-director {
