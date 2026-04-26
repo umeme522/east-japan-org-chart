@@ -625,61 +625,84 @@ textarea {
 }
 
 .node-card.role-tone-staff {
-  background: rgba(246, 247, 244, 0.99);
-  border-color: rgba(128, 136, 131, 0.24);
+  background: rgba(255, 255, 255, 0.99);
+  border-color: rgba(182, 186, 181, 0.48);
 }
 
 .node-card.role-tone-staff::before {
-  background: rgba(124, 132, 127, 0.54);
+  background: rgba(214, 216, 213, 0.96);
 }
 
 .node-card.role-tone-leader {
-  background: rgba(236, 242, 237, 0.99);
-  border-color: rgba(92, 109, 99, 0.28);
+  background: rgba(236, 238, 240, 0.99);
+  border-color: rgba(133, 139, 146, 0.52);
 }
 
 .node-card.role-tone-leader::before {
-  background: rgba(86, 103, 94, 0.72);
+  background: rgba(129, 136, 143, 0.9);
 }
 
 .node-card.role-tone-assistant-chief {
-  background: rgba(255, 243, 232, 0.99);
-  border-color: rgba(208, 126, 52, 0.34);
+  background: rgba(255, 240, 223, 0.99);
+  border-color: rgba(215, 129, 39, 0.52);
 }
 
 .node-card.role-tone-assistant-chief::before {
-  background: rgba(201, 112, 28, 0.84);
+  background: rgba(217, 123, 28, 0.9);
 }
 
 .node-card.role-tone-office-chief,
 .node-card.role-tone-section-chief {
-  background: rgba(228, 242, 233, 0.99);
-  border-color: rgba(34, 114, 72, 0.34);
+  background: rgba(228, 243, 232, 0.99);
+  border-color: rgba(34, 120, 71, 0.5);
 }
 
 .node-card.role-tone-office-chief::before,
 .node-card.role-tone-section-chief::before {
-  background: rgba(23, 113, 66, 0.84);
+  background: rgba(28, 122, 71, 0.92);
 }
 
 .node-card.role-tone-director {
-  background: rgba(238, 240, 242, 0.99);
-  border-color: rgba(126, 134, 143, 0.4);
+  background: rgba(233, 207, 181, 0.99);
+  border-color: rgba(160, 100, 46, 0.5);
 }
 
 .node-card.role-tone-director::before {
-  background: rgba(122, 131, 140, 0.88);
+  background: rgba(166, 104, 48, 0.92);
 }
 
 .node-card.role-tone-deputy-chief,
 .node-card.role-tone-branch-chief {
-  background: rgba(248, 239, 210, 0.99);
-  border-color: rgba(181, 142, 34, 0.42);
+  border-width: 1px;
 }
 
-.node-card.role-tone-deputy-chief::before,
+.node-card.role-tone-branch-chief {
+  background: rgba(248, 230, 154, 0.99);
+  border-color: rgba(177, 138, 17, 0.58);
+}
+
 .node-card.role-tone-branch-chief::before {
-  background: rgba(189, 147, 27, 0.9);
+  background: rgba(189, 146, 19, 0.94);
+}
+
+.node-card.role-tone-deputy-chief {
+  background: rgba(231, 235, 240, 0.99);
+  border-color: rgba(136, 144, 154, 0.58);
+}
+
+.node-card.role-tone-deputy-chief::before {
+  background: rgba(132, 140, 150, 0.94);
+}
+
+.node-card.role-tone-branch-chief .node-title,
+.node-card.role-tone-branch-chief .node-inline-meta,
+.node-card.role-tone-branch-chief .node-toggle-indicator,
+.node-card.role-tone-deputy-chief .node-title,
+.node-card.role-tone-deputy-chief .node-inline-meta,
+.node-card.role-tone-deputy-chief .node-toggle-indicator,
+.node-card.role-tone-director .node-title,
+.node-card.role-tone-director .node-inline-meta {
+  color: rgba(62, 47, 14, 0.96);
 }
 
 .node-card.has-inline-leader {
@@ -886,81 +909,96 @@ textarea {
 }
 
 .member-card.tone-staff {
-  background: linear-gradient(180deg, rgba(249, 249, 246, 0.99) 0%, rgba(242, 244, 241, 0.98) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(248, 249, 247, 0.98) 100%);
 }
 
 .member-card.tone-staff::before {
-  background: rgba(124, 132, 127, 0.46);
+  background: rgba(214, 216, 213, 0.96);
 }
 
 .member-card.tone-staff .member-role {
-  color: rgba(105, 112, 107, 0.96);
+  color: rgba(132, 137, 132, 0.96);
 }
 
 .member-card.tone-leader {
-  background: linear-gradient(180deg, rgba(241, 245, 242, 0.99) 0%, rgba(231, 237, 233, 0.98) 100%);
+  background: linear-gradient(180deg, rgba(240, 242, 244, 0.99) 0%, rgba(229, 233, 237, 0.98) 100%);
 }
 
 .member-card.tone-leader::before {
-  background: rgba(86, 103, 94, 0.66);
+  background: rgba(129, 136, 143, 0.9);
 }
 
 .member-card.tone-leader .member-role {
-  color: rgba(77, 94, 85, 0.98);
+  color: rgba(101, 109, 117, 0.98);
 }
 
 .member-card.tone-assistant-chief {
-  background: linear-gradient(180deg, rgba(255, 246, 238, 0.99) 0%, rgba(250, 234, 216, 0.98) 100%);
+  background: linear-gradient(180deg, rgba(255, 244, 231, 0.99) 0%, rgba(251, 230, 202, 0.98) 100%);
 }
 
 .member-card.tone-assistant-chief::before {
-  background: rgba(201, 112, 28, 0.8);
+  background: rgba(217, 123, 28, 0.92);
 }
 
 .member-card.tone-assistant-chief .member-role {
-  color: rgba(179, 97, 18, 0.98);
+  color: rgba(187, 102, 19, 0.98);
 }
 
 .member-card.tone-office-chief,
 .member-card.tone-section-chief {
-  background: linear-gradient(180deg, rgba(239, 248, 242, 0.99) 0%, rgba(223, 238, 228, 0.98) 100%);
+  background: linear-gradient(180deg, rgba(237, 247, 240, 0.99) 0%, rgba(222, 239, 228, 0.98) 100%);
 }
 
 .member-card.tone-office-chief::before,
 .member-card.tone-section-chief::before {
-  background: rgba(23, 113, 66, 0.78);
+  background: rgba(28, 122, 71, 0.92);
 }
 
 .member-card.tone-office-chief .member-role,
 .member-card.tone-section-chief .member-role {
-  color: rgba(20, 101, 58, 0.98);
+  color: rgba(23, 108, 63, 0.98);
 }
 
 .member-card.tone-director {
-  background: linear-gradient(180deg, rgba(244, 245, 247, 0.99) 0%, rgba(227, 231, 235, 0.98) 100%);
+  background: linear-gradient(180deg, rgba(239, 220, 200, 0.99) 0%, rgba(228, 196, 163, 0.98) 100%);
 }
 
 .member-card.tone-director::before {
-  background: rgba(122, 131, 140, 0.82);
+  background: rgba(166, 104, 48, 0.94);
 }
 
 .member-card.tone-director .member-role {
-  color: rgba(105, 114, 123, 0.98);
+  color: rgba(125, 74, 28, 0.98);
 }
 
 .member-card.tone-deputy-chief,
 .member-card.tone-branch-chief {
-  background: linear-gradient(180deg, rgba(251, 245, 223, 0.99) 0%, rgba(239, 226, 176, 0.98) 100%);
+  border-width: 1px;
 }
 
-.member-card.tone-deputy-chief::before,
+.member-card.tone-branch-chief {
+  background: linear-gradient(180deg, rgba(251, 241, 195, 0.99) 0%, rgba(240, 220, 141, 0.98) 100%);
+}
+
 .member-card.tone-branch-chief::before {
-  background: rgba(189, 147, 27, 0.84);
+  background: rgba(189, 146, 19, 0.94);
+}
+
+.member-card.tone-deputy-chief {
+  background: linear-gradient(180deg, rgba(238, 242, 246, 0.99) 0%, rgba(224, 229, 235, 0.98) 100%);
+}
+
+.member-card.tone-deputy-chief::before {
+  background: rgba(132, 140, 150, 0.94);
 }
 
 .member-card.tone-deputy-chief .member-role,
 .member-card.tone-branch-chief .member-role {
-  color: rgba(155, 120, 19, 0.98);
+  color: rgba(109, 83, 17, 0.98);
+}
+
+.member-card.tone-deputy-chief .member-role {
+  color: rgba(96, 104, 114, 0.98);
 }
 
 .member-card p {

@@ -3097,7 +3097,7 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
   const isRoot = node.id === scopeRootId;
   const isLeaf = reportIds.length === 0;
   const isIndependentUnit = node.id === "branch-admin" && parentId === branch.rootId;
-  const toneClass = node.kind === "person" && !isRoot ? ` role-tone-${getRoleToneKey(node)}` : "";
+  const toneClass = node.kind === "person" ? ` role-tone-${getRoleToneKey(node)}` : "";
   const hasInlineLeader = Boolean(inlineLeader);
   const isExecutive = node.kind === "person" && /(支店長|副支店長)/.test(getRoleText(node));
   const isOfficeWithLeader = isOfficeNode(node) && hasInlineLeader;
