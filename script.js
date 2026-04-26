@@ -3118,11 +3118,12 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
   const isIndependentUnit = node.id === "branch-admin" && parentId === branch.rootId;
   const toneClass = node.kind === "person" ? ` role-tone-${getRoleToneKey(node)}` : "";
   const hasInlineLeader = Boolean(inlineLeader);
+  const hasUnitChildren = node.kind === "person" && reportIds.some((reportId) => nodes.get(reportId)?.kind === "unit");
   const isExecutive = node.kind === "person" && /(支店長|副支店長)/.test(getRoleText(node));
   const isOfficeWithLeader = isOfficeNode(node) && hasInlineLeader;
 
   card.type = "button";
-  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${isOfficeWithLeader ? " office-inline-stacked" : ""}${isExecutive ? " is-executive" : ""}${toneClass}`;
+  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${hasUnitChildren ? " has-unit-children" : ""}${isOfficeWithLeader ? " office-inline-stacked" : ""}${isExecutive ? " is-executive" : ""}${toneClass}`;
   if (isIndependentUnit) {
     item.classList.add("is-independent-root");
   }
