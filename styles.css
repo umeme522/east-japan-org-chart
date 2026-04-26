@@ -1247,9 +1247,11 @@ textarea {
 }
 
 .profile-stat {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  column-gap: 8px;
   min-width: 0;
   padding: 7px 9px;
   border-radius: 14px;
@@ -1273,7 +1275,7 @@ textarea {
 }
 
 .profile-stat dd {
-  margin-left: auto;
+  margin: 0;
   white-space: nowrap;
   font-weight: 700;
   overflow: hidden;
