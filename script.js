@@ -3096,6 +3096,7 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
   const isActive = node.id === state.selectedNodeId;
   const isRoot = node.id === scopeRootId;
   const isLeaf = reportIds.length === 0;
+  const isIndependentUnit = node.id === "branch-admin" && parentId === branch.rootId;
   const toneClass = node.kind === "person" && !isRoot ? ` role-tone-${getRoleToneKey(node)}` : "";
   const hasInlineLeader = Boolean(inlineLeader);
   const isExecutive = node.kind === "person" && /(支店長|副支店長)/.test(getRoleText(node));
@@ -3103,6 +3104,9 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
 
   card.type = "button";
   card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${isOfficeWithLeader ? " office-inline-stacked" : ""}${isExecutive ? " is-executive" : ""}${toneClass}`;
+  if (isIndependentUnit) {
+    item.classList.add("is-independent-root");
+  }
   card.innerHTML = `
     <div class="node-card-header">
       <div class="node-inline-row${hasInlineMeta ? " has-meta" : ""}${hasInlineLeader ? " has-leader" : ""}">

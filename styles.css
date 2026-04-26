@@ -500,6 +500,11 @@ textarea {
   border-radius: 0 10px 0 0;
 }
 
+.org-chart li.is-independent-root::before,
+.org-chart li.is-independent-root::after {
+  display: none;
+}
+
 .org-chart li > ul {
   margin-top: 0;
 }
@@ -1834,6 +1839,11 @@ textarea {
   .org-chart li:first-child::before,
   .org-chart li:last-child::before {
     display: block;
+  }
+
+  .org-chart li.is-independent-root::before,
+  .org-chart li.is-independent-root::after {
+    display: none;
   }
 
   .org-chart li > ul {
