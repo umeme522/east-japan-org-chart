@@ -2138,6 +2138,10 @@ textarea {
 
   .org-chart ul.vertical-children > li > .node-card {
     width: 100%;
+  }
+
+  .org-chart ul.vertical-children > li > .node-card {
+    width: 100%;
     margin-inline: 0;
   }
 
@@ -2168,6 +2172,11 @@ textarea {
 
   .profile-stat-grid-compact > .profile-stat:nth-child(3) {
     grid-column: 1 / -1;
+  }
+
+  .profile-stat-grid-compact > .profile-stat:nth-child(1),
+  .profile-stat-grid-compact > .profile-stat:nth-child(2) {
+    grid-column: auto;
   }
 
   .profile-stat {
