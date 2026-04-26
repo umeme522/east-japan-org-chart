@@ -1354,13 +1354,39 @@ function normalizeBranch(branch, index) {
     seenNodeIds.add(normalizedNode.id);
     return normalizedNode;
   });
-  const validIds = new Set(nodes.map((node) => node.id));
+  const duplicateIdMap = new Map();
+  const dedupedNodes = [];
+  const dedupeIndexByKey = new Map();
 
   nodes.forEach((node) => {
+    const key = node.kind === "person"
+      ? `${node.employeeNumber ? `emp:${node.employeeNumber}` : "name"}:${normalizeText(node.name)}|${normalizeText(node.department)}|${normalizeTitles(node.titles, node.title).join("|")}`
+      : `unit:${normalizeText(node.name)}|${normalizeText(node.department)}`;
+    const existingIndex = dedupeIndexByKey.get(key);
+    if (existingIndex === undefined) {
+      dedupeIndexByKey.set(key, dedupedNodes.length);
+      dedupedNodes.push({ ...node, reports: [...node.reports] });
+      return;
+    }
+
+    const keptNode = dedupedNodes[existingIndex];
+    duplicateIdMap.set(node.id, keptNode.id);
+    keptNode.reports = Array.from(new Set([...keptNode.reports, ...node.reports]));
+  });
+
+  dedupedNodes.forEach((node) => {
+    node.reports = node.reports
+      .map((reportId) => duplicateIdMap.get(reportId) || reportId)
+      .filter((reportId) => reportId && reportId !== node.id);
+  });
+
+  const validIds = new Set(dedupedNodes.map((node) => node.id));
+
+  dedupedNodes.forEach((node) => {
     node.reports = node.reports.filter((reportId) => validIds.has(reportId) && reportId !== node.id);
   });
 
-  if (nodes.length === 0) {
+  if (dedupedNodes.length === 0) {
     return null;
   }
 
@@ -1372,8 +1398,8 @@ function normalizeBranch(branch, index) {
     location: normalizeText(branch?.location),
     division: normalizeText(branch?.division),
     overview: normalizeText(branch?.overview),
-    rootId: validIds.has(rootId) ? rootId : nodes[0].id,
-    nodes,
+    rootId: validIds.has(rootId) ? rootId : dedupedNodes[0].id,
+    nodes: dedupedNodes,
   };
 }
 
