@@ -1179,6 +1179,18 @@ function pruneNestedReportIds(reportIds, nodes) {
   });
 }
 
+function normalizeBranchReports(branch) {
+  if (!branch?.nodes?.length) {
+    return branch;
+  }
+
+  const nodes = nodeMap(branch);
+  branch.nodes.forEach((node) => {
+    node.reports = pruneNestedReportIds(node.reports, nodes);
+  });
+  return branch;
+}
+
 function sortReportIdsForDisplay(node, nodes) {
   const inlineLeader = getInlineUnitLeader(node, nodes);
   const inlineLeaderNode = inlineLeader?.linkedNodeId ? nodes.get(inlineLeader.linkedNodeId) : null;
@@ -1189,10 +1201,6 @@ function sortReportIdsForDisplay(node, nodes) {
         ...inlineLeaderReports,
       ]
     : node.reports.filter((reportId) => reportId !== inlineLeader?.id);
-
-  if (isOfficeNode(node) && inlineLeader) {
-    return Array.from(new Set(officeChildIds));
-  }
 
   const reports = pruneNestedReportIds(officeChildIds, nodes)
     .map((reportId, index) => ({
@@ -1624,7 +1632,7 @@ function migrateEastJapanBranch(branch) {
 }
 
 function migrateBranches(branchList) {
-  return branchList.map((branch) => migrateEastJapanBranch(branch));
+  return branchList.map((branch) => normalizeBranchReports(migrateEastJapanBranch(branch)));
 }
 
 function buildStoragePayload(updatedAt = "") {
@@ -1885,7 +1893,7 @@ function mergeBranchData(primaryBranch, localBranch, options = {}) {
   merged.overview = mergeTextValue(primaryBranch.overview, localBranch.overview);
   merged.rootId = validIds.has(primaryBranch.rootId) ? primaryBranch.rootId : localBranch.rootId;
   merged.nodes = mergedNodes;
-  return merged;
+  return normalizeBranchReports(merged);
 }
 
 function mergeBranchLists(primaryBranches = [], localBranches = [], options = {}) {
@@ -1900,7 +1908,7 @@ function mergeBranchLists(primaryBranches = [], localBranches = [], options = {}
     }
   });
 
-  return mergedBranches.filter(Boolean);
+  return mergedBranches.filter(Boolean).map((branch) => normalizeBranchReports(branch));
 }
 
 const storedPayload = loadStoredPayload();
