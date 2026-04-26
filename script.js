@@ -2,6 +2,7 @@ const STORAGE_KEY = "east-japan-org-chart-data";
 const STORAGE_VERSION = 1;
 const PUBLIC_SYNC_ENDPOINT = "https://east-japan-org-chart.pages.dev/api/org-data";
 const USE_REMOTE_SYNC_ENDPOINT = window.location.protocol === "file:" || ["localhost", "127.0.0.1", "0.0.0.0"].includes(window.location.hostname);
+const KEEP_LOCAL_ONLY_NODES = USE_REMOTE_SYNC_ENDPOINT;
 const SERVER_DATA_ENDPOINT = USE_REMOTE_SYNC_ENDPOINT ? PUBLIC_SYNC_ENDPOINT : "/api/org-data";
 const SERVER_SYNC_INTERVAL_MS = 8000;
 const BUNDLED_UPDATED_AT = "2026-03-31T00:00:00.000Z";
@@ -1845,10 +1846,10 @@ function mergeReportIds(primaryReports = [], localReports = [], preferLocal = fa
 }
 
 function mergeNormalizedNode(primaryNode, localNode, options = {}) {
-  const { preferLocalEditable = false } = options;
+  const { preferLocalEditable = false, keepLocalOnlyNodes = true } = options;
 
   if (!primaryNode) {
-    return cloneBranches([localNode])[0] ?? null;
+    return keepLocalOnlyNodes ? cloneBranches([localNode])[0] ?? null : null;
   }
 
   if (!localNode) {
@@ -1896,8 +1897,9 @@ function mergeNormalizedNode(primaryNode, localNode, options = {}) {
 }
 
 function mergeBranchData(primaryBranch, localBranch, options = {}) {
+  const { keepLocalOnlyNodes = true } = options;
   if (!primaryBranch) {
-    return cloneBranches([localBranch])[0] ?? null;
+    return keepLocalOnlyNodes ? cloneBranches([localBranch])[0] ?? null : null;
   }
 
   if (!localBranch) {
@@ -1913,11 +1915,13 @@ function mergeBranchData(primaryBranch, localBranch, options = {}) {
     mergedNodes.push(mergeNormalizedNode(primaryNode, localNodeMap.get(primaryNode.id), options));
   });
 
-  localBranch.nodes.forEach((localNode) => {
-    if (!primaryNodeMap.has(localNode.id)) {
-      mergedNodes.push(cloneBranches([localNode])[0]);
-    }
-  });
+  if (keepLocalOnlyNodes) {
+    localBranch.nodes.forEach((localNode) => {
+      if (!primaryNodeMap.has(localNode.id)) {
+        mergedNodes.push(cloneBranches([localNode])[0]);
+      }
+    });
+  }
 
   const validIds = new Set(mergedNodes.map((node) => node.id));
   mergedNodes.forEach((node) => {
@@ -1938,16 +1942,19 @@ function mergeBranchData(primaryBranch, localBranch, options = {}) {
 }
 
 function mergeBranchLists(primaryBranches = [], localBranches = [], options = {}) {
+  const { keepLocalOnlyNodes = true } = options;
   const localBranchMap = new Map((localBranches ?? []).map((branch) => [branch.id, branch]));
   const mergedBranches = (primaryBranches ?? []).map((primaryBranch) =>
     mergeBranchData(primaryBranch, localBranchMap.get(primaryBranch.id), options)
   );
 
-  (localBranches ?? []).forEach((localBranch) => {
-    if (!mergedBranches.some((branch) => branch?.id === localBranch.id)) {
-      mergedBranches.push(cloneBranches([localBranch])[0]);
-    }
-  });
+  if (keepLocalOnlyNodes) {
+    (localBranches ?? []).forEach((localBranch) => {
+      if (!mergedBranches.some((branch) => branch?.id === localBranch.id)) {
+        mergedBranches.push(cloneBranches([localBranch])[0]);
+      }
+    });
+  }
 
   return mergedBranches.filter(Boolean).map((branch) => normalizeBranchReports(branch));
 }
@@ -1959,6 +1966,7 @@ const storedUpdatedAt = normalizeText(storedPayload?.updatedAt);
 const preferStoredEditable = parseUpdatedAt(storedUpdatedAt) >= parseUpdatedAt(BUNDLED_UPDATED_AT);
 let branches = mergeBranchLists(bundledBranches, storedBranches, {
   preferLocalEditable: preferStoredEditable,
+  keepLocalOnlyNodes: KEEP_LOCAL_ONLY_NODES,
 });
 if (!branches.length) {
   branches = bundledBranches;

@@ -2115,10 +2115,11 @@ textarea {
   }
 
   .org-chart ul.vertical-children {
-    justify-items: center;
+    justify-items: stretch;
     align-self: center;
     justify-self: center;
     gap: 8px;
+    width: 100%;
   }
 
   .org-chart ul.vertical-children::before {
@@ -2127,12 +2128,13 @@ textarea {
   }
 
   .org-chart ul.vertical-children > li {
-    width: max-content;
-    align-items: center;
+    width: 100%;
+    align-items: stretch;
   }
 
   .org-chart ul.vertical-children > li > .node-card {
-    margin-inline: auto;
+    width: 100%;
+    margin-inline: 0;
   }
 
   .profile-summary {
