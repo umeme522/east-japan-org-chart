@@ -462,6 +462,10 @@ textarea {
   margin-top: 94px;
 }
 
+.chart-root-layout > ul.detached-tree::before {
+  display: none;
+}
+
 .chart-root-layout > ul.detached-tree > li {
   padding-top: 0;
 }
@@ -1785,6 +1789,10 @@ textarea {
 
   .chart-root-layout > ul.detached-tree {
     margin-top: 0;
+  }
+
+  .chart-root-layout > ul.detached-tree::before {
+    display: none;
   }
 
   .member-card {
