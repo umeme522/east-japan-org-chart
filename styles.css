@@ -605,7 +605,7 @@ textarea {
 .node-card {
   display: grid;
   gap: 4px;
-  width: 144px;
+  width: 156px;
   min-height: 44px;
   padding: 9px 11px;
   margin: 0 auto;
@@ -759,15 +759,15 @@ textarea {
 }
 
 .node-card.has-inline-leader {
-  width: 258px;
+  width: 156px;
 }
 
 .node-card.office-inline-stacked {
-  width: 168px;
+  width: 156px;
 }
 
 .node-card.is-leaf {
-  width: 138px;
+  width: 156px;
 }
 
 .node-card-header {
