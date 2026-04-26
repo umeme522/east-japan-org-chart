@@ -555,15 +555,14 @@ textarea {
 
 .org-chart li > ul {
   margin-top: 0;
-  align-self: flex-start;
+  align-self: center;
 }
 
 .org-chart ul.vertical-children {
   display: grid;
-  justify-items: start;
-  align-self: flex-start;
-  justify-self: flex-start;
-  width: 100%;
+  justify-items: center;
+  align-self: center;
+  justify-self: center;
   gap: 10px;
   min-width: 0;
   padding-top: 18px;
@@ -577,13 +576,13 @@ textarea {
 }
 
 .org-chart ul.vertical-children > li {
-  width: 100%;
   padding: 0;
-  align-items: flex-start;
+  width: max-content;
+  align-items: center;
 }
 
 .org-chart ul.vertical-children > li > .node-card {
-  margin-inline: 0;
+  margin-inline: auto;
 }
 
 .org-chart ul.vertical-children > li::before,
@@ -2082,10 +2081,9 @@ textarea {
   }
 
   .org-chart ul.vertical-children {
-    justify-items: start;
-    align-self: flex-start;
-    justify-self: flex-start;
-    width: 100%;
+    justify-items: center;
+    align-self: center;
+    justify-self: center;
     gap: 8px;
   }
 
@@ -2095,12 +2093,12 @@ textarea {
   }
 
   .org-chart ul.vertical-children > li {
-    width: 100%;
-    align-items: flex-start;
+    width: max-content;
+    align-items: center;
   }
 
   .org-chart ul.vertical-children > li > .node-card {
-    margin-inline: 0;
+    margin-inline: auto;
   }
 
   .profile-summary {
