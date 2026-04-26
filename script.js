@@ -3232,6 +3232,10 @@ function renderOrgChart(branch) {
   content.className = `chart-scale-content${detachedChildIds.length > 0 ? " chart-root-layout" : ""}`;
   content.appendChild(tree);
 
+  const detachedRow = document.createElement("div");
+  detachedRow.className = "chart-detached-row";
+  let hasDetachedRow = false;
+
   if (executiveNode && executiveChildIds.length > 0) {
     const executiveTree = document.createElement("ul");
     executiveTree.className = "detached-tree executive-children-tree";
@@ -3242,7 +3246,8 @@ function renderOrgChart(branch) {
       }
       executiveTree.appendChild(createNode(childNode, branch, nodes, new Set(), childNode.id, executiveNode.id));
     });
-    content.appendChild(executiveTree);
+    detachedRow.appendChild(executiveTree);
+    hasDetachedRow = true;
   }
 
   detachedChildIds.forEach((childId) => {
@@ -3253,8 +3258,13 @@ function renderOrgChart(branch) {
     const detachedTree = document.createElement("ul");
     detachedTree.className = "detached-tree";
     detachedTree.appendChild(createNode(childNode, branch, nodes, new Set(), childNode.id));
-    content.appendChild(detachedTree);
+    detachedRow.appendChild(detachedTree);
+    hasDetachedRow = true;
   });
+
+  if (hasDetachedRow) {
+    content.appendChild(detachedRow);
+  }
 
   shell.appendChild(content);
   elements.orgChart.appendChild(shell);
