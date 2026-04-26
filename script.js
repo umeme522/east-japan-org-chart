@@ -1062,8 +1062,8 @@ function getRoleToneKey(node) {
 function comparePeopleForDisplay(leftNode, rightNode) {
   return (
     getRoleWeight(rightNode) - getRoleWeight(leftNode) ||
-    parseNumericValue(getDisplayAge(rightNode)) - parseNumericValue(getDisplayAge(leftNode)) ||
-    normalizeText(leftNode?.name).localeCompare(normalizeText(rightNode?.name), "ja")
+    normalizeText(leftNode?.name).localeCompare(normalizeText(rightNode?.name), "ja") ||
+    parseNumericValue(getDisplayAge(rightNode)) - parseNumericValue(getDisplayAge(leftNode))
   );
 }
 
