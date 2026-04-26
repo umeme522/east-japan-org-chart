@@ -1495,6 +1495,7 @@ function migrateEastJapanBranch(branch) {
   }
 
   branch.nodes = branch.nodes.filter((node) => node.id !== "dept-3-manager");
+  branch.nodes = branch.nodes.filter((node) => node.id !== "tochigi-3");
 
   if (!branch.nodes.some((node) => node.id === "office-106")) {
     upsertBranchNode(branch, {

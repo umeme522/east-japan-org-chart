@@ -1736,27 +1736,6 @@
           "photo": ""
         },
         {
-          "id": "tochigi-3",
-          "kind": "person",
-          "name": "市川 輝",
-          "title": "スタッフ",
-          "titles": [
-            "スタッフ"
-          ],
-          "department": "栃木",
-          "tags": [],
-          "reports": [],
-          "lastName": "市川",
-          "firstName": "輝",
-          "employeeNumber": "4377",
-          "age": "",
-          "joinYear": "",
-          "tenure": "",
-          "historyEntries": [],
-          "hobbies": [],
-          "photo": ""
-        },
-        {
           "id": "person-mnl88l25",
           "kind": "person",
           "name": "出澤",
