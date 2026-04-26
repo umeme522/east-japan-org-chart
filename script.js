@@ -1119,7 +1119,7 @@ function getInlineUnitLeader(node, nodes) {
       title: managerTitles[0] || "",
       titles: managerTitles,
       department: node.name,
-      reports: linkedNode?.reports ?? [],
+      reports: [],
     };
   }
 
@@ -1182,14 +1182,6 @@ function pruneNestedReportIds(reportIds, nodes) {
 function sortReportIdsForDisplay(node, nodes) {
   const inlineLeader = getInlineUnitLeader(node, nodes);
   const displayReportIds = node.reports.filter((reportId) => reportId !== inlineLeader?.id);
-
-  if (isOfficeNode(node) && inlineLeader?.reports?.length) {
-    inlineLeader.reports.forEach((reportId) => {
-      if (!displayReportIds.includes(reportId)) {
-        displayReportIds.push(reportId);
-      }
-    });
-  }
 
   const reports = pruneNestedReportIds(displayReportIds, nodes)
     .map((reportId, index) => ({
