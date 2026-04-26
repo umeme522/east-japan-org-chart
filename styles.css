@@ -2068,6 +2068,10 @@ textarea {
     width: 100%;
   }
 
+  .node-card.office-inline-stacked {
+    width: 100%;
+  }
+
   .node-title {
     font-size: 0.86rem;
   }
@@ -2095,7 +2099,7 @@ textarea {
   }
 
   .node-card.office-inline-stacked .node-inline-leader {
-    width: auto;
+    width: 100%;
   }
 
   .node-inline-leader-role {
@@ -2158,7 +2162,12 @@ textarea {
   }
 
   .profile-stat-grid-compact {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .profile-stat-grid-compact > .profile-stat:nth-child(3) {
+    grid-column: 1 / -1;
   }
 
   .profile-stat {
