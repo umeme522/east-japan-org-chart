@@ -420,6 +420,18 @@ textarea {
   transform-origin: top center;
 }
 
+.org-chart ul::before,
+.chart-scale-content > ul::before,
+.chart-detached-row > ul.detached-tree::before,
+.org-chart li::before,
+.org-chart li::after,
+.org-chart ul.vertical-children::before,
+.chart-scale-content > ul > li::before {
+  display: none !important;
+  content: none !important;
+  border: 0 !important;
+}
+
 .chart-root-layout {
   display: flex;
   flex-direction: column;
@@ -560,6 +572,17 @@ textarea {
 .org-chart ul.vertical-children > li::before,
 .org-chart ul.vertical-children > li::after {
   display: none;
+}
+
+.org-chart ul::before,
+.chart-scale-content > ul::before,
+.chart-detached-row > ul.detached-tree::before,
+.org-chart li::before,
+.org-chart li::after,
+.org-chart ul.vertical-children::before,
+.chart-scale-content > ul > li::before {
+  display: none !important;
+  content: none !important;
 }
 
 .node-card {
