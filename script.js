@@ -1085,12 +1085,53 @@ function createTargetNodes(branch) {
   return targets;
 }
 
+function getTargetDepth(branch, node) {
+  if (!branch || !node) {
+    return 0;
+  }
+
+  if (node.id === branch.rootId) {
+    return 0;
+  }
+
+  const nodes = nodeMap(branch);
+  const queue = [[branch.rootId, 0]];
+  const visited = new Set();
+
+  while (queue.length > 0) {
+    const [currentId, depth] = queue.shift();
+    if (visited.has(currentId)) {
+      continue;
+    }
+    visited.add(currentId);
+
+    if (currentId === node.id) {
+      return depth;
+    }
+
+    const currentNode = nodes.get(currentId);
+    for (const childId of currentNode?.reports ?? []) {
+      if (!visited.has(childId) && nodes.has(childId)) {
+        queue.push([childId, depth + 1]);
+      }
+    }
+  }
+
+  return node.kind === "unit" ? 1 : 0;
+}
+
 function createTargetLabel(branch, node) {
   if (!node) {
     return "";
   }
 
-  return node.id === branch.rootId ? branch.name : node.name;
+  const baseLabel = node.id === branch.rootId ? branch.name : node.name;
+  const depth = getTargetDepth(branch, node);
+  if (depth <= 0) {
+    return baseLabel;
+  }
+
+  return `${"　".repeat(depth)}${baseLabel}`;
 }
 
 function isDepartmentUnitNode(node) {

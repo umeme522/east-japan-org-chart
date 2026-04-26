@@ -247,6 +247,10 @@ textarea {
   outline-offset: 2px;
 }
 
+.branch-scope-select option {
+  white-space: pre;
+}
+
 .search-box {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
