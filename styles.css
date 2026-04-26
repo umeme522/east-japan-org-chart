@@ -486,6 +486,9 @@ textarea {
 .chart-detached-row > ul.detached-tree {
   padding-top: 0;
   margin-top: 0;
+  align-self: flex-start;
+  justify-self: flex-start;
+  width: 100%;
 }
 
 .chart-detached-row > ul.detached-tree::before {
@@ -552,11 +555,15 @@ textarea {
 
 .org-chart li > ul {
   margin-top: 0;
+  align-self: flex-start;
 }
 
 .org-chart ul.vertical-children {
   display: grid;
   justify-items: start;
+  align-self: flex-start;
+  justify-self: flex-start;
+  width: 100%;
   gap: 10px;
   min-width: 0;
   padding-top: 18px;
@@ -2074,6 +2081,9 @@ textarea {
 
   .org-chart ul.vertical-children {
     justify-items: start;
+    align-self: flex-start;
+    justify-self: flex-start;
+    width: 100%;
     gap: 8px;
   }
 
