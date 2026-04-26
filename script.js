@@ -3163,8 +3163,16 @@ function renderOrgChart(branch) {
     return;
   }
 
+  const detachedChildIds = root.id === branch.rootId
+    ? root.reports.filter((reportId) => reportId === "branch-admin")
+    : [];
+  const detachedChildIdSet = new Set(detachedChildIds);
+  const mainRoot = detachedChildIds.length > 0
+    ? { ...root, reports: root.reports.filter((reportId) => !detachedChildIdSet.has(reportId)) }
+    : root;
+
   const tree = document.createElement("ul");
-  tree.appendChild(createNode(root, branch, nodes, new Set(), root.id));
+  tree.appendChild(createNode(mainRoot, branch, nodes, new Set(), root.id));
 
   if (Array.from(tree.children).every((child) => child.hidden)) {
     elements.orgChart.innerHTML = `<div class="empty-state">検索条件に一致する組織がありません。</div>`;
@@ -3175,8 +3183,19 @@ function renderOrgChart(branch) {
   shell.className = "chart-scale-shell";
 
   const content = document.createElement("div");
-  content.className = "chart-scale-content";
+  content.className = `chart-scale-content${detachedChildIds.length > 0 ? " chart-root-layout" : ""}`;
   content.appendChild(tree);
+
+  detachedChildIds.forEach((childId) => {
+    const childNode = nodes.get(childId);
+    if (!childNode) {
+      return;
+    }
+    const detachedTree = document.createElement("ul");
+    detachedTree.className = "detached-tree";
+    detachedTree.appendChild(createNode(childNode, branch, nodes, new Set(), childNode.id));
+    content.appendChild(detachedTree);
+  });
 
   shell.appendChild(content);
   elements.orgChart.appendChild(shell);

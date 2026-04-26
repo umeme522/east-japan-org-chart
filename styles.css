@@ -420,6 +420,12 @@ textarea {
   transform-origin: top center;
 }
 
+.chart-root-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+}
+
 .org-chart ul {
   position: relative;
   display: flex;
@@ -449,6 +455,14 @@ textarea {
 
 .chart-scale-content > ul::before {
   display: none;
+}
+
+.chart-root-layout > ul.detached-tree {
+  padding-top: 0;
+}
+
+.chart-root-layout > ul.detached-tree > li {
+  padding-top: 0;
 }
 
 .org-chart li {
