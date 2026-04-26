@@ -1912,10 +1912,26 @@ textarea {
 
   .chart-detached-row > ul.detached-tree {
     margin-top: 0;
+    width: 100%;
+    justify-items: stretch;
+    align-self: stretch;
+    justify-self: stretch;
   }
 
   .chart-detached-row > ul.detached-tree::before {
     display: none;
+  }
+
+  .chart-detached-row > ul.detached-tree > li {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .chart-detached-row > ul.detached-tree > li > .node-card {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    margin-inline: 0;
   }
 
   .member-card {
@@ -2122,8 +2138,8 @@ textarea {
 
   .org-chart ul.vertical-children {
     justify-items: stretch;
-    align-self: center;
-    justify-self: center;
+    align-self: stretch;
+    justify-self: stretch;
     gap: 8px;
     width: 100%;
   }
@@ -2144,6 +2160,8 @@ textarea {
 
   .org-chart ul.vertical-children > li > .node-card {
     width: 100%;
+    min-width: 100%;
+    max-width: 100%;
     margin-inline: 0;
   }
 
