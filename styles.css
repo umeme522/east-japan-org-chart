@@ -765,6 +765,29 @@ textarea {
   width: 156px;
 }
 
+.office-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+}
+
+.node-office-title {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.15;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .node-card.is-leaf {
   width: 156px;
 }
@@ -859,13 +882,6 @@ textarea {
 .node-card.office-inline-stacked .node-inline-leader {
   width: 100%;
   pointer-events: none;
-}
-
-.node-card.office-inline-stacked .node-inline-main {
-  min-height: 30px;
-  padding: 0 8px;
-  border-radius: 12px;
-  background: rgba(102, 111, 104, 0.08);
 }
 
 .node-inline-leader-role {

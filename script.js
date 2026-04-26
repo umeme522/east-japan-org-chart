@@ -3197,23 +3197,38 @@ function createNode(
   if (isIndependentUnit) {
     item.classList.add("is-independent-root");
   }
-  card.innerHTML = `
-    <div class="node-card-header">
-      <div class="node-inline-row${hasInlineMeta ? " has-meta" : ""}${hasInlineLeader ? " has-leader" : ""}">
-        <span class="node-inline-main">
-          ${hasInlineMeta ? `<span class="node-inline-meta">${primaryTitle}</span>` : ""}
-          <span class="node-title">${node.name}</span>
-        </span>
+  if (isOfficeWithLeader) {
+    card.innerHTML = `
+      <div class="node-card-header office-card-header">
+        <span class="node-office-title">${node.name}</span>
         ${hasInlineLeader ? `
-          <span class="node-inline-leader">
+          <span class="node-inline-leader node-office-leader">
             <span class="node-inline-leader-role">${getPrimaryTitle(inlineLeader)}</span>
             <span class="node-inline-leader-name">${inlineLeader.name}</span>
           </span>
         ` : ""}
+        ${canToggle ? `<span class="node-toggle-indicator">${isExpanded ? "-" : "+"}</span>` : ""}
       </div>
-      ${canToggle ? `<span class="node-toggle-indicator">${isExpanded ? "-" : "+"}</span>` : ""}
-    </div>
-  `;
+    `;
+  } else {
+    card.innerHTML = `
+      <div class="node-card-header">
+        <div class="node-inline-row${hasInlineMeta ? " has-meta" : ""}${hasInlineLeader ? " has-leader" : ""}">
+          <span class="node-inline-main">
+            ${hasInlineMeta ? `<span class="node-inline-meta">${primaryTitle}</span>` : ""}
+            <span class="node-title">${node.name}</span>
+          </span>
+          ${hasInlineLeader ? `
+            <span class="node-inline-leader">
+              <span class="node-inline-leader-role">${getPrimaryTitle(inlineLeader)}</span>
+              <span class="node-inline-leader-name">${inlineLeader.name}</span>
+            </span>
+          ` : ""}
+        </div>
+        ${canToggle ? `<span class="node-toggle-indicator">${isExpanded ? "-" : "+"}</span>` : ""}
+      </div>
+    `;
+  }
   if (ORG_DRAG_ENABLED) {
     card.addEventListener("pointerdown", (event) => beginNodeDrag(event, branch.id, node.id, parentId));
   }
