@@ -835,9 +835,9 @@ textarea {
 
 .node-card.unit .node-title,
 .node-card.has-inline-leader .node-title {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   line-height: 1.25;
 }
 
