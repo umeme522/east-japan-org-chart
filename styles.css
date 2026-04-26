@@ -797,8 +797,11 @@ textarea {
 }
 
 .node-card.office-inline-stacked .node-inline-row.has-leader {
-  grid-template-columns: minmax(0, 1fr);
-  gap: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding-right: 0;
 }
 
 .node-inline-main {
@@ -856,6 +859,13 @@ textarea {
 .node-card.office-inline-stacked .node-inline-leader {
   width: 100%;
   pointer-events: none;
+}
+
+.node-card.office-inline-stacked .node-inline-main {
+  min-height: 30px;
+  padding: 0 8px;
+  border-radius: 12px;
+  background: rgba(102, 111, 104, 0.08);
 }
 
 .node-inline-leader-role {
@@ -2051,8 +2061,11 @@ textarea {
   }
 
   .node-card.office-inline-stacked .node-inline-row.has-leader {
-    grid-template-columns: minmax(0, 1fr) minmax(84px, auto);
-    gap: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding-right: 0;
   }
 
   .node-inline-leader {
