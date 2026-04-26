@@ -529,10 +529,6 @@ textarea {
   margin-top: 0;
 }
 
-.org-chart li.has-unit-children > ul {
-  transform: translateX(-18px);
-}
-
 .org-chart ul.vertical-children {
   display: grid;
   justify-items: center;
