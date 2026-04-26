@@ -758,11 +758,13 @@ textarea {
 }
 
 .node-card.has-inline-leader {
-  width: 156px;
+  width: 184px;
+  min-width: 184px;
 }
 
 .node-card.office-inline-stacked {
-  width: 156px;
+  width: 184px;
+  min-width: 184px;
 }
 
 .office-card-header {
