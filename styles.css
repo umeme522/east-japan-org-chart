@@ -772,7 +772,7 @@ textarea {
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   width: 100%;
 }
 
@@ -780,7 +780,7 @@ textarea {
   display: block;
   width: 100%;
   min-width: 0;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 800;
   color: var(--ink);
   line-height: 1.15;
@@ -790,14 +790,21 @@ textarea {
   box-shadow: none;
   padding: 0;
   margin: 0;
-  white-space: normal;
+  white-space: nowrap;
   overflow: hidden;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  min-height: 2.3em;
+  text-overflow: ellipsis;
+}
+
+.node-office-leader-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .node-card.is-leaf {
@@ -2121,9 +2128,9 @@ textarea {
     padding: 0 6px;
   }
 
-  .node-card.office-inline-stacked .node-inline-leader {
-    width: 100%;
-  }
+.node-card.office-inline-stacked .node-inline-leader {
+  width: 100%;
+}
 
   .node-inline-leader-role {
     font-size: 0.58rem;

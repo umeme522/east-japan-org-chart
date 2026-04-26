@@ -3213,7 +3213,7 @@ function createNode(
       <div class="node-card-header office-card-header">
         <span class="node-office-title">${node.name}</span>
         ${hasInlineLeader ? `
-          <span class="node-inline-leader node-office-leader">
+          <span class="node-office-leader-line">
             <span class="node-inline-leader-role">${getPrimaryTitle(inlineLeader)}</span>
             <span class="node-inline-leader-name">${inlineLeader.name}</span>
           </span>
