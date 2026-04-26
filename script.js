@@ -2704,7 +2704,7 @@ function handleNodeClick(event, branchId, nodeId) {
 
   const nodes = nodeMap(branch);
   const inlineLeader = getInlineUnitLeader(node, nodes);
-  if (inlineLeader && event?.target?.closest(".node-inline-leader")) {
+  if (inlineLeader && event?.target?.closest(".node-inline-leader") && !isOfficeNode(node)) {
     selectNode(branchId, inlineLeader.linkedNodeId || inlineLeader.id);
     return;
   }
