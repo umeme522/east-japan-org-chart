@@ -1,6 +1,4 @@
 {
-  "version": 1,
-  "updatedAt": "2026-04-25T07:58:45.190Z",
   "branches": [
     {
       "id": "east-japan",
@@ -30,6 +28,7 @@
           ],
           "lastName": "大久保",
           "firstName": "祐介",
+          "employeeNumber": "",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -62,20 +61,78 @@
           ],
           "lastName": "堀内",
           "firstName": "芳人",
-          "age": "48",
-          "joinYear": "",
-          "tenure": "22",
+          "employeeNumber": "3109",
+          "age": "47",
+          "joinYear": "2001",
+          "tenure": "26",
           "historyEntries": [
             {
-              "year": "",
-              "location": "現場運営と業務管理を歴任し、現在は副支店長として各部を統括。"
+              "year": "2001",
+              "location": "白州"
+            },
+            {
+              "year": "2002",
+              "location": "武蔵野"
+            },
+            {
+              "year": "2004",
+              "location": "八王子"
+            },
+            {
+              "year": "2004",
+              "location": "青梅"
+            },
+            {
+              "year": "2009",
+              "location": "国立流通センター"
+            },
+            {
+              "year": "2015",
+              "location": "岡山早島配送センター"
+            },
+            {
+              "year": "2021",
+              "location": "京都城陽配送センター"
+            },
+            {
+              "year": "2023",
+              "location": "西日本支店業務第二部　部長"
+            },
+            {
+              "year": "2023",
+              "location": "東日本支店業務第四部　部長　兼　神奈川綾瀬　所長"
+            },
+            {
+              "year": "2024",
+              "location": "東日本支店業務第四部　部長"
+            },
+            {
+              "year": "2025",
+              "location": "東日本支店　副支店長　兼　業務第二部　部長"
+            },
+            {
+              "year": "2026",
+              "location": "東日本支店　副支店長　兼　業務第三部　部長"
+            },
+            {
+              "year": "2008",
+              "location": "係長"
+            },
+            {
+              "year": "2011",
+              "location": "副長"
+            },
+            {
+              "year": "2014",
+              "location": "所長"
             }
           ],
           "hobbies": [
             "釣り",
-            "��ライブ"
+            "ドライブ"
           ],
-          "photo": ""
+          "photo": "",
+          "history": "2001〜 白州 | 2002〜 武蔵野 | 2004〜 八王子 | 2004〜 青梅 | 2009〜 国立流通センター | 2015〜 岡山早島配送センター | 2021〜 京都城陽配送センター | 2023〜 西日本支店業務第二部　部長 | 2023〜 東日本支店業務第四部　部長　兼　神奈川綾瀬　所長 | 2024〜 東日本支店業務第四部　部長 | 2025〜 東日本支店　副支店長　兼　業務第二部　部長 | 2026〜 東日本支店　副支店長　兼　業務第三部　部長 | 2008〜 係長 | 2011〜 副長 | 2014〜 所長"
         },
         {
           "id": "dept-1",
@@ -117,6 +174,7 @@
           "reports": [],
           "lastName": "西原",
           "firstName": "達也",
+          "employeeNumber": "2360",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -156,10 +214,12 @@
           "department": "武蔵野",
           "tags": [],
           "reports": [
-            "office-101-nakane"
+            "office-101-nakane",
+            "office-101-toshida"
           ],
           "lastName": "米良",
           "firstName": "真拓",
+          "employeeNumber": "3485",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -180,8 +240,9 @@
           "reports": [
             "office-101-toshida"
           ],
-          "lastName": "���根",
+          "lastName": "中根",
           "firstName": "寛哉",
+          "employeeNumber": "3952",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -192,7 +253,7 @@
         {
           "id": "office-101-toshida",
           "kind": "person",
-          "name": "土志田",
+          "name": "土志田 知明",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -201,7 +262,8 @@
           "tags": [],
           "reports": [],
           "lastName": "土志田",
-          "firstName": "",
+          "firstName": "知明",
+          "employeeNumber": "4372",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -233,7 +295,7 @@
         {
           "id": "office-102-suzuki",
           "kind": "person",
-          "name": "鈴��� 秀和",
+          "name": "鈴木 秀和",
           "title": "所長",
           "titles": [
             "所長"
@@ -246,6 +308,7 @@
           ],
           "lastName": "鈴木",
           "firstName": "秀和",
+          "employeeNumber": "3298",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -256,7 +319,7 @@
         {
           "id": "office-102-yamagata",
           "kind": "person",
-          "name": "山縣",
+          "name": "山縣 和泰",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -265,7 +328,8 @@
           "tags": [],
           "reports": [],
           "lastName": "山縣",
-          "firstName": "",
+          "firstName": "和泰",
+          "employeeNumber": "4188",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -276,7 +340,7 @@
         {
           "id": "office-102-fujii",
           "kind": "person",
-          "name": "藤井",
+          "name": "藤井 壮也",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -285,7 +349,8 @@
           "tags": [],
           "reports": [],
           "lastName": "藤井",
-          "firstName": "",
+          "firstName": "壮也",
+          "employeeNumber": "4285",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -296,7 +361,7 @@
         {
           "id": "office-102-miyake",
           "kind": "person",
-          "name": "三宅",
+          "name": "三宅 菜央",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -305,7 +370,8 @@
           "tags": [],
           "reports": [],
           "lastName": "三宅",
-          "firstName": "",
+          "firstName": "菜央",
+          "employeeNumber": "4364",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -369,6 +435,7 @@
           "reports": [],
           "lastName": "三井",
           "firstName": "快",
+          "employeeNumber": "3116",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -434,6 +501,7 @@
           ],
           "lastName": "真上",
           "firstName": "将生",
+          "employeeNumber": "3147",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -456,6 +524,7 @@
           ],
           "lastName": "鈴木",
           "firstName": "大貴",
+          "employeeNumber": "",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -476,6 +545,7 @@
           "reports": [],
           "lastName": "遠藤",
           "firstName": "聖人",
+          "employeeNumber": "4193",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -546,6 +616,7 @@
           ],
           "lastName": "根岸",
           "firstName": "一雄",
+          "employeeNumber": "3102",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -589,6 +660,7 @@
           ],
           "lastName": "村井",
           "firstName": "拳",
+          "employeeNumber": "3637",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -611,13 +683,22 @@
           ],
           "lastName": "梅原",
           "firstName": "裕太郎",
-          "age": "",
-          "joinYear": "",
-          "tenure": "",
+          "employeeNumber": "3966",
+          "age": "31",
+          "joinYear": "2018",
+          "tenure": "9",
           "historyEntries": [
             {
-              "year": "2018年",
-              "location": "西多摩営業所"
+              "year": "2018",
+              "location": "西多摩"
+            },
+            {
+              "year": "2020",
+              "location": "青梅流通センター"
+            },
+            {
+              "year": "2023",
+              "location": "栃木"
             }
           ],
           "hobbies": [],
@@ -659,6 +740,7 @@
           ],
           "lastName": "三喜",
           "firstName": "康孝",
+          "employeeNumber": "3464",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -677,7 +759,6 @@
             "組織"
           ],
           "reports": [
-            "office-204-kitou",
             "person-mnl87k4l"
           ],
           "description": "業務2部配下です。",
@@ -691,7 +772,7 @@
         {
           "id": "office-204-kitou",
           "kind": "person",
-          "name": "鬼頭",
+          "name": "鬼頭 嵩弥",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -700,7 +781,8 @@
           "tags": [],
           "reports": [],
           "lastName": "鬼頭",
-          "firstName": "",
+          "firstName": "嵩弥",
+          "employeeNumber": "4049",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -744,6 +826,7 @@
           ],
           "lastName": "弘山",
           "firstName": "舜",
+          "employeeNumber": "3716",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -783,10 +866,13 @@
           "department": "利根川",
           "tags": [],
           "reports": [
-            "office-206-maezawa"
+            "office-206-maezawa",
+            "person-mnl88znr",
+            "office-206-shinyashiki"
           ],
           "lastName": "片岡",
           "firstName": "勇貴",
+          "employeeNumber": "3509",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -809,6 +895,7 @@
           ],
           "lastName": "前澤",
           "firstName": "ちひろ",
+          "employeeNumber": "3995",
           "age": "30",
           "joinYear": "2018",
           "tenure": "",
@@ -819,18 +906,17 @@
         {
           "id": "office-206-shinyashiki",
           "kind": "person",
-          "name": "新屋敷",
+          "name": "新屋敷 尚也",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
           ],
           "department": "利根川",
           "tags": [],
-          "reports": [
-            "person-mnl88znr"
-          ],
+          "reports": [],
           "lastName": "新屋敷",
-          "firstName": "",
+          "firstName": "尚也",
+          "employeeNumber": "4153",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -903,6 +989,7 @@
           ],
           "lastName": "西本",
           "firstName": "幸佑",
+          "employeeNumber": "",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -925,6 +1012,7 @@
           ],
           "lastName": "渡辺",
           "firstName": "洋治郎",
+          "employeeNumber": "4182",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -968,6 +1056,7 @@
           ],
           "lastName": "西畑",
           "firstName": "匡績",
+          "employeeNumber": "3663",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -978,7 +1067,7 @@
         {
           "id": "office-302-nose",
           "kind": "person",
-          "name": "能勢",
+          "name": "能勢 未来",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -987,7 +1076,8 @@
           "tags": [],
           "reports": [],
           "lastName": "能勢",
-          "firstName": "",
+          "firstName": "未来",
+          "employeeNumber": "4300",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1029,10 +1119,12 @@
           "reports": [
             "office-303-nakahara",
             "office-303-ikeda",
-            "office-303-sato"
+            "office-303-sato",
+            "person-mnu216hz"
           ],
           "lastName": "川井",
           "firstName": "邦彦",
+          "employeeNumber": "3474",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1053,6 +1145,7 @@
           "reports": [],
           "lastName": "中原",
           "firstName": "由貴",
+          "employeeNumber": "2581",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1073,6 +1166,7 @@
           "reports": [],
           "lastName": "池田",
           "firstName": "和哉",
+          "employeeNumber": "3846",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1083,18 +1177,17 @@
         {
           "id": "office-303-sato",
           "kind": "person",
-          "name": "佐藤",
+          "name": "佐藤 樹希亜",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
           ],
           "department": "北関東流通",
           "tags": [],
-          "reports": [
-            "person-mnu216hz"
-          ],
+          "reports": [],
           "lastName": "佐藤",
-          "firstName": "",
+          "firstName": "樹希亜",
+          "employeeNumber": "4165",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1138,6 +1231,7 @@
           ],
           "lastName": "大友",
           "firstName": "俊也",
+          "employeeNumber": "3599",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1158,6 +1252,7 @@
           "reports": [],
           "lastName": "平良",
           "firstName": "一和",
+          "employeeNumber": "4168",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1198,10 +1293,12 @@
           "tags": [],
           "reports": [
             "office-305-kurishima",
-            "office-305-tajiri"
+            "office-305-tajiri",
+            "office-305-seki"
           ],
-          "lastName": "���田",
+          "lastName": "安田",
           "firstName": "忠愛",
+          "employeeNumber": "3294",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1224,6 +1321,7 @@
           ],
           "lastName": "栗嶋",
           "firstName": "龍作",
+          "employeeNumber": "3768",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1246,6 +1344,7 @@
           ],
           "lastName": "田尻",
           "firstName": "泰悠",
+          "employeeNumber": "3958",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1256,7 +1355,7 @@
         {
           "id": "office-305-seki",
           "kind": "person",
-          "name": "関",
+          "name": "関 晋汰",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -1265,7 +1364,8 @@
           "tags": [],
           "reports": [],
           "lastName": "関",
-          "firstName": "",
+          "firstName": "晋汰",
+          "employeeNumber": "4213",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1311,6 +1411,7 @@
           ],
           "lastName": "原",
           "firstName": "翔平",
+          "employeeNumber": "4471",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1333,6 +1434,7 @@
           ],
           "lastName": "岸川",
           "firstName": "陽平",
+          "employeeNumber": "3897",
           "age": "",
           "joinYear": "2017",
           "tenure": "9",
@@ -1358,8 +1460,9 @@
           "reports": [],
           "lastName": "大西",
           "firstName": "和哉",
+          "employeeNumber": "4475",
           "age": "",
-          "joinYear": "",
+          "joinYear": "2025",
           "tenure": "",
           "historyEntries": [],
           "hobbies": [],
@@ -1369,22 +1472,23 @@
           "id": "dept-2-manager",
           "kind": "person",
           "name": "藤原 邦康",
+          "lastName": "藤原",
+          "firstName": "邦康",
           "title": "部長",
           "titles": [
             "部長"
           ],
           "department": "業務2部",
-          "tags": [],
-          "reports": [],
-          "lastName": "藤原",
-          "firstName": "邦康",
           "age": "",
           "joinYear": "",
           "tenure": "",
+          "history": "",
           "historyEntries": [],
           "hobbies": [],
-          "photo": "",
-          "history": ""
+          "tags": [],
+          "reports": [],
+          "employeeNumber": "3239",
+          "photo": ""
         },
         {
           "id": "person-mnl85lwh",
@@ -1399,6 +1503,7 @@
           "reports": [],
           "lastName": "浅利",
           "firstName": "順一",
+          "employeeNumber": "",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1421,6 +1526,7 @@
           ],
           "lastName": "滝下",
           "firstName": "直樹",
+          "employeeNumber": "3531",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1438,9 +1544,12 @@
           ],
           "department": "群馬",
           "tags": [],
-          "reports": [],
+          "reports": [
+            "office-204-kitou"
+          ],
           "lastName": "植野",
           "firstName": "明寛",
+          "employeeNumber": "2693",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1451,7 +1560,7 @@
         {
           "id": "person-mnl87x38",
           "kind": "person",
-          "name": "輪千",
+          "name": "輪千 雄一",
           "title": "係長",
           "titles": [
             "係長"
@@ -1460,7 +1569,8 @@
           "tags": [],
           "reports": [],
           "lastName": "輪千",
-          "firstName": "",
+          "firstName": "雄一",
+          "employeeNumber": "",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1471,7 +1581,7 @@
         {
           "id": "person-mnl88znr",
           "kind": "person",
-          "name": "大原",
+          "name": "大原 健太郎",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -1480,7 +1590,8 @@
           "tags": [],
           "reports": [],
           "lastName": "大原",
-          "firstName": "",
+          "firstName": "健太郎",
+          "employeeNumber": "4445",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1501,6 +1612,7 @@
           "reports": [],
           "lastName": "東",
           "firstName": "誠",
+          "employeeNumber": "",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1521,6 +1633,7 @@
           "reports": [],
           "lastName": "三上",
           "firstName": "俊",
+          "employeeNumber": "3880",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1541,6 +1654,7 @@
           "reports": [],
           "lastName": "出澤",
           "firstName": "草併",
+          "employeeNumber": "3874",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1561,6 +1675,7 @@
           "reports": [],
           "lastName": "市川",
           "firstName": "輝",
+          "employeeNumber": "4377",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1571,7 +1686,7 @@
         {
           "id": "person-mnu20750",
           "kind": "person",
-          "name": "中丸",
+          "name": "中丸 大樹",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -1580,18 +1695,24 @@
           "tags": [],
           "reports": [],
           "lastName": "中丸",
-          "firstName": "",
+          "firstName": "大樹",
+          "employeeNumber": "4357",
           "age": "",
           "joinYear": "",
           "tenure": "",
-          "historyEntries": [],
+          "historyEntries": [
+            {
+              "year": "2024",
+              "location": "国立流通センター"
+            }
+          ],
           "hobbies": [],
           "photo": ""
         },
         {
           "id": "person-mnu216hz",
           "kind": "person",
-          "name": "原",
+          "name": "原 一真",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
@@ -1600,11 +1721,17 @@
           "tags": [],
           "reports": [],
           "lastName": "原",
-          "firstName": "",
+          "firstName": "一真",
+          "employeeNumber": "",
           "age": "",
           "joinYear": "",
           "tenure": "",
-          "historyEntries": [],
+          "historyEntries": [
+            {
+              "year": "2025",
+              "location": "北関東流通センター"
+            }
+          ],
           "hobbies": [],
           "photo": ""
         },
@@ -1621,6 +1748,7 @@
           "reports": [],
           "lastName": "市川",
           "firstName": "輝",
+          "employeeNumber": "4377",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1641,6 +1769,7 @@
           "reports": [],
           "lastName": "出澤",
           "firstName": "",
+          "employeeNumber": "3874",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1661,6 +1790,7 @@
           "reports": [],
           "lastName": "東",
           "firstName": "誠",
+          "employeeNumber": "",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1681,6 +1811,7 @@
           "reports": [],
           "lastName": "植野",
           "firstName": "",
+          "employeeNumber": "",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1701,6 +1832,7 @@
           "reports": [],
           "lastName": "輪千",
           "firstName": "",
+          "employeeNumber": "",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1721,6 +1853,7 @@
           "reports": [],
           "lastName": "出澤",
           "firstName": "草栟",
+          "employeeNumber": "3874",
           "age": "",
           "joinYear": "",
           "tenure": "",
@@ -1733,8 +1866,8 @@
           "kind": "unit",
           "name": "支店総務部",
           "title": "",
-          "titles": [],
           "department": "東日本支店",
+          "description": "支店総務部です。",
           "tags": [
             "組織"
           ],
@@ -1743,7 +1876,7 @@
             "branch-admin-kitaura",
             "branch-admin-matsumura"
           ],
-          "description": "支店総務部です。",
+          "titles": [],
           "managerName": "",
           "managerLastName": "",
           "managerFirstName": "",
@@ -1755,64 +1888,67 @@
           "id": "branch-admin-inoue",
           "kind": "person",
           "name": "井上 珠美",
-          "title": "スタッフ",
-          "titles": [
-            "スタッフ"
-          ],
-          "department": "支店総務部",
-          "tags": [],
-          "reports": [],
           "lastName": "井上",
           "firstName": "珠美",
+          "title": "係長",
+          "titles": [
+            "係長"
+          ],
+          "department": "支店総務部",
           "age": "",
           "joinYear": "",
           "tenure": "",
+          "history": "",
           "historyEntries": [],
           "hobbies": [],
-          "photo": "",
-          "history": ""
+          "tags": [],
+          "reports": [],
+          "employeeNumber": "3901",
+          "photo": ""
         },
         {
           "id": "branch-admin-kitaura",
           "kind": "person",
           "name": "北浦 愛梨",
+          "lastName": "北浦",
+          "firstName": "愛梨",
           "title": "スタッフ",
           "titles": [
             "スタッフ"
           ],
           "department": "支店総務部",
-          "tags": [],
-          "reports": [],
-          "lastName": "北浦",
-          "firstName": "愛梨",
           "age": "",
           "joinYear": "",
           "tenure": "",
+          "history": "",
           "historyEntries": [],
           "hobbies": [],
-          "photo": "",
-          "history": ""
+          "tags": [],
+          "reports": [],
+          "employeeNumber": "4375",
+          "photo": ""
         },
         {
           "id": "branch-admin-matsumura",
           "kind": "person",
           "name": "松村 結花",
+          "lastName": "松村",
+          "firstName": "結花",
           "title": "課長",
           "titles": [
             "課長"
           ],
           "department": "支店総務部",
-          "tags": [],
-          "reports": [],
-          "lastName": "松村",
-          "firstName": "結花",
           "age": "",
           "joinYear": "",
           "tenure": "",
+          "history": "",
           "historyEntries": [],
           "hobbies": [],
-          "photo": "",
-          "history": ""
+          "tags": [],
+          "reports": [],
+          "employeeNumber": "3537",
+          "photo": ""
         },
         {
           "id": "person-moe1ribt",
@@ -1827,6 +1963,7 @@
           "reports": [],
           "lastName": "藤田",
           "firstName": "塁",
+          "employeeNumber": "4120",
           "age": "",
           "joinYear": "",
           "tenure": "",
