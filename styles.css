@@ -609,8 +609,6 @@ textarea {
 
 .node-card.is-executive {
   --executive-half-width: 72px;
-  position: sticky;
-  left: calc(50% - var(--executive-half-width));
   z-index: 6;
 }
 
