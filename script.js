@@ -7,7 +7,6 @@ const SERVER_SYNC_INTERVAL_MS = 8000;
 const BUNDLED_UPDATED_AT = "2026-03-31T00:00:00.000Z";
 const ORG_DRAG_ENABLED = false;
 const EDIT_ROLE_OPTIONS = ["", "支店長", "副支店長", "部長", "所長", "課長", "副長", "係長", "スタッフ"];
-const EDIT_AGE_OPTIONS = Array.from({ length: 82 }, (_, index) => String(index + 18));
 const EDIT_TENURE_OPTIONS = Array.from({ length: 61 }, (_, index) => String(index));
 const EDIT_JOIN_YEAR_OPTIONS = Array.from(
   { length: new Date().getFullYear() - 1979 },
@@ -886,6 +885,55 @@ function normalizeNumericField(value) {
   return digits ? digits.join("") : "";
 }
 
+function normalizeBirthDate(value) {
+  const text = normalizeText(value);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+    return "";
+  }
+
+  const [yearText, monthText, dayText] = text.split("-");
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const date = new Date(year, month - 1, day);
+  if (
+    Number.isNaN(date.getTime()) ||
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return "";
+  }
+
+  return text;
+}
+
+function calculateAgeFromBirthDate(birthDate, now = new Date()) {
+  const normalizedBirthDate = normalizeBirthDate(birthDate);
+  if (!normalizedBirthDate) {
+    return "";
+  }
+
+  const [yearText, monthText, dayText] = normalizedBirthDate.split("-");
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  let age = now.getFullYear() - year;
+  const hasHadBirthdayThisYear =
+    now.getMonth() + 1 > month ||
+    (now.getMonth() + 1 === month && now.getDate() >= day);
+
+  if (!hasHadBirthdayThisYear) {
+    age -= 1;
+  }
+
+  return age >= 0 ? String(age) : "";
+}
+
+function getDisplayAge(node, now = new Date()) {
+  return calculateAgeFromBirthDate(node?.birthDate, now) || normalizeNumericField(node?.age);
+}
+
 function normalizeRoleLabel(value) {
   const normalized = normalizeText(value);
   if (normalized === "東日本支店長") {
@@ -1014,7 +1062,7 @@ function getRoleToneKey(node) {
 function comparePeopleForDisplay(leftNode, rightNode) {
   return (
     getRoleWeight(rightNode) - getRoleWeight(leftNode) ||
-    parseNumericValue(rightNode?.age) - parseNumericValue(leftNode?.age) ||
+    parseNumericValue(getDisplayAge(rightNode)) - parseNumericValue(getDisplayAge(leftNode)) ||
     normalizeText(leftNode?.name).localeCompare(normalizeText(rightNode?.name), "ja")
   );
 }
@@ -1272,6 +1320,7 @@ function normalizeNode(node, index) {
     normalized.lastName = nameParts.lastName;
     normalized.firstName = nameParts.firstName;
     normalized.employeeNumber = normalizeText(node?.employeeNumber);
+    normalized.birthDate = normalizeBirthDate(node?.birthDate);
     const joinYear = normalizeNumericField(node?.joinYear);
     const rawAge = normalizeNumericField(node?.age);
     const looksLikeJoinYear = /^(?:19|20)\d{2}$/.test(rawAge);
@@ -1737,6 +1786,7 @@ function mergeNormalizedNode(primaryNode, localNode, options = {}) {
     merged.name = buildDisplayName(merged.lastName, merged.firstName, mergeTextValue(primaryNode.name, localNode.name, { preferLocal: preferLocalEditable }));
     merged.department = mergeTextValue(primaryNode.department, localNode.department, { preferLocal: preferLocalEditable });
     merged.employeeNumber = mergeTextValue(primaryNode.employeeNumber, localNode.employeeNumber, { preferLocal: preferLocalEditable });
+    merged.birthDate = mergeTextValue(primaryNode.birthDate, localNode.birthDate, { preferLocal: preferLocalEditable });
     merged.photo = mergeTextValue(primaryNode.photo, localNode.photo, { preferLocal: preferLocalEditable });
     merged.age = mergeTextValue(primaryNode.age, localNode.age, { preferLocal: preferLocalEditable });
     merged.joinYear = mergeTextValue(primaryNode.joinYear, localNode.joinYear, { preferLocal: preferLocalEditable });
@@ -1913,10 +1963,10 @@ const elements = {
   editDepartment: document.getElementById("editDepartment"),
   editEmployeeNumberField: document.getElementById("editEmployeeNumberField"),
   editEmployeeNumber: document.getElementById("editEmployeeNumber"),
+  editBirthDateField: document.getElementById("editBirthDateField"),
+  editBirthDate: document.getElementById("editBirthDate"),
   editPhotoField: document.getElementById("editPhotoField"),
   editPhoto: document.getElementById("editPhoto"),
-  editAgeField: document.getElementById("editAgeField"),
-  editAge: document.getElementById("editAge"),
   editJoinYearField: document.getElementById("editJoinYearField"),
   editJoinYear: document.getElementById("editJoinYear"),
   editTenureField: document.getElementById("editTenureField"),
@@ -1940,8 +1990,8 @@ const elements = {
   createAddTitleButton: document.getElementById("createAddTitleButton"),
   createDepartment: document.getElementById("createDepartment"),
   createEmployeeNumber: document.getElementById("createEmployeeNumber"),
+  createBirthDate: document.getElementById("createBirthDate"),
   createPhoto: document.getElementById("createPhoto"),
-  createAge: document.getElementById("createAge"),
   createJoinYear: document.getElementById("createJoinYear"),
   createTenure: document.getElementById("createTenure"),
   createStatus: document.getElementById("createStatus"),
@@ -2554,7 +2604,9 @@ function populateCreateSelectFields(defaults = {}) {
     elements.createAddTitleButton,
     defaults.titles ?? defaults.title
   );
-  setSelectOptions(elements.createAge, buildNumericSelectOptions(EDIT_AGE_OPTIONS, defaults.age), normalizeNumericField(defaults.age));
+  if (elements.createBirthDate) {
+    elements.createBirthDate.value = normalizeBirthDate(defaults.birthDate);
+  }
   setSelectOptions(elements.createJoinYear, buildNumericSelectOptions(EDIT_JOIN_YEAR_OPTIONS, defaults.joinYear), normalizeNumericField(defaults.joinYear));
   setSelectOptions(elements.createTenure, buildNumericSelectOptions(EDIT_TENURE_OPTIONS, defaults.tenure), normalizeNumericField(defaults.tenure));
 }
@@ -2934,10 +2986,12 @@ function toggleEditFormFields(kind) {
   if (elements.editEmployeeNumberField) {
     elements.editEmployeeNumberField.hidden = !isPerson;
   }
+  if (elements.editBirthDateField) {
+    elements.editBirthDateField.hidden = !isPerson;
+  }
   if (!isPerson) {
     setSecondaryRoleVisibility(elements.editTitleSecondaryField, elements.editAddTitleButton, false);
   }
-  elements.editAgeField.hidden = !isPerson;
   elements.editJoinYearField.hidden = !isPerson;
   elements.editTenureField.hidden = !isPerson;
   elements.editHistoryField.hidden = !isPerson;
@@ -3188,7 +3242,7 @@ function renderProfile(branch) {
     elements.profileAffiliationValue.title = affiliation;
     elements.profileEmployeeNumberValue.textContent = selected.employeeNumber || "未設定";
     elements.profileEmployeeNumberValue.title = selected.employeeNumber || "未設定";
-    elements.profileAgeValue.textContent = selected.age || "未設定";
+    elements.profileAgeValue.textContent = getDisplayAge(selected) || "未設定";
     elements.profileTenureValue.textContent = selected.tenure || "未設定";
     elements.profileJoinYearValue.textContent = selected.joinYear || "未設定";
     elements.profileDescriptionRow.hidden = false;
@@ -3224,6 +3278,9 @@ function populateEditForm(node) {
   if (elements.editEmployeeNumber) {
     elements.editEmployeeNumber.value = node.kind === "person" ? (node.employeeNumber ?? "") : "";
   }
+  if (elements.editBirthDate) {
+    elements.editBirthDate.value = node.kind === "person" ? normalizeBirthDate(node.birthDate) : "";
+  }
   if (elements.editPhoto) {
     elements.editPhoto.value = "";
   }
@@ -3238,7 +3295,6 @@ function populateEditForm(node) {
 
   if (node.kind === "person") {
     toggleEditFormFields("person");
-    setSelectOptions(elements.editAge, buildNumericSelectOptions(EDIT_AGE_OPTIONS, node.age), normalizeNumericField(node.age));
     setSelectOptions(elements.editJoinYear, buildNumericSelectOptions(EDIT_JOIN_YEAR_OPTIONS, node.joinYear), normalizeNumericField(node.joinYear));
     setSelectOptions(elements.editTenure, buildNumericSelectOptions(EDIT_TENURE_OPTIONS, node.tenure), normalizeNumericField(node.tenure));
     renderHistoryRows(elements.editHistoryRows, node.historyEntries ?? []);
@@ -3248,7 +3304,9 @@ function populateEditForm(node) {
     if (elements.editEmployeeNumber) {
       elements.editEmployeeNumber.value = "";
     }
-    setSelectOptions(elements.editAge, buildNumericSelectOptions(EDIT_AGE_OPTIONS), "");
+    if (elements.editBirthDate) {
+      elements.editBirthDate.value = "";
+    }
     setSelectOptions(elements.editJoinYear, buildNumericSelectOptions(EDIT_JOIN_YEAR_OPTIONS), "");
     setSelectOptions(elements.editTenure, buildNumericSelectOptions(EDIT_TENURE_OPTIONS), "");
   }
@@ -3332,7 +3390,11 @@ async function handleProfileSave(event) {
   const nextDepartment = normalizeText(elements.editDepartment.value) || selected.department;
   const selectedTitles = collectRoleValues(elements.editTitle, elements.editTitleSecondary);
   const nextEmployeeNumber = normalizeText(elements.editEmployeeNumber?.value);
-  const nextAge = normalizeNumericField(elements.editAge.value);
+  const nextBirthDate = normalizeBirthDate(elements.editBirthDate?.value);
+  const hadBirthDate = normalizeBirthDate(selected.birthDate);
+  const nextAge = nextBirthDate
+    ? calculateAgeFromBirthDate(nextBirthDate)
+    : (hadBirthDate ? "" : normalizeNumericField(selected.age));
   const nextJoinYear = normalizeNumericField(elements.editJoinYear.value);
   const nextTenure = normalizeNumericField(elements.editTenure.value);
   const nextHistoryEntries = collectHistoryEntries(elements.editHistoryRows);
@@ -3365,6 +3427,7 @@ async function handleProfileSave(event) {
       updates.lastName = lastName;
       updates.firstName = firstName;
       updates.employeeNumber = nextEmployeeNumber;
+      updates.birthDate = nextBirthDate;
       updates.age = nextAge;
       updates.joinYear = nextJoinYear;
       updates.tenure = nextTenure;
@@ -3503,7 +3566,8 @@ async function handleCreatePerson(event) {
       elements.createDepartment?.value.trim() ||
       createDepartmentName(branch, targetNode, parent),
     employeeNumber: normalizeText(elements.createEmployeeNumber?.value),
-    age: normalizeNumericField(elements.createAge?.value),
+    birthDate: normalizeBirthDate(elements.createBirthDate?.value),
+    age: calculateAgeFromBirthDate(elements.createBirthDate?.value),
     joinYear: normalizeNumericField(elements.createJoinYear?.value),
     tenure: normalizeNumericField(elements.createTenure?.value),
     historyEntries: [],
