@@ -1189,6 +1189,10 @@ function sortReportIdsForDisplay(node, nodes) {
       ]
     : node.reports.filter((reportId) => reportId !== inlineLeader?.id);
 
+  if (isOfficeNode(node) && inlineLeader) {
+    return Array.from(new Set(officeChildIds));
+  }
+
   const reports = pruneNestedReportIds(officeChildIds, nodes)
     .map((reportId, index) => ({
       reportId,
