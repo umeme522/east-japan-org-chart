@@ -556,7 +556,7 @@ textarea {
 
 .org-chart ul.vertical-children {
   display: grid;
-  justify-items: center;
+  justify-items: start;
   gap: 10px;
   min-width: 0;
   padding-top: 18px;
@@ -570,7 +570,13 @@ textarea {
 }
 
 .org-chart ul.vertical-children > li {
+  width: 100%;
   padding: 0;
+  align-items: flex-start;
+}
+
+.org-chart ul.vertical-children > li > .node-card {
+  margin-inline: 0;
 }
 
 .org-chart ul.vertical-children > li::before,
@@ -2067,13 +2073,22 @@ textarea {
   }
 
   .org-chart ul.vertical-children {
-    justify-items: stretch;
+    justify-items: start;
     gap: 8px;
   }
 
   .org-chart ul.vertical-children::before {
     left: 8px;
     transform: none;
+  }
+
+  .org-chart ul.vertical-children > li {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .org-chart ul.vertical-children > li > .node-card {
+    margin-inline: 0;
   }
 
   .profile-summary {
