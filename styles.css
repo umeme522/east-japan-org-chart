@@ -790,9 +790,14 @@ textarea {
   box-shadow: none;
   padding: 0;
   margin: 0;
-  white-space: nowrap;
+  white-space: normal;
   overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-height: 2.3em;
 }
 
 .node-card.is-leaf {
