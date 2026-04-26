@@ -665,13 +665,13 @@ textarea {
 
 .node-card.role-tone-office-chief,
 .node-card.role-tone-section-chief {
-  background: rgba(43, 128, 86, 0.06);
-  border-color: rgba(43, 128, 86, 0.18);
+  background: rgba(228, 238, 231, 0.98);
+  border-color: rgba(182, 198, 187, 0.54);
 }
 
 .node-card.role-tone-office-chief::before,
 .node-card.role-tone-section-chief::before {
-  background: rgba(43, 128, 86, 0.34);
+  background: rgba(124, 168, 136, 0.72);
 }
 
 .node-card.role-tone-director {
