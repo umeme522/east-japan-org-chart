@@ -3086,7 +3086,16 @@ function shouldRenderChildren(node, nodes) {
   return state.expandedDepartmentIds.has(node.id);
 }
 
-function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.rootId, parentId = "") {
+function createNode(
+  node,
+  branch,
+  nodes,
+  path = new Set(),
+  scopeRootId = branch.rootId,
+  parentId = "",
+  options = {}
+) {
+  const suppressChildrenFor = options.suppressChildrenFor ?? new Set();
   const item = document.createElement("li");
   item.dataset.nodeId = node.id;
   item.dataset.parentId = parentId;
@@ -3120,9 +3129,11 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
   const hasInlineLeader = Boolean(inlineLeader);
   const isExecutive = node.kind === "person" && /(支店長|副支店長)/.test(getRoleText(node));
   const isOfficeWithLeader = isOfficeNode(node) && hasInlineLeader;
+  const childrenSuppressed = suppressChildrenFor.has(node.id);
+  const renderChildReports = !childrenSuppressed && shouldRenderChildren(node, nodes);
 
   card.type = "button";
-  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle ? " is-department" : ""}${isLeaf ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${isOfficeWithLeader ? " office-inline-stacked" : ""}${isExecutive ? " is-executive" : ""}${toneClass}`;
+  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle && !childrenSuppressed ? " is-department" : ""}${isLeaf || childrenSuppressed ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${isOfficeWithLeader ? " office-inline-stacked" : ""}${isExecutive ? " is-executive" : ""}${toneClass}`;
   if (isIndependentUnit) {
     item.classList.add("is-independent-root");
   }
@@ -3149,7 +3160,7 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
   card.addEventListener("click", (event) => handleNodeClick(event, branch.id, node.id));
   item.appendChild(card);
 
-  if (shouldRenderChildren(node, nodes)) {
+  if (renderChildReports) {
     const children = document.createElement("ul");
     const allPeopleChildren = reportIds.length > 0 && reportIds.every((reportId) => nodes.get(reportId)?.kind === "person");
     if (allPeopleChildren) {
@@ -3159,7 +3170,7 @@ function createNode(node, branch, nodes, path = new Set(), scopeRootId = branch.
     reportIds.forEach((reportId) => {
       const report = nodes.get(reportId);
       if (report) {
-        children.appendChild(createNode(report, branch, nodes, nextPath, scopeRootId, node.id));
+        children.appendChild(createNode(report, branch, nodes, nextPath, scopeRootId, node.id, options));
       }
     });
 
@@ -3182,6 +3193,14 @@ function renderOrgChart(branch) {
     return;
   }
 
+  const executiveNodeId = root.id === branch.rootId
+    ? root.reports.find((reportId) => {
+        const report = nodes.get(reportId);
+        return report?.kind === "person" && /(副支店長|支店長)/.test(getRoleText(report));
+      }) ?? ""
+    : "";
+  const executiveNode = executiveNodeId ? nodes.get(executiveNodeId) : null;
+  const executiveChildIds = executiveNode ? sortReportIdsForDisplay(executiveNode, nodes) : [];
   const detachedChildIds = root.id === branch.rootId
     ? root.reports.filter((reportId) => reportId === "branch-admin")
     : [];
@@ -3191,7 +3210,15 @@ function renderOrgChart(branch) {
     : root;
 
   const tree = document.createElement("ul");
-  tree.appendChild(createNode(mainRoot, branch, nodes, new Set(), root.id));
+  tree.appendChild(createNode(
+    mainRoot,
+    branch,
+    nodes,
+    new Set(),
+    root.id,
+    "",
+    { suppressChildrenFor: new Set(executiveNodeId ? [executiveNodeId] : []) }
+  ));
 
   if (Array.from(tree.children).every((child) => child.hidden)) {
     elements.orgChart.innerHTML = `<div class="empty-state">検索条件に一致する組織がありません。</div>`;
@@ -3204,6 +3231,19 @@ function renderOrgChart(branch) {
   const content = document.createElement("div");
   content.className = `chart-scale-content${detachedChildIds.length > 0 ? " chart-root-layout" : ""}`;
   content.appendChild(tree);
+
+  if (executiveNode && executiveChildIds.length > 0) {
+    const executiveTree = document.createElement("ul");
+    executiveTree.className = "detached-tree executive-children-tree";
+    executiveChildIds.forEach((childId) => {
+      const childNode = nodes.get(childId);
+      if (!childNode) {
+        return;
+      }
+      executiveTree.appendChild(createNode(childNode, branch, nodes, new Set(), childNode.id, executiveNode.id));
+    });
+    content.appendChild(executiveTree);
+  }
 
   detachedChildIds.forEach((childId) => {
     const childNode = nodes.get(childId);
