@@ -2003,7 +2003,7 @@ const storedUpdatedAt = normalizeText(storedPayload?.updatedAt);
 const preferStoredEditable = parseUpdatedAt(storedUpdatedAt) >= parseUpdatedAt(BUNDLED_UPDATED_AT);
 let branches = mergeBranchLists(bundledBranches, storedBranches, {
   preferLocalEditable: preferStoredEditable,
-  keepLocalOnlyNodes: true,
+  keepLocalOnlyNodes: false,
 });
 if (!branches.length) {
   branches = bundledBranches;
@@ -2162,9 +2162,9 @@ function writeStorageSnapshot(branchList, updatedAt = "") {
 
 async function saveBranches() {
   const payload = buildStoragePayload();
-  const cached = writeStorageCache(payload);
 
   if (persistence.mode !== "server") {
+    const cached = writeStorageCache(payload);
     if (!cached) {
       state.editStatus = "このブラウザでは保存できませんでした。";
       setActionStatus("このブラウザでは保存できませんでした。");
@@ -2250,11 +2250,10 @@ function applyServerState(serverState) {
   const previousSearchTerm = state.searchTerm;
   const knownNodeIds = new Set(serverState.branches.flatMap((branch) => branch.nodes.map((node) => node.id)));
 
-  const preferLocalEditable = parseUpdatedAt(persistence.localUpdatedAt) >= parseUpdatedAt(serverState.updatedAt);
-  const mergedUpdatedAt = preferLocalEditable ? persistence.localUpdatedAt || serverState.updatedAt : serverState.updatedAt;
+  const mergedUpdatedAt = normalizeText(serverState.updatedAt) || persistence.localUpdatedAt;
   branches = mergeBranchLists(serverState.branches, branches, {
-    preferLocalEditable,
-    keepLocalOnlyNodes: true,
+    preferLocalEditable: false,
+    keepLocalOnlyNodes: false,
   });
   writeStorageSnapshot(branches, mergedUpdatedAt);
   persistence.localUpdatedAt = normalizeText(mergedUpdatedAt);
