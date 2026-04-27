@@ -1479,14 +1479,15 @@ textarea {
 
 .profile-photo {
   width: 100%;
-  min-height: 220px;
-  aspect-ratio: 4 / 5;
+  min-height: 320px;
+  aspect-ratio: 3 / 4;
   border-radius: 22px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.26);
   background: rgba(255, 255, 255, 0.14);
   box-shadow: 0 10px 20px rgba(8, 31, 20, 0.18);
-  justify-self: end;
+  justify-self: stretch;
+  align-self: stretch;
 }
 
 .profile-info-layout {
@@ -1498,7 +1499,7 @@ textarea {
 }
 
 .profile-info-layout.has-photo {
-  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
 }
 
 .profile-info-main {
