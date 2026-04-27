@@ -778,6 +778,13 @@ textarea {
   border-color: rgba(102, 111, 104, 0.14);
 }
 
+.node-card.department-inline-stacked {
+  width: 184px;
+  min-width: 184px;
+  background: rgba(228, 238, 231, 0.98);
+  border-color: rgba(182, 198, 187, 0.54);
+}
+
 .office-card-header {
   display: flex;
   flex-direction: column;
@@ -851,6 +858,37 @@ textarea {
   text-overflow: ellipsis;
 }
 
+.node-dept-title {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.15;
+  text-align: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.node-dept-leader-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .node-card.is-leaf {
   width: 156px;
 }
@@ -900,6 +938,15 @@ textarea {
   width: 100%;
 }
 
+.node-card.department-inline-stacked .node-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+}
+
 .node-inline-main {
   display: inline-flex;
   align-items: center;
@@ -913,6 +960,17 @@ textarea {
   padding: 0 10px;
   border-radius: 12px;
   background: transparent;
+}
+
+.node-card.department-inline-stacked.has-inline-leader {
+  background: rgba(228, 238, 231, 0.98);
+  border-color: rgba(182, 198, 187, 0.54);
+}
+
+.node-card.department-inline-stacked.has-inline-leader .node-inline-main {
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
 }
 
 .node-inline-row.has-leader .node-inline-main {

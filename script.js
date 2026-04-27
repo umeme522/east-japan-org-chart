@@ -3241,6 +3241,7 @@ function createNode(
   const isRoot = node.id === scopeRootId;
   const isLeaf = reportIds.length === 0;
   const isIndependentUnit = ["branch-admin", "sales-innovation"].includes(node.id);
+  const isDepartmentWithLeader = isDepartmentUnitNode(node) && Boolean(inlineLeader);
   const toneClass = node.kind === "person" ? ` role-tone-${getRoleToneKey(node)}` : "";
   const hasInlineLeader = Boolean(inlineLeader);
   const isExecutive = node.kind === "person" && /(支店長|副支店長)/.test(getRoleText(node));
@@ -3250,7 +3251,7 @@ function createNode(
   const renderChildReports = !childrenSuppressed && shouldRenderChildren(node, nodes);
 
   card.type = "button";
-  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle && !childrenSuppressed ? " is-department" : ""}${isLeaf || childrenSuppressed ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${isOfficeWithLeader ? " office-inline-stacked" : ""}${isIndependentUnitWithLeader ? " unit-inline-stacked" : ""}${isExecutive ? " is-executive" : ""}${toneClass}`;
+  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle && !childrenSuppressed ? " is-department" : ""}${isLeaf || childrenSuppressed ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${isOfficeWithLeader ? " office-inline-stacked" : ""}${isDepartmentWithLeader ? " department-inline-stacked" : ""}${isIndependentUnitWithLeader ? " unit-inline-stacked" : ""}${isExecutive ? " is-executive" : ""}${toneClass}`;
   if (isIndependentUnit) {
     item.classList.add("is-independent-root");
   }
@@ -3264,6 +3265,17 @@ function createNode(
             <span class="node-inline-leader-name">${inlineLeader.name}</span>
           </span>
         ` : ""}
+        ${canToggle ? `<span class="node-toggle-indicator">${isExpanded ? "-" : "+"}</span>` : ""}
+      </div>
+    `;
+  } else if (isDepartmentWithLeader) {
+    card.innerHTML = `
+      <div class="node-card-header department-card-header">
+        <span class="node-dept-title">${node.name}</span>
+        <span class="node-dept-leader-line">
+          <span class="node-inline-leader-role">${getPrimaryTitle(inlineLeader)}</span>
+          <span class="node-inline-leader-name">${inlineLeader.name}</span>
+        </span>
         ${canToggle ? `<span class="node-toggle-indicator">${isExpanded ? "-" : "+"}</span>` : ""}
       </div>
     `;
