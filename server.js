@@ -10,7 +10,11 @@ const DATA_DIR = process.env.DATA_DIR
 const DATA_FILE = process.env.DATA_FILE
   ? path.resolve(process.env.DATA_FILE)
   : path.join(DATA_DIR, "org-data.json");
+const HISTORY_FILE = process.env.DATA_HISTORY_FILE
+  ? path.resolve(process.env.DATA_HISTORY_FILE)
+  : path.join(DATA_DIR, "org-history.json");
 const PORT = Number(process.env.PORT) || 3000;
+const HISTORY_RETENTION_DAYS = 7;
 
 const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
@@ -22,6 +26,63 @@ const MIME_TYPES = {
   ".svg": "image/svg+xml",
   ".txt": "text/plain; charset=utf-8",
 };
+
+function normalizeText(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeRevision(value) {
+  const revision = Number.parseInt(normalizeText(value), 10);
+  return Number.isFinite(revision) && revision > 0 ? revision : 0;
+}
+
+function normalizeHistoryId(value) {
+  const historyId = Number.parseInt(normalizeText(String(value)), 10);
+  return Number.isFinite(historyId) && historyId > 0 ? historyId : 0;
+}
+
+function stripRuntimeFields(payload, fallbackRevision = 1, fallbackUpdatedAt = "") {
+  const normalized = {
+    version: 1,
+    revision: normalizeRevision(payload?.revision) || fallbackRevision || 1,
+    updatedAt: normalizeText(payload?.updatedAt) || normalizeText(fallbackUpdatedAt) || "",
+    branches: Array.isArray(payload?.branches) ? payload.branches : [],
+  };
+
+  return normalized;
+}
+
+async function readJsonFile(filePath, fallbackValue) {
+  try {
+    const content = await fs.readFile(filePath, "utf8");
+    return JSON.parse(content);
+  } catch {
+    return fallbackValue;
+  }
+}
+
+async function writeJsonFile(filePath, value) {
+  await fs.writeFile(filePath, JSON.stringify(value, null, 2), "utf8");
+}
+
+async function ensureDataFiles() {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+
+  const current = await readJsonFile(DATA_FILE, null);
+  if (!current) {
+    await writeJsonFile(DATA_FILE, {
+      version: 1,
+      revision: 1,
+      updatedAt: new Date().toISOString(),
+      branches: [],
+    });
+  }
+
+  const history = await readJsonFile(HISTORY_FILE, null);
+  if (!Array.isArray(history)) {
+    await writeJsonFile(HISTORY_FILE, []);
+  }
+}
 
 function sendJson(response, statusCode, payload) {
   response.writeHead(statusCode, {
@@ -44,30 +105,108 @@ function publicFilePath(urlPathname) {
   return path.resolve(ROOT_DIR, normalizedPath);
 }
 
-async function ensureDataFile() {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  try {
-    await fs.access(DATA_FILE);
-  } catch {
-    const initialPayload = {
-      version: 1,
-      updatedAt: new Date().toISOString(),
-      branches: [],
-    };
-    await fs.writeFile(DATA_FILE, JSON.stringify(initialPayload, null, 2), "utf8");
-  }
+async function readCurrentState() {
+  const payload = await readJsonFile(DATA_FILE, {
+    version: 1,
+    revision: 1,
+    updatedAt: "",
+    branches: [],
+  });
+  return stripRuntimeFields(payload, payload?.revision || 1, payload?.updatedAt || "");
 }
 
-async function readRequestBody(request) {
-  const chunks = [];
-  for await (const chunk of request) {
-    chunks.push(chunk);
-  }
-  return Buffer.concat(chunks).toString("utf8");
+async function readHistoryEntries() {
+  const history = await readJsonFile(HISTORY_FILE, []);
+  const cutoff = Date.now() - HISTORY_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+
+  return history
+    .filter((entry) => Date.parse(normalizeText(entry?.savedAt)) >= cutoff)
+    .sort((left, right) => {
+      const leftTime = Date.parse(normalizeText(left?.savedAt)) || 0;
+      const rightTime = Date.parse(normalizeText(right?.savedAt)) || 0;
+      return rightTime - leftTime || (normalizeRevision(right?.revision) - normalizeRevision(left?.revision));
+    });
 }
 
-async function handleApi(request, response) {
+async function pruneHistoryFile(history = []) {
+  const cutoff = Date.now() - HISTORY_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+  const pruned = history.filter((entry) => Date.parse(normalizeText(entry?.savedAt)) >= cutoff);
+  await writeJsonFile(HISTORY_FILE, pruned);
+  return pruned;
+}
+
+async function writeHistoryEntry(snapshot) {
+  const history = await readJsonFile(HISTORY_FILE, []);
+  const pruned = await pruneHistoryFile(history);
+  const nextId = pruned.reduce((max, entry) => Math.max(max, Number(entry?.id) || 0), 0) + 1;
+  const savedAt = new Date().toISOString();
+
+  pruned.unshift({
+    id: nextId,
+    revision: normalizeRevision(snapshot?.revision) || 1,
+    updatedAt: normalizeText(snapshot?.updatedAt),
+    savedAt,
+    payload: stripRuntimeFields(snapshot, normalizeRevision(snapshot?.revision) || 1, snapshot?.updatedAt),
+  });
+
+  await writeJsonFile(HISTORY_FILE, pruned);
+  return pruned;
+}
+
+async function writeCurrentState(payload, revision, updatedAt) {
+  const snapshot = stripRuntimeFields(payload, revision, updatedAt);
+  await writeJsonFile(DATA_FILE, snapshot);
+  return snapshot;
+}
+
+async function saveSnapshot(payload) {
+  const current = await readCurrentState();
+  await writeHistoryEntry(current);
+  const nextRevision = (normalizeRevision(current.revision) || 1) + 1;
+  const updatedAt = new Date().toISOString();
+  const snapshot = await writeCurrentState(payload, nextRevision, updatedAt);
+  return snapshot;
+}
+
+async function restoreSnapshot(historyId) {
+  const current = await readCurrentState();
+  const history = await readHistoryEntries();
+  const selected = history.find((entry) => Number(entry.id) === historyId);
+
+  if (!selected?.payload) {
+    return null;
+  }
+
+  await writeHistoryEntry(current);
+  const nextRevision = (normalizeRevision(current.revision) || 1) + 1;
+  return writeCurrentState(selected.payload, nextRevision, new Date().toISOString());
+}
+
+function sendApiJson(response, payload, statusCode = 200) {
+  sendJson(response, statusCode, payload);
+}
+
+async function handleApi(request, response, url) {
   if (request.method === "GET") {
+    if (url.searchParams.get("history") === "1") {
+      const current = await readCurrentState();
+      const history = await readHistoryEntries();
+      sendApiJson(response, {
+        ok: true,
+        current: {
+          revision: current.revision,
+          updatedAt: current.updatedAt,
+        },
+        history: history.map((entry) => ({
+          id: entry.id,
+          revision: entry.revision,
+          updatedAt: entry.updatedAt,
+          savedAt: entry.savedAt,
+        })),
+      });
+      return;
+    }
+
     const content = await fs.readFile(DATA_FILE, "utf8");
     response.writeHead(200, {
       "Content-Type": "application/json; charset=utf-8",
@@ -81,19 +220,61 @@ async function handleApi(request, response) {
     try {
       const body = await readRequestBody(request);
       const parsed = JSON.parse(body);
-      if (!parsed || (typeof parsed !== "object" && !Array.isArray(parsed))) {
+      if (!parsed || typeof parsed !== "object") {
         throw new Error("invalid-payload");
       }
 
-      await fs.writeFile(DATA_FILE, JSON.stringify(parsed, null, 2), "utf8");
-      sendJson(response, 200, { ok: true, updatedAt: new Date().toISOString() });
+      const snapshot = await saveSnapshot(parsed);
+      sendApiJson(response, { ok: true, updatedAt: snapshot.updatedAt, revision: snapshot.revision });
     } catch {
-      sendJson(response, 400, { ok: false, message: "JSON の保存に失敗しました。" });
+      sendApiJson(response, { ok: false, message: "JSON の保存に失敗しました。" }, 400);
     }
     return;
   }
 
-  sendJson(response, 405, { ok: false, message: "許可されていないメソッドです。" });
+  if (request.method === "POST") {
+    try {
+      const body = await readRequestBody(request);
+      const parsed = JSON.parse(body);
+      if (!parsed || typeof parsed !== "object") {
+        throw new Error("invalid-payload");
+      }
+
+      if (normalizeText(parsed.action) !== "restore") {
+        throw new Error("invalid-action");
+      }
+
+      const historyId = normalizeHistoryId(parsed.historyId);
+      if (!historyId) {
+        throw new Error("missing-history-id");
+      }
+
+      const restored = await restoreSnapshot(historyId);
+      if (!restored) {
+        throw new Error("history-not-found");
+      }
+
+      sendApiJson(response, {
+        ok: true,
+        updatedAt: restored.updatedAt,
+        revision: restored.revision,
+        branches: restored.branches,
+      });
+    } catch {
+      sendApiJson(response, { ok: false, message: "復元に失敗しました。" }, 400);
+    }
+    return;
+  }
+
+  sendApiJson(response, { ok: false, message: "許可されていないメソッドです。" }, 405);
+}
+
+async function readRequestBody(request) {
+  const chunks = [];
+  for await (const chunk of request) {
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks).toString("utf8");
 }
 
 async function handleStatic(request, response, pathname) {
@@ -136,14 +317,14 @@ function networkUrls() {
 }
 
 async function startServer() {
-  await ensureDataFile();
+  await ensureDataFiles();
 
   const server = http.createServer(async (request, response) => {
     try {
       const url = new URL(request.url, `http://${request.headers.host}`);
 
       if (url.pathname === "/api/org-data") {
-        await handleApi(request, response);
+        await handleApi(request, response, url);
         return;
       }
 

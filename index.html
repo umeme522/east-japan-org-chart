@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=20260427-35">
+  <link rel="stylesheet" href="./styles.css?v=20260427-44">
 </head>
 <body>
   <div class="page-shell">
@@ -29,6 +29,13 @@
           </div>
         </div>
         <p id="actionStatus" class="action-status" aria-live="polite"></p>
+        <details class="version-disclosure" id="versionDisclosure">
+          <summary>
+            <span class="version-disclosure-label">版履歴</span>
+            <span id="versionCurrentBadge" class="version-current-badge">版 1</span>
+          </summary>
+          <div id="versionHistoryList" class="version-history-list"></div>
+        </details>
 
         <section class="org-chart-section org-chart-section-wide">
           <div class="section-header">
@@ -244,6 +251,6 @@
     </main>
   </div>
 
-  <script src="./script.js?v=20260427-43"></script>
+  <script src="./script.js?v=20260427-44"></script>
 </body>
 </html>

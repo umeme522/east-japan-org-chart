@@ -1676,13 +1676,39 @@ function migrateBranches(branchList) {
   return branchList.map((branch) => normalizeBranchReports(migrateEastJapanBranch(branch)));
 }
 
-function buildStoragePayload(updatedAt = "") {
-  return buildSnapshotPayload(branches, updatedAt);
+function buildStoragePayload(updatedAt = "", revision = persistence.currentRevision ?? 1) {
+  return buildSnapshotPayload(branches, updatedAt, revision);
 }
 
 function parseUpdatedAt(value) {
   const timestamp = Date.parse(normalizeText(value));
   return Number.isNaN(timestamp) ? 0 : timestamp;
+}
+
+function normalizeRevision(value) {
+  const revision = Number.parseInt(normalizeText(value), 10);
+  return Number.isFinite(revision) && revision > 0 ? revision : 0;
+}
+
+function formatTimestamp(value) {
+  const text = normalizeText(value);
+  if (!text) {
+    return "未設定";
+  }
+
+  const date = new Date(text);
+  if (Number.isNaN(date.getTime())) {
+    return text;
+  }
+
+  return new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
 }
 
 function loadStoredPayload() {
@@ -1702,9 +1728,10 @@ function loadBranches(payload = null) {
   return migrateBranches(parseBranches(payload) ?? parseBranches(DEFAULT_BRANCHES) ?? cloneBranches(DEFAULT_BRANCHES));
 }
 
-function buildSnapshotPayload(branchList, updatedAt = "") {
+function buildSnapshotPayload(branchList, updatedAt = "", revision = 1) {
   return {
     version: STORAGE_VERSION,
+    revision: normalizeRevision(revision) || 1,
     updatedAt: normalizeText(updatedAt) || new Date().toISOString(),
     branches: Array.isArray(branchList) ? branchList : [],
   };
@@ -1975,6 +2002,7 @@ const storedPayload = loadStoredPayload();
 const bundledBranches = loadBranches(DEFAULT_BRANCHES);
 const storedBranches = loadBranches(storedPayload);
 const storedUpdatedAt = normalizeText(storedPayload?.updatedAt);
+const storedRevision = normalizeRevision(storedPayload?.revision) || 1;
 const preferStoredEditable = true;
 let branches = mergeBranchLists(bundledBranches, storedBranches, {
   preferLocalEditable: preferStoredEditable,
@@ -1989,6 +2017,7 @@ const persistence = {
   serverReachable: false,
   localUpdatedAt: storedUpdatedAt || BUNDLED_UPDATED_AT,
   serverUpdatedAt: "",
+  currentRevision: storedRevision,
 };
 
 const state = {
@@ -2002,6 +2031,10 @@ const state = {
   actionStatus: "",
   isSaving: false,
   ignoreNodeClickUntil: 0,
+  versionHistoryItems: [],
+  versionHistoryLoading: false,
+  versionHistoryError: "",
+  versionHistoryRevision: storedRevision,
 };
 
 const dragState = {
@@ -2029,6 +2062,9 @@ const elements = {
   orgChart: document.getElementById("orgChart"),
   resetButton: document.getElementById("resetButton"),
   actionStatus: document.getElementById("actionStatus"),
+  versionDisclosure: document.getElementById("versionDisclosure"),
+  versionCurrentBadge: document.getElementById("versionCurrentBadge"),
+  versionHistoryList: document.getElementById("versionHistoryList"),
   openCreateButton: document.getElementById("openCreateButton"),
   memberGrid: document.getElementById("memberGrid"),
   search: document.getElementById("memberSearch"),
@@ -2125,30 +2161,37 @@ function writeStorageCache(payload = buildStoragePayload()) {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     persistence.localUpdatedAt = normalizeText(payload.updatedAt);
+    persistence.currentRevision = normalizeRevision(payload.revision) || persistence.currentRevision;
     return true;
   } catch {
     return false;
   }
 }
 
-function writeStorageSnapshot(branchList, updatedAt = "") {
-  const payload = buildSnapshotPayload(branchList, updatedAt);
+function writeStorageSnapshot(branchList, updatedAt = "", revision = persistence.currentRevision ?? 1) {
+  const payload = buildSnapshotPayload(branchList, updatedAt, revision);
   return writeStorageCache(payload);
 }
 
 async function saveBranches() {
-  const payload = buildStoragePayload();
-
   if (persistence.mode !== "server") {
+    const nextRevision = (normalizeRevision(persistence.currentRevision) || 1) + 1;
+    const payload = buildStoragePayload("", nextRevision);
     const cached = writeStorageCache(payload);
     if (!cached) {
       state.editStatus = "このブラウザでは保存できませんでした。";
       setActionStatus("このブラウザでは保存できませんでした。");
       return false;
     }
+    persistence.currentRevision = nextRevision;
+    persistence.localUpdatedAt = normalizeText(payload.updatedAt);
+    if (elements.versionDisclosure?.open) {
+      void refreshVersionHistory(true);
+    }
     return true;
   }
 
+  const payload = buildStoragePayload("", persistence.currentRevision ?? 1);
   const controller = typeof AbortController === "function" ? new AbortController() : null;
   const timeoutId = controller
     ? window.setTimeout(() => {
@@ -2174,7 +2217,11 @@ async function saveBranches() {
 
     persistence.serverReachable = true;
     persistence.serverUpdatedAt = normalizeText(result?.updatedAt) || payload.updatedAt;
-    writeStorageSnapshot(branches, persistence.serverUpdatedAt);
+    persistence.currentRevision = normalizeRevision(result?.revision) || (normalizeRevision(persistence.currentRevision) || 1) + 1;
+    writeStorageSnapshot(branches, persistence.serverUpdatedAt, persistence.currentRevision);
+    if (elements.versionDisclosure?.open) {
+      void refreshVersionHistory(true);
+    }
     return true;
   } catch {
     persistence.serverReachable = false;
@@ -2202,6 +2249,7 @@ async function loadServerBranches() {
     return {
       branches: migrateBranches(parsedBranches),
       updatedAt: normalizeText(payload?.updatedAt),
+      revision: normalizeRevision(payload?.revision) || 1,
     };
   }
 
@@ -2209,16 +2257,19 @@ async function loadServerBranches() {
     return {
       branches: loadBranches(DEFAULT_BRANCHES),
       updatedAt: normalizeText(payload?.updatedAt) || BUNDLED_UPDATED_AT,
+      revision: normalizeRevision(payload?.revision) || 1,
     };
   }
 
   throw new Error("invalid-data");
 }
 
-function applyServerState(serverState) {
+function applyServerState(serverState, options = {}) {
   if (!serverState?.branches?.length) {
     return;
   }
+
+  const { mergeLocal = true } = options;
 
   const previousBranchId = state.activeBranchId;
   const previousScopeNodeId = state.scopeNodeId;
@@ -2227,12 +2278,19 @@ function applyServerState(serverState) {
   const knownNodeIds = new Set(serverState.branches.flatMap((branch) => branch.nodes.map((node) => node.id)));
 
   const mergedUpdatedAt = normalizeText(serverState.updatedAt) || persistence.localUpdatedAt;
-  branches = mergeBranchLists(serverState.branches, branches, {
-    preferLocalEditable: false,
-    keepLocalOnlyNodes: false,
-  });
-  writeStorageSnapshot(branches, mergedUpdatedAt);
+  const mergedRevision = normalizeRevision(serverState.revision) || persistence.currentRevision || 1;
+  branches = mergeLocal
+    ? mergeBranchLists(serverState.branches, branches, {
+        preferLocalEditable: false,
+        keepLocalOnlyNodes: false,
+      })
+    : migrateBranches(serverState.branches);
+  writeStorageSnapshot(branches, mergedUpdatedAt, mergedRevision);
   persistence.localUpdatedAt = normalizeText(mergedUpdatedAt);
+  persistence.currentRevision = mergedRevision;
+  if (elements.versionDisclosure?.open) {
+    void refreshVersionHistory(true);
+  }
 
   const branch = getBranch(previousBranchId) ?? branches[0];
   if (!branch) {
@@ -2850,6 +2908,159 @@ function renderActionStatus() {
   }
 }
 
+function renderVersionHistory() {
+  if (elements.versionCurrentBadge) {
+    elements.versionCurrentBadge.textContent = `版 ${normalizeRevision(persistence.currentRevision) || 1}`;
+  }
+
+  if (!elements.versionHistoryList) {
+    return;
+  }
+
+  elements.versionHistoryList.innerHTML = "";
+
+  if (!elements.versionDisclosure?.open) {
+    return;
+  }
+
+  if (state.versionHistoryLoading) {
+    elements.versionHistoryList.innerHTML = `<div class="version-history-empty">履歴を読み込み中。</div>`;
+    return;
+  }
+
+  if (state.versionHistoryError) {
+    elements.versionHistoryList.innerHTML = `<div class="version-history-empty">${state.versionHistoryError}</div>`;
+    return;
+  }
+
+  const items = state.versionHistoryItems ?? [];
+  if (items.length === 0) {
+    elements.versionHistoryList.innerHTML = `<div class="version-history-empty">履歴はありません。</div>`;
+    return;
+  }
+
+  items.forEach((item) => {
+    const card = document.createElement("article");
+    card.className = "version-history-item";
+    card.innerHTML = `
+      <div class="version-history-meta">
+        <strong>版 ${normalizeRevision(item.revision) || 1}</strong>
+        <span>${formatTimestamp(item.savedAt || item.updatedAt)}</span>
+      </div>
+      <button type="button" class="secondary-button version-restore-button">戻す</button>
+    `;
+
+    card.querySelector(".version-restore-button").addEventListener("click", () => {
+      void handleVersionRestore(item.id);
+    });
+    elements.versionHistoryList.appendChild(card);
+  });
+}
+
+async function refreshVersionHistory(force = false) {
+  if (!elements.versionDisclosure?.open && !force) {
+    return;
+  }
+
+  if (state.versionHistoryLoading) {
+    return;
+  }
+
+  const currentRevision = normalizeRevision(persistence.currentRevision) || 1;
+  if (!force && state.versionHistoryRevision === currentRevision && state.versionHistoryItems.length > 0) {
+    renderVersionHistory();
+    return;
+  }
+
+  state.versionHistoryLoading = true;
+  state.versionHistoryError = "";
+  renderVersionHistory();
+
+  try {
+    const response = await window.fetch(`${SERVER_DATA_ENDPOINT}?history=1`, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error("load-failed");
+    }
+
+    const payload = await response.json();
+    const current = payload?.current ?? {};
+    state.versionHistoryItems = Array.isArray(payload?.history)
+      ? payload.history.map((item) => ({
+          id: item.id,
+          revision: normalizeRevision(item.revision) || 1,
+          updatedAt: normalizeText(item.updatedAt),
+          savedAt: normalizeText(item.savedAt),
+        }))
+      : [];
+    state.versionHistoryRevision = normalizeRevision(current.revision) || currentRevision;
+    if (normalizeRevision(current.revision)) {
+      persistence.currentRevision = normalizeRevision(current.revision);
+    }
+    if (normalizeText(current.updatedAt)) {
+      persistence.serverUpdatedAt = normalizeText(current.updatedAt);
+    }
+  } catch {
+    state.versionHistoryError = "履歴の取得に失敗しました。";
+  } finally {
+    state.versionHistoryLoading = false;
+    renderVersionHistory();
+  }
+}
+
+async function handleVersionRestore(historyId) {
+  if (!historyId || state.isSaving) {
+    return;
+  }
+
+  if (!window.confirm("この版に戻します。よろしいですか。")) {
+    return;
+  }
+
+  state.isSaving = true;
+  setActionStatus("版を戻しています。");
+  renderActionStatus();
+
+  try {
+    const response = await window.fetch(SERVER_DATA_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "restore", historyId }),
+    });
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok || result?.ok === false) {
+      throw new Error("restore-failed");
+    }
+
+    const parsedBranches = parseBranches(result);
+    if (parsedBranches) {
+      applyServerState(
+        {
+          branches: migrateBranches(parsedBranches),
+          updatedAt: normalizeText(result?.updatedAt),
+          revision: normalizeRevision(result?.revision) || (normalizeRevision(persistence.currentRevision) || 1) + 1,
+        },
+        { mergeLocal: false }
+      );
+    }
+
+    state.versionHistoryItems = [];
+    state.versionHistoryRevision = normalizeRevision(result?.revision) || state.versionHistoryRevision;
+    setActionStatus("版を戻しました。");
+    if (elements.versionDisclosure?.open) {
+      await refreshVersionHistory(true);
+    }
+  } catch {
+    state.versionHistoryError = "版の復元に失敗しました。";
+    setActionStatus("版の復元に失敗しました。");
+  } finally {
+    state.isSaving = false;
+    render();
+  }
+}
+
 function waitForNextPaint() {
   return new Promise((resolve) => {
     window.requestAnimationFrame(() => {
@@ -3036,8 +3247,14 @@ function renderBranchTabs() {
 
 function renderBranchSummary(branch) {
   const peopleCount = collectScopePeople(branch).length;
+  const revision = normalizeRevision(persistence.currentRevision) || 1;
+  const updatedAt = persistence.serverUpdatedAt || persistence.localUpdatedAt;
 
   elements.branchSummary.innerHTML = `
+    <article class="summary-card summary-card-version">
+      <span>版 ${revision}</span>
+      <small>${formatTimestamp(updatedAt)}</small>
+    </article>
     <article class="summary-card summary-card-count">
       <span>人数 ${peopleCount}名</span>
     </article>
@@ -3993,6 +4210,7 @@ function render() {
   renderHeroStats();
   renderBranchTabs();
   renderBranchSummary(branch);
+  renderVersionHistory();
   renderOrgChart(branch);
   renderMemberGrid(branch);
   renderProfile(branch);
@@ -4133,6 +4351,15 @@ if (elements.openCreateButton) {
     openCreatePanel();
   });
 }
+if (elements.versionDisclosure) {
+  elements.versionDisclosure.addEventListener("toggle", () => {
+    if (elements.versionDisclosure.open) {
+      void refreshVersionHistory(true);
+    } else {
+      renderVersionHistory();
+    }
+  });
+}
 window.addEventListener("resize", () => {
   window.requestAnimationFrame(fitOrgChartToFrame);
 });
@@ -4153,6 +4380,7 @@ window.addEventListener("storage", (event) => {
     const payload = JSON.parse(event.newValue);
     const parsedBranches = parseBranches(payload);
     const updatedAt = normalizeText(payload?.updatedAt);
+    const revision = normalizeRevision(payload?.revision);
 
     if (!parsedBranches || looksCorruptedBranches(parsedBranches)) {
       return;
@@ -4168,6 +4396,7 @@ window.addEventListener("storage", (event) => {
     applyServerState({
       branches: migrateBranches(parsedBranches),
       updatedAt,
+      revision,
     });
   } catch {
     // Ignore invalid storage payloads from other tabs.
