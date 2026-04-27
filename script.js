@@ -1864,9 +1864,22 @@ function mergeTitlesValue(primaryNode, localNode, options = {}) {
 }
 
 function mergeReportIds(primaryReports = [], localReports = [], preferLocal = false) {
-  const preferredReports = normalizeReports(preferLocal ? localReports : primaryReports);
-  const fallbackReports = normalizeReports(preferLocal ? primaryReports : localReports);
-  return preferredReports.length > 0 ? preferredReports : fallbackReports;
+  const primary = normalizeReports(primaryReports);
+  const local = normalizeReports(localReports);
+  const preferredReports = preferLocal ? local : primary;
+  const mergedReports = [...preferredReports];
+
+  local.forEach((reportId) => {
+    if (!primary.includes(reportId) && !mergedReports.includes(reportId)) {
+      mergedReports.push(reportId);
+    }
+  });
+
+  if (mergedReports.length > 0) {
+    return mergedReports;
+  }
+
+  return preferLocal ? primary : local;
 }
 
 function mergeNormalizedNode(primaryNode, localNode, options = {}) {
@@ -1990,7 +2003,7 @@ const storedUpdatedAt = normalizeText(storedPayload?.updatedAt);
 const preferStoredEditable = parseUpdatedAt(storedUpdatedAt) >= parseUpdatedAt(BUNDLED_UPDATED_AT);
 let branches = mergeBranchLists(bundledBranches, storedBranches, {
   preferLocalEditable: preferStoredEditable,
-  keepLocalOnlyNodes: KEEP_LOCAL_ONLY_NODES,
+  keepLocalOnlyNodes: true,
 });
 if (!branches.length) {
   branches = bundledBranches;
@@ -2241,7 +2254,7 @@ function applyServerState(serverState) {
   const mergedUpdatedAt = preferLocalEditable ? persistence.localUpdatedAt || serverState.updatedAt : serverState.updatedAt;
   branches = mergeBranchLists(serverState.branches, branches, {
     preferLocalEditable,
-    keepLocalOnlyNodes: KEEP_LOCAL_ONLY_NODES || preferLocalEditable,
+    keepLocalOnlyNodes: true,
   });
   writeStorageSnapshot(branches, mergedUpdatedAt);
   persistence.localUpdatedAt = normalizeText(mergedUpdatedAt);
