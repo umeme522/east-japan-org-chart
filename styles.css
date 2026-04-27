@@ -1910,7 +1910,7 @@ textarea {
   border: 1px dashed rgba(31, 106, 67, 0.22);
 }
 
-@media (max-width: 1320px) {
+@media (max-width: 960px) {
   .workspace {
     grid-template-areas:
       "main"
@@ -1925,7 +1925,7 @@ textarea {
   }
 }
 
-@media (max-width: 1120px) {
+@media (max-width: 960px) {
   .branch-summary {
     grid-template-columns: 1fr;
   }
