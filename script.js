@@ -3148,6 +3148,13 @@ function createNode(
         ${canToggle ? `<span class="node-toggle-indicator">${isExpanded ? "-" : "+"}</span>` : ""}
       </div>
     `;
+  } else if (node.kind === "person") {
+    card.innerHTML = `
+      <div class="node-card-header person-card-header">
+        <span class="node-person-role">${primaryTitle || "未設定"}</span>
+        <span class="node-person-name">${node.name}</span>
+      </div>
+    `;
   } else {
     card.innerHTML = `
       <div class="node-card-header">

@@ -875,6 +875,42 @@ textarea {
   border-color: rgba(102, 111, 104, 0.14);
 }
 
+.node-card.person {
+  justify-items: stretch;
+}
+
+.node-card.person .node-card-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+}
+
+.node-person-role,
+.node-person-name {
+  display: block;
+  min-width: 0;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.node-person-role {
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: var(--warm-deep);
+}
+
+.node-person-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
 .node-card.office-inline-stacked,
 .node-card.unit-inline-stacked {
   width: 184px;
