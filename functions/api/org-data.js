@@ -1,4 +1,3 @@
-const HISTORY_RETENTION_DAYS = 7;
 const DEFAULT_PAYLOAD = {
   version: 1,
   revision: 1,
@@ -8,7 +7,7 @@ const DEFAULT_PAYLOAD = {
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET,PUT,POST,OPTIONS",
+  "Access-Control-Allow-Methods": "GET,PUT,OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
@@ -21,18 +20,12 @@ function normalizeRevision(value) {
   return Number.isFinite(revision) && revision > 0 ? revision : 0;
 }
 
-function normalizeHistoryId(value) {
-  const historyId = Number.parseInt(normalizeText(String(value)), 10);
-  return Number.isFinite(historyId) && historyId > 0 ? historyId : 0;
-}
-
 function stripRuntimeFields(payload, fallbackRevision = 1, fallbackUpdatedAt = "") {
   const normalized = {
     ...DEFAULT_PAYLOAD,
     ...(payload && typeof payload === "object" ? payload : {}),
   };
 
-  delete normalized.history;
   normalized.version = normalizeRevision(normalized.version) || DEFAULT_PAYLOAD.version;
   normalized.revision = normalizeRevision(normalized.revision) || fallbackRevision || DEFAULT_PAYLOAD.revision;
   normalized.updatedAt = normalizeText(normalized.updatedAt) || normalizeText(fallbackUpdatedAt) || "";
@@ -60,10 +53,6 @@ async function ensureDatabase(env) {
     "CREATE TABLE IF NOT EXISTS org_state (id INTEGER PRIMARY KEY, payload TEXT NOT NULL, updated_at TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 1)"
   ).run();
 
-  await env.ORG_DB.prepare(
-    "CREATE TABLE IF NOT EXISTS org_history (id INTEGER PRIMARY KEY AUTOINCREMENT, revision INTEGER NOT NULL, payload TEXT NOT NULL, updated_at TEXT NOT NULL, saved_at TEXT NOT NULL)"
-  ).run();
-
   const schema = await env.ORG_DB.prepare("PRAGMA table_info(org_state)").all();
   const hasRevisionColumn = Array.isArray(schema?.results)
     ? schema.results.some((column) => column?.name === "revision")
@@ -72,14 +61,6 @@ async function ensureDatabase(env) {
   if (!hasRevisionColumn) {
     await env.ORG_DB.prepare("ALTER TABLE org_state ADD COLUMN revision INTEGER NOT NULL DEFAULT 1").run();
   }
-}
-
-async function pruneHistory(env) {
-  await env.ORG_DB.prepare(
-    "DELETE FROM org_history WHERE julianday(saved_at) < julianday('now', ?)"
-  )
-    .bind(`-${HISTORY_RETENTION_DAYS} days`)
-    .run();
 }
 
 async function readCurrentState(env) {
@@ -99,35 +80,6 @@ async function readCurrentState(env) {
   } catch {
     return stripRuntimeFields(DEFAULT_PAYLOAD, row.revision || DEFAULT_PAYLOAD.revision, row.updated_at || "");
   }
-}
-
-async function readHistoryEntries(env) {
-  await ensureDatabase(env);
-  await pruneHistory(env);
-
-  const rows = await env.ORG_DB.prepare(
-    "SELECT id, revision, updated_at, saved_at FROM org_history WHERE julianday(saved_at) >= julianday('now', ?) ORDER BY id DESC"
-  )
-    .bind(`-${HISTORY_RETENTION_DAYS} days`)
-    .all();
-
-  return (rows?.results ?? []).map((row) => ({
-    id: row.id,
-    revision: normalizeRevision(row.revision) || 1,
-    updatedAt: normalizeText(row.updated_at),
-    savedAt: normalizeText(row.saved_at),
-  }));
-}
-
-async function insertHistoryEntry(env, payload, updatedAt, revision) {
-  const savedAt = new Date().toISOString();
-  const snapshot = stripRuntimeFields(payload, revision, updatedAt);
-
-  await env.ORG_DB.prepare(
-    "INSERT INTO org_history (revision, payload, updated_at, saved_at) VALUES (?, ?, ?, ?)"
-  )
-    .bind(revision, JSON.stringify(snapshot), normalizeText(updatedAt), savedAt)
-    .run();
 }
 
 async function writeCurrentState(env, payload, revision, updatedAt) {
@@ -155,45 +107,7 @@ async function savePayload(env, payload) {
   const current = await readCurrentState(env);
   const nextRevision = (normalizeRevision(current.revision) || DEFAULT_PAYLOAD.revision) + 1;
   const updatedAt = new Date().toISOString();
-
-  await insertHistoryEntry(env, current, current.updatedAt, current.revision || DEFAULT_PAYLOAD.revision);
-  const snapshot = await writeCurrentState(env, payload, nextRevision, updatedAt);
-  await pruneHistory(env);
-  return snapshot;
-}
-
-async function restorePayload(env, historyId) {
-  await ensureDatabase(env);
-
-  const row = await env.ORG_DB.prepare(
-    "SELECT id, payload, updated_at, revision FROM org_history WHERE id = ? LIMIT 1"
-  )
-    .bind(historyId)
-    .first();
-
-  if (!row?.payload) {
-    throw new Error("history-not-found");
-  }
-
-  const current = await readCurrentState(env);
-  await insertHistoryEntry(env, current, current.updatedAt, current.revision || DEFAULT_PAYLOAD.revision);
-
-  let parsedPayload;
-  try {
-    parsedPayload = JSON.parse(row.payload);
-  } catch {
-    throw new Error("invalid-history-payload");
-  }
-
-  const nextRevision = (normalizeRevision(current.revision) || DEFAULT_PAYLOAD.revision) + 1;
-  const restored = await writeCurrentState(
-    env,
-    parsedPayload,
-    nextRevision,
-    new Date().toISOString()
-  );
-  await pruneHistory(env);
-  return restored;
+  return writeCurrentState(env, payload, nextRevision, updatedAt);
 }
 
 export function onRequestOptions() {
@@ -205,21 +119,7 @@ export function onRequestOptions() {
 
 export async function onRequestGet(context) {
   try {
-    const historyRequested = new URL(context.request.url).searchParams.get("history") === "1";
     const current = await readCurrentState(context.env);
-
-    if (historyRequested) {
-      const history = await readHistoryEntries(context.env);
-      return createJsonResponse({
-        ok: true,
-        current: {
-          revision: current.revision || DEFAULT_PAYLOAD.revision,
-          updatedAt: current.updatedAt || "",
-        },
-        history,
-      });
-    }
-
     return createJsonResponse(current);
   } catch (error) {
     console.error("org-data GET failed", error);
@@ -253,42 +153,6 @@ export async function onRequestPut(context) {
       {
         ok: false,
         message: "JSON の保存に失敗しました。",
-        details: String(error?.message ?? error),
-      },
-      400
-    );
-  }
-}
-
-export async function onRequestPost(context) {
-  try {
-    const payload = await context.request.json();
-    if (!payload || typeof payload !== "object") {
-      return createJsonResponse({ ok: false, message: "復元に失敗しました。" }, 400);
-    }
-
-    if (normalizeText(payload.action) !== "restore") {
-      return createJsonResponse({ ok: false, message: "許可されていない操作です。" }, 400);
-    }
-
-    const historyId = normalizeHistoryId(payload.historyId);
-    if (!historyId) {
-      return createJsonResponse({ ok: false, message: "復元対象が選択されていません。" }, 400);
-    }
-
-    const restored = await restorePayload(context.env, historyId);
-    return createJsonResponse({
-      ok: true,
-      updatedAt: restored.updatedAt,
-      revision: restored.revision,
-      branches: restored.branches,
-    });
-  } catch (error) {
-    console.error("org-data POST failed", error);
-    return createJsonResponse(
-      {
-        ok: false,
-        message: "復元に失敗しました。",
         details: String(error?.message ?? error),
       },
       400

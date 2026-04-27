@@ -10,11 +10,7 @@ const DATA_DIR = process.env.DATA_DIR
 const DATA_FILE = process.env.DATA_FILE
   ? path.resolve(process.env.DATA_FILE)
   : path.join(DATA_DIR, "org-data.json");
-const HISTORY_FILE = process.env.DATA_HISTORY_FILE
-  ? path.resolve(process.env.DATA_HISTORY_FILE)
-  : path.join(DATA_DIR, "org-history.json");
 const PORT = Number(process.env.PORT) || 3000;
-const HISTORY_RETENTION_DAYS = 7;
 
 const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
@@ -34,11 +30,6 @@ function normalizeText(value) {
 function normalizeRevision(value) {
   const revision = Number.parseInt(normalizeText(value), 10);
   return Number.isFinite(revision) && revision > 0 ? revision : 0;
-}
-
-function normalizeHistoryId(value) {
-  const historyId = Number.parseInt(normalizeText(String(value)), 10);
-  return Number.isFinite(historyId) && historyId > 0 ? historyId : 0;
 }
 
 function stripRuntimeFields(payload, fallbackRevision = 1, fallbackUpdatedAt = "") {
@@ -78,10 +69,6 @@ async function ensureDataFiles() {
     });
   }
 
-  const history = await readJsonFile(HISTORY_FILE, null);
-  if (!Array.isArray(history)) {
-    await writeJsonFile(HISTORY_FILE, []);
-  }
 }
 
 function sendJson(response, statusCode, payload) {
@@ -115,44 +102,6 @@ async function readCurrentState() {
   return stripRuntimeFields(payload, payload?.revision || 1, payload?.updatedAt || "");
 }
 
-async function readHistoryEntries() {
-  const history = await readJsonFile(HISTORY_FILE, []);
-  const cutoff = Date.now() - HISTORY_RETENTION_DAYS * 24 * 60 * 60 * 1000;
-
-  return history
-    .filter((entry) => Date.parse(normalizeText(entry?.savedAt)) >= cutoff)
-    .sort((left, right) => {
-      const leftTime = Date.parse(normalizeText(left?.savedAt)) || 0;
-      const rightTime = Date.parse(normalizeText(right?.savedAt)) || 0;
-      return rightTime - leftTime || (normalizeRevision(right?.revision) - normalizeRevision(left?.revision));
-    });
-}
-
-async function pruneHistoryFile(history = []) {
-  const cutoff = Date.now() - HISTORY_RETENTION_DAYS * 24 * 60 * 60 * 1000;
-  const pruned = history.filter((entry) => Date.parse(normalizeText(entry?.savedAt)) >= cutoff);
-  await writeJsonFile(HISTORY_FILE, pruned);
-  return pruned;
-}
-
-async function writeHistoryEntry(snapshot) {
-  const history = await readJsonFile(HISTORY_FILE, []);
-  const pruned = await pruneHistoryFile(history);
-  const nextId = pruned.reduce((max, entry) => Math.max(max, Number(entry?.id) || 0), 0) + 1;
-  const savedAt = new Date().toISOString();
-
-  pruned.unshift({
-    id: nextId,
-    revision: normalizeRevision(snapshot?.revision) || 1,
-    updatedAt: normalizeText(snapshot?.updatedAt),
-    savedAt,
-    payload: stripRuntimeFields(snapshot, normalizeRevision(snapshot?.revision) || 1, snapshot?.updatedAt),
-  });
-
-  await writeJsonFile(HISTORY_FILE, pruned);
-  return pruned;
-}
-
 async function writeCurrentState(payload, revision, updatedAt) {
   const snapshot = stripRuntimeFields(payload, revision, updatedAt);
   await writeJsonFile(DATA_FILE, snapshot);
@@ -161,25 +110,10 @@ async function writeCurrentState(payload, revision, updatedAt) {
 
 async function saveSnapshot(payload) {
   const current = await readCurrentState();
-  await writeHistoryEntry(current);
   const nextRevision = (normalizeRevision(current.revision) || 1) + 1;
   const updatedAt = new Date().toISOString();
   const snapshot = await writeCurrentState(payload, nextRevision, updatedAt);
   return snapshot;
-}
-
-async function restoreSnapshot(historyId) {
-  const current = await readCurrentState();
-  const history = await readHistoryEntries();
-  const selected = history.find((entry) => Number(entry.id) === historyId);
-
-  if (!selected?.payload) {
-    return null;
-  }
-
-  await writeHistoryEntry(current);
-  const nextRevision = (normalizeRevision(current.revision) || 1) + 1;
-  return writeCurrentState(selected.payload, nextRevision, new Date().toISOString());
 }
 
 function sendApiJson(response, payload, statusCode = 200) {
@@ -188,25 +122,6 @@ function sendApiJson(response, payload, statusCode = 200) {
 
 async function handleApi(request, response, url) {
   if (request.method === "GET") {
-    if (url.searchParams.get("history") === "1") {
-      const current = await readCurrentState();
-      const history = await readHistoryEntries();
-      sendApiJson(response, {
-        ok: true,
-        current: {
-          revision: current.revision,
-          updatedAt: current.updatedAt,
-        },
-        history: history.map((entry) => ({
-          id: entry.id,
-          revision: entry.revision,
-          updatedAt: entry.updatedAt,
-          savedAt: entry.savedAt,
-        })),
-      });
-      return;
-    }
-
     const content = await fs.readFile(DATA_FILE, "utf8");
     response.writeHead(200, {
       "Content-Type": "application/json; charset=utf-8",
@@ -228,40 +143,6 @@ async function handleApi(request, response, url) {
       sendApiJson(response, { ok: true, updatedAt: snapshot.updatedAt, revision: snapshot.revision });
     } catch {
       sendApiJson(response, { ok: false, message: "JSON の保存に失敗しました。" }, 400);
-    }
-    return;
-  }
-
-  if (request.method === "POST") {
-    try {
-      const body = await readRequestBody(request);
-      const parsed = JSON.parse(body);
-      if (!parsed || typeof parsed !== "object") {
-        throw new Error("invalid-payload");
-      }
-
-      if (normalizeText(parsed.action) !== "restore") {
-        throw new Error("invalid-action");
-      }
-
-      const historyId = normalizeHistoryId(parsed.historyId);
-      if (!historyId) {
-        throw new Error("missing-history-id");
-      }
-
-      const restored = await restoreSnapshot(historyId);
-      if (!restored) {
-        throw new Error("history-not-found");
-      }
-
-      sendApiJson(response, {
-        ok: true,
-        updatedAt: restored.updatedAt,
-        revision: restored.revision,
-        branches: restored.branches,
-      });
-    } catch {
-      sendApiJson(response, { ok: false, message: "復元に失敗しました。" }, 400);
     }
     return;
   }

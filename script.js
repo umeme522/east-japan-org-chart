@@ -2031,10 +2031,6 @@ const state = {
   actionStatus: "",
   isSaving: false,
   ignoreNodeClickUntil: 0,
-  versionHistoryItems: [],
-  versionHistoryLoading: false,
-  versionHistoryError: "",
-  versionHistoryRevision: storedRevision,
 };
 
 const dragState = {
@@ -2062,9 +2058,6 @@ const elements = {
   orgChart: document.getElementById("orgChart"),
   resetButton: document.getElementById("resetButton"),
   actionStatus: document.getElementById("actionStatus"),
-  versionDisclosure: document.getElementById("versionDisclosure"),
-  versionCurrentBadge: document.getElementById("versionCurrentBadge"),
-  versionHistoryList: document.getElementById("versionHistoryList"),
   openCreateButton: document.getElementById("openCreateButton"),
   memberGrid: document.getElementById("memberGrid"),
   search: document.getElementById("memberSearch"),
@@ -2185,9 +2178,6 @@ async function saveBranches() {
     }
     persistence.currentRevision = nextRevision;
     persistence.localUpdatedAt = normalizeText(payload.updatedAt);
-    if (elements.versionDisclosure?.open) {
-      void refreshVersionHistory(true);
-    }
     return true;
   }
 
@@ -2219,9 +2209,6 @@ async function saveBranches() {
     persistence.serverUpdatedAt = normalizeText(result?.updatedAt) || payload.updatedAt;
     persistence.currentRevision = normalizeRevision(result?.revision) || (normalizeRevision(persistence.currentRevision) || 1) + 1;
     writeStorageSnapshot(branches, persistence.serverUpdatedAt, persistence.currentRevision);
-    if (elements.versionDisclosure?.open) {
-      void refreshVersionHistory(true);
-    }
     return true;
   } catch {
     persistence.serverReachable = false;
@@ -2288,10 +2275,6 @@ function applyServerState(serverState, options = {}) {
   writeStorageSnapshot(branches, mergedUpdatedAt, mergedRevision);
   persistence.localUpdatedAt = normalizeText(mergedUpdatedAt);
   persistence.currentRevision = mergedRevision;
-  if (elements.versionDisclosure?.open) {
-    void refreshVersionHistory(true);
-  }
-
   const branch = getBranch(previousBranchId) ?? branches[0];
   if (!branch) {
     return;
@@ -2905,159 +2888,6 @@ function renderActionStatus() {
   if (elements.actionStatus) {
     elements.actionStatus.textContent = state.actionStatus;
     delete elements.actionStatus.dataset.state;
-  }
-}
-
-function renderVersionHistory() {
-  if (elements.versionCurrentBadge) {
-    elements.versionCurrentBadge.textContent = `版 ${normalizeRevision(persistence.currentRevision) || 1}`;
-  }
-
-  if (!elements.versionHistoryList) {
-    return;
-  }
-
-  elements.versionHistoryList.innerHTML = "";
-
-  if (!elements.versionDisclosure?.open) {
-    return;
-  }
-
-  if (state.versionHistoryLoading) {
-    elements.versionHistoryList.innerHTML = `<div class="version-history-empty">履歴を読み込み中。</div>`;
-    return;
-  }
-
-  if (state.versionHistoryError) {
-    elements.versionHistoryList.innerHTML = `<div class="version-history-empty">${state.versionHistoryError}</div>`;
-    return;
-  }
-
-  const items = state.versionHistoryItems ?? [];
-  if (items.length === 0) {
-    elements.versionHistoryList.innerHTML = `<div class="version-history-empty">履歴はありません。</div>`;
-    return;
-  }
-
-  items.forEach((item) => {
-    const card = document.createElement("article");
-    card.className = "version-history-item";
-    card.innerHTML = `
-      <div class="version-history-meta">
-        <strong>版 ${normalizeRevision(item.revision) || 1}</strong>
-        <span>${formatTimestamp(item.savedAt || item.updatedAt)}</span>
-      </div>
-      <button type="button" class="secondary-button version-restore-button">戻す</button>
-    `;
-
-    card.querySelector(".version-restore-button").addEventListener("click", () => {
-      void handleVersionRestore(item.id);
-    });
-    elements.versionHistoryList.appendChild(card);
-  });
-}
-
-async function refreshVersionHistory(force = false) {
-  if (!elements.versionDisclosure?.open && !force) {
-    return;
-  }
-
-  if (state.versionHistoryLoading) {
-    return;
-  }
-
-  const currentRevision = normalizeRevision(persistence.currentRevision) || 1;
-  if (!force && state.versionHistoryRevision === currentRevision && state.versionHistoryItems.length > 0) {
-    renderVersionHistory();
-    return;
-  }
-
-  state.versionHistoryLoading = true;
-  state.versionHistoryError = "";
-  renderVersionHistory();
-
-  try {
-    const response = await window.fetch(`${SERVER_DATA_ENDPOINT}?history=1`, { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error("load-failed");
-    }
-
-    const payload = await response.json();
-    const current = payload?.current ?? {};
-    state.versionHistoryItems = Array.isArray(payload?.history)
-      ? payload.history.map((item) => ({
-          id: item.id,
-          revision: normalizeRevision(item.revision) || 1,
-          updatedAt: normalizeText(item.updatedAt),
-          savedAt: normalizeText(item.savedAt),
-        }))
-      : [];
-    state.versionHistoryRevision = normalizeRevision(current.revision) || currentRevision;
-    if (normalizeRevision(current.revision)) {
-      persistence.currentRevision = normalizeRevision(current.revision);
-    }
-    if (normalizeText(current.updatedAt)) {
-      persistence.serverUpdatedAt = normalizeText(current.updatedAt);
-    }
-  } catch {
-    state.versionHistoryError = "履歴の取得に失敗しました。";
-  } finally {
-    state.versionHistoryLoading = false;
-    renderVersionHistory();
-  }
-}
-
-async function handleVersionRestore(historyId) {
-  if (!historyId || state.isSaving) {
-    return;
-  }
-
-  if (!window.confirm("この版に戻します。よろしいですか。")) {
-    return;
-  }
-
-  state.isSaving = true;
-  setActionStatus("版を戻しています。");
-  renderActionStatus();
-
-  try {
-    const response = await window.fetch(SERVER_DATA_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ action: "restore", historyId }),
-    });
-    const result = await response.json().catch(() => null);
-
-    if (!response.ok || result?.ok === false) {
-      throw new Error("restore-failed");
-    }
-
-    const parsedBranches = parseBranches(result);
-    if (parsedBranches) {
-      applyServerState(
-        {
-          branches: migrateBranches(parsedBranches),
-          updatedAt: normalizeText(result?.updatedAt),
-          revision: normalizeRevision(result?.revision) || (normalizeRevision(persistence.currentRevision) || 1) + 1,
-        },
-        { mergeLocal: false }
-      );
-    }
-
-    state.versionHistoryItems = [];
-    state.versionHistoryRevision = normalizeRevision(result?.revision) || state.versionHistoryRevision;
-    setActionStatus("版を戻しました。");
-    if (elements.versionDisclosure?.open) {
-      await refreshVersionHistory(true);
-    }
-  } catch {
-    state.versionHistoryError = "版の復元に失敗しました。";
-    setActionStatus("版の復元に失敗しました。");
-  } finally {
-    state.isSaving = false;
-    render();
   }
 }
 
@@ -4210,7 +4040,6 @@ function render() {
   renderHeroStats();
   renderBranchTabs();
   renderBranchSummary(branch);
-  renderVersionHistory();
   renderOrgChart(branch);
   renderMemberGrid(branch);
   renderProfile(branch);
@@ -4349,15 +4178,6 @@ if (elements.openCreateButton) {
     event.preventDefault();
     event.stopPropagation();
     openCreatePanel();
-  });
-}
-if (elements.versionDisclosure) {
-  elements.versionDisclosure.addEventListener("toggle", () => {
-    if (elements.versionDisclosure.open) {
-      void refreshVersionHistory(true);
-    } else {
-      renderVersionHistory();
-    }
   });
 }
 window.addEventListener("resize", () => {
