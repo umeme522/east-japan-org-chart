@@ -456,6 +456,7 @@ textarea {
   gap: 24px;
   width: max-content;
   margin: 0 auto;
+  margin-top: -118px;
 }
 
 .org-chart ul {
@@ -2148,6 +2149,7 @@ textarea {
     align-items: center;
     gap: 16px;
     width: 100%;
+    margin-top: 0;
   }
 
   .chart-detached-row > ul.detached-tree {
