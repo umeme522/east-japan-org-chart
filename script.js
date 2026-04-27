@@ -1529,61 +1529,6 @@ function migrateEastJapanBranch(branch) {
   }
 
   upsertBranchNode(branch, {
-    id: "dept-2-manager",
-    kind: "person",
-    name: "藤原 邦康",
-    lastName: "藤原",
-    firstName: "邦康",
-    title: "部長",
-    titles: ["部長"],
-    department: "業務2部",
-    age: "",
-    joinYear: "",
-    tenure: "",
-    history: "",
-    historyEntries: [],
-    hobbies: [],
-    tags: [],
-    reports: [],
-  }, { preferExisting: true });
-
-  const dept2 = branch.nodes.find((node) => node.id === "dept-2");
-  if (dept2) {
-    dept2.reports = ["dept-2-manager", ...dept2.reports.filter((reportId) => reportId !== "dept-2-manager")];
-  }
-
-  const dept3 = branch.nodes.find((node) => node.id === "dept-3");
-  if (dept3) {
-    dept3.managerName = "堀内 芳人";
-    dept3.managerLastName = "堀内";
-    dept3.managerFirstName = "芳人";
-    dept3.managerTitle = "部長";
-    dept3.managerTitles = ["部長", "副支店長"];
-    dept3.managerLinkedId = "east-japan-2";
-    dept3.reports = dept3.reports.filter((reportId) => reportId !== "dept-3-manager");
-  }
-
-  branch.nodes = branch.nodes.filter((node) => node.id !== "dept-3-manager");
-  branch.nodes = branch.nodes.filter((node) => node.id !== "tochigi-3");
-
-  if (!branch.nodes.some((node) => node.id === "office-106")) {
-    upsertBranchNode(branch, {
-      id: "office-106",
-      kind: "unit",
-      name: "南多摩",
-      title: "",
-      department: "業務1部",
-      description: "業務1部配下です。",
-      tags: ["組織"],
-      reports: [],
-    });
-  }
-
-  if (dept1) {
-    dept1.reports = [...new Set([...dept1.reports, "office-106"])];
-  }
-
-  upsertBranchNode(branch, {
     id: "branch-admin",
     kind: "unit",
     name: "支店総務部",
@@ -1592,7 +1537,27 @@ function migrateEastJapanBranch(branch) {
     description: "支店総務部です。",
     tags: ["組織"],
     reports: ["branch-admin-inoue", "branch-admin-kitaura", "branch-admin-matsumura"],
+    managerName: "松村 結花",
+    managerLastName: "松村",
+    managerFirstName: "結花",
+    managerTitle: "課長",
+    managerTitles: ["課長"],
+    managerLinkedId: "branch-admin-matsumura",
   }, { preferExisting: true });
+
+  upsertBranchNode(branch, {
+    id: "office-106",
+    kind: "unit",
+    name: "南多摩",
+    title: "",
+    department: "業務1部",
+    description: "業務1部配下です。",
+    tags: ["組織"],
+    reports: [],
+  });
+  if (dept1) {
+    dept1.reports = [...new Set([...dept1.reports, "office-106"])];
+  }
 
   upsertBranchNode(branch, {
     id: "sales-innovation",
@@ -3165,7 +3130,10 @@ function createNode(
     card.innerHTML = `
       <div class="node-card-header unit-card-header">
         <span class="node-unit-title">${node.name}</span>
-        <span class="node-unit-top-name">${inlineLeader.name}</span>
+        <span class="node-office-leader-line">
+          <span class="node-inline-leader-role">${getPrimaryTitle(inlineLeader)}</span>
+          <span class="node-inline-leader-name">${inlineLeader.name}</span>
+        </span>
         ${canToggle ? `<span class="node-toggle-indicator">${isExpanded ? "-" : "+"}</span>` : ""}
       </div>
     `;

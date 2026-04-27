@@ -1899,12 +1899,14 @@
             "branch-admin-matsumura"
           ],
           "titles": [],
-          "managerName": "",
-          "managerLastName": "",
-          "managerFirstName": "",
-          "managerTitle": "",
-          "managerTitles": [],
-          "managerLinkedId": ""
+          "managerName": "松村 結花",
+          "managerLastName": "松村",
+          "managerFirstName": "結花",
+          "managerTitle": "課長",
+          "managerTitles": [
+            "課長"
+          ],
+          "managerLinkedId": "branch-admin-matsumura"
         },
         {
           "id": "sales-innovation",
