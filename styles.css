@@ -661,6 +661,22 @@ textarea {
   z-index: 6;
 }
 
+@media (min-width: 721px) {
+  .node-card.is-root.is-executive {
+    position: sticky;
+    left: 50%;
+    transform: translateX(calc(-100% - 14px));
+    z-index: 9;
+  }
+
+  .node-card.is-executive:not(.is-root) {
+    position: sticky;
+    left: 50%;
+    transform: translateX(14px);
+    z-index: 8;
+  }
+}
+
 .node-card.is-root::before {
   background: rgba(255, 255, 255, 0.42);
 }

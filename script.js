@@ -33,7 +33,7 @@ const DEFAULT_BRANCHES = [
         department: "支店統括",
         age: "52歳",
         tenure: "28年",
-        history: "首都圏の責任者と東日本エリア統括を経て、支店長に就任。",
+        history: "",
         hobbies: ["ゴルフ", "歴史散策"],
         tags: ["支店運営", "組織管理", "営業統括"],
         reports: ["east-japan-2", "branch-admin", "sales-innovation"],
@@ -2259,7 +2259,7 @@ function applyServerState(serverState) {
   const previousSearchTerm = state.searchTerm;
   const knownNodeIds = new Set(serverState.branches.flatMap((branch) => branch.nodes.map((node) => node.id)));
 
-  const preferLocalEditable = parseUpdatedAt(persistence.localUpdatedAt) > parseUpdatedAt(serverState.updatedAt);
+  const preferLocalEditable = parseUpdatedAt(persistence.localUpdatedAt) >= parseUpdatedAt(serverState.updatedAt);
   const mergedUpdatedAt = preferLocalEditable ? persistence.localUpdatedAt || serverState.updatedAt : serverState.updatedAt;
   branches = mergeBranchLists(serverState.branches, branches, {
     preferLocalEditable,
