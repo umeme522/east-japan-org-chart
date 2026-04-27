@@ -759,15 +759,13 @@ textarea {
 @media (min-width: 721px) {
   .node-card.is-root.is-executive {
     position: sticky;
-    left: 50%;
-    transform: translateX(calc(-100% - 14px));
+    left: 12px;
     z-index: 9;
   }
 
   .node-card.is-executive:not(.is-root) {
     position: sticky;
-    left: 50%;
-    transform: translateX(14px);
+    left: 12px;
     z-index: 8;
   }
 }
