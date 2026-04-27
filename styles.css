@@ -302,7 +302,7 @@ textarea {
 
 .branch-summary {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   align-items: stretch;
   justify-content: stretch;
@@ -325,17 +325,6 @@ textarea {
   align-items: center;
   justify-content: center;
   min-height: 44px;
-}
-
-.summary-card.summary-card-version {
-  display: grid;
-  gap: 3px;
-  align-content: center;
-}
-
-.summary-card.summary-card-version small {
-  color: var(--muted);
-  font-size: 0.72rem;
 }
 
 .summary-card span,

@@ -3077,14 +3077,8 @@ function renderBranchTabs() {
 
 function renderBranchSummary(branch) {
   const peopleCount = collectScopePeople(branch).length;
-  const revision = normalizeRevision(persistence.currentRevision) || 1;
-  const updatedAt = persistence.serverUpdatedAt || persistence.localUpdatedAt;
 
   elements.branchSummary.innerHTML = `
-    <article class="summary-card summary-card-version">
-      <span>版 ${revision}</span>
-      <small>${formatTimestamp(updatedAt)}</small>
-    </article>
     <article class="summary-card summary-card-count">
       <span>人数 ${peopleCount}名</span>
     </article>
