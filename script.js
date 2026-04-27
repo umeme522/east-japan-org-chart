@@ -3314,6 +3314,9 @@ function createNode(
 
   if (renderChildReports) {
     const children = document.createElement("ul");
+    if (node.kind === "unit") {
+      children.classList.add("node-line-children");
+    }
     const allPeopleChildren = reportIds.length > 0 && reportIds.every((reportId) => nodes.get(reportId)?.kind === "person");
     if (allPeopleChildren) {
       children.classList.add("vertical-children");

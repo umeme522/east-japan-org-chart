@@ -607,6 +607,100 @@ textarea {
   content: none !important;
 }
 
+.org-chart ul.node-line-children::before,
+.chart-scale-content > ul > li > ul.node-line-children::before,
+.chart-detached-row > ul.detached-tree > li > ul.node-line-children::before {
+  display: block !important;
+  content: "" !important;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 22px;
+  background: var(--line-strong);
+  transform: translateX(-50%);
+}
+
+.org-chart ul.node-line-children > li::before,
+.org-chart ul.node-line-children > li::after,
+.chart-scale-content > ul > li > ul.node-line-children > li::before,
+.chart-scale-content > ul > li > ul.node-line-children > li::after,
+.chart-detached-row > ul.detached-tree > li > ul.node-line-children > li::before,
+.chart-detached-row > ul.detached-tree > li > ul.node-line-children > li::after {
+  display: block !important;
+  content: "" !important;
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 18px;
+  border-top: 2px solid var(--line-strong);
+}
+
+.org-chart ul.node-line-children > li::before,
+.chart-scale-content > ul > li > ul.node-line-children > li::before,
+.chart-detached-row > ul.detached-tree > li > ul.node-line-children > li::before {
+  right: 50%;
+}
+
+.org-chart ul.node-line-children > li::after,
+.chart-scale-content > ul > li > ul.node-line-children > li::after,
+.chart-detached-row > ul.detached-tree > li > ul.node-line-children > li::after {
+  left: 50%;
+  border-left: 2px solid var(--line-strong);
+}
+
+.org-chart ul.node-line-children > li:only-child {
+  padding-top: 0;
+}
+
+.org-chart ul.node-line-children > li:only-child::before,
+.org-chart ul.node-line-children > li:only-child::after,
+.org-chart ul.node-line-children > li:first-child::before,
+.org-chart ul.node-line-children > li:last-child::after {
+  display: none !important;
+}
+
+.org-chart ul.node-line-children > li:first-child::after {
+  border-radius: 10px 0 0 0;
+}
+
+.org-chart ul.node-line-children > li:last-child::before {
+  border-right: 2px solid var(--line-strong);
+  border-radius: 0 10px 0 0;
+}
+
+.org-chart ul.node-line-children.vertical-children {
+  display: grid;
+  justify-items: center;
+  align-self: center;
+  justify-self: center;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 18px;
+}
+
+.org-chart ul.node-line-children.vertical-children::before {
+  left: 50%;
+  width: 2px;
+  height: calc(100% - 8px);
+  transform: translateX(-50%);
+}
+
+.org-chart ul.node-line-children.vertical-children > li {
+  padding: 0;
+  width: max-content;
+  align-items: center;
+}
+
+.org-chart ul.node-line-children.vertical-children > li > .node-card {
+  margin-inline: auto;
+}
+
+.org-chart ul.node-line-children.vertical-children > li::before,
+.org-chart ul.node-line-children.vertical-children > li::after {
+  display: none !important;
+}
+
 .node-card {
   display: grid;
   gap: 4px;
