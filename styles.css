@@ -1447,14 +1447,29 @@ textarea {
 }
 
 .profile-summary-main {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
   gap: 14px;
 }
 
+.profile-summary-copy {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  align-content: start;
+}
+
+.profile-summary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
 .profile-edit-button {
-  margin-left: auto;
-  align-self: center;
+  margin-left: 0;
+  align-self: start;
 }
 
 .profile-close-button {
@@ -1471,6 +1486,7 @@ textarea {
   border: 1px solid rgba(255, 255, 255, 0.26);
   background: rgba(255, 255, 255, 0.14);
   box-shadow: 0 10px 20px rgba(8, 31, 20, 0.18);
+  justify-self: end;
 }
 
 .profile-photo img {
@@ -1486,7 +1502,7 @@ textarea {
 
 .profile-simple-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
   margin: 0;
 }
@@ -1507,19 +1523,19 @@ textarea {
 }
 
 .profile-stat-grid-compact {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   padding: 10px 12px;
 }
 
 .profile-stat {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
-  column-gap: 8px;
+  justify-content: space-between;
+  column-gap: 10px;
   min-width: 0;
-  padding: 7px 9px;
+  padding: 8px 10px;
   border-radius: 14px;
 }
 
@@ -1546,6 +1562,7 @@ textarea {
   font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: right;
 }
 
 #profilePersonInfoRow .profile-stat:nth-child(1) {
