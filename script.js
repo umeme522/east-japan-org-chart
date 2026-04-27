@@ -2024,6 +2024,7 @@ const elements = {
   search: document.getElementById("memberSearch"),
   profileEmpty: document.getElementById("profileEmpty"),
   profileContent: document.getElementById("profileContent"),
+  profileInfoLayout: document.getElementById("profileInfoLayout"),
   profileBranch: document.getElementById("profileBranch"),
   profilePhoto: document.getElementById("profilePhoto"),
   profilePhotoImage: document.getElementById("profilePhotoImage"),
@@ -3303,6 +3304,12 @@ function renderProfile(branch) {
       elements.profilePhotoImage.removeAttribute("src");
       elements.profilePhotoImage.alt = "";
     }
+  }
+  if (elements.profileInfoLayout) {
+    elements.profileInfoLayout.classList.toggle(
+      "has-photo",
+      Boolean(selected.kind === "person" && selected.photo)
+    );
   }
   const affiliation = buildAffiliation(branch, selected) || "未設定";
 

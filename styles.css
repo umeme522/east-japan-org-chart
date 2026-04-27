@@ -1448,7 +1448,7 @@ textarea {
 
 .profile-summary-main {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
   gap: 14px;
 }
@@ -1478,15 +1478,31 @@ textarea {
 }
 
 .profile-photo {
-  flex: 0 0 auto;
-  width: 82px;
-  height: 82px;
+  width: 100%;
+  min-height: 220px;
+  aspect-ratio: 4 / 5;
   border-radius: 22px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.26);
   background: rgba(255, 255, 255, 0.14);
   box-shadow: 0 10px 20px rgba(8, 31, 20, 0.18);
   justify-self: end;
+}
+
+.profile-info-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  margin-top: 10px;
+}
+
+.profile-info-layout.has-photo {
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+}
+
+.profile-info-main {
+  min-width: 0;
 }
 
 .profile-photo img {
@@ -2447,9 +2463,12 @@ textarea {
   }
 
   .profile-photo {
-    width: 68px;
-    height: 68px;
+    min-height: 160px;
     border-radius: 18px;
+  }
+
+  .profile-info-layout.has-photo {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .profile-stat-grid {

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=20260427-32">
+  <link rel="stylesheet" href="./styles.css?v=20260427-33">
 </head>
 <body>
   <div class="page-shell">
@@ -137,44 +137,48 @@
                   <button id="profileCloseButton" type="button" class="secondary-button profile-close-button">閉じる</button>
                 </div>
               </div>
-              <div class="profile-photo" id="profilePhoto" hidden>
-                <img id="profilePhotoImage" alt="顔写真">
-              </div>
             </div>
           </div>
 
-          <dl class="profile-simple-list">
-            <div id="profilePersonInfoRow" class="profile-stat-grid profile-stat-grid-compact">
-              <div class="profile-stat">
-                <dt>所属</dt>
-                <dd id="profileAffiliationValue"></dd>
-              </div>
-              <div class="profile-stat">
-                <dt>役職</dt>
-                <dd id="profileRoleValue"></dd>
-              </div>
-              <div class="profile-stat">
-                <dt>社員番号</dt>
-                <dd id="profileEmployeeNumberValue"></dd>
-              </div>
-              <div class="profile-stat">
-                <dt>年齢</dt>
-                <dd id="profileAgeValue"></dd>
-              </div>
-              <div class="profile-stat">
-                <dt>勤続</dt>
-                <dd id="profileTenureValue"></dd>
-              </div>
-              <div class="profile-stat">
-                <dt>入社</dt>
-                <dd id="profileJoinYearValue"></dd>
-              </div>
+          <div id="profileInfoLayout" class="profile-info-layout">
+            <div class="profile-info-main">
+              <dl class="profile-simple-list">
+                <div id="profilePersonInfoRow" class="profile-stat-grid profile-stat-grid-compact">
+                  <div class="profile-stat">
+                    <dt>所属</dt>
+                    <dd id="profileAffiliationValue"></dd>
+                  </div>
+                  <div class="profile-stat">
+                    <dt>役職</dt>
+                    <dd id="profileRoleValue"></dd>
+                  </div>
+                  <div class="profile-stat">
+                    <dt>社員番号</dt>
+                    <dd id="profileEmployeeNumberValue"></dd>
+                  </div>
+                  <div class="profile-stat">
+                    <dt>年齢</dt>
+                    <dd id="profileAgeValue"></dd>
+                  </div>
+                  <div class="profile-stat">
+                    <dt>勤続</dt>
+                    <dd id="profileTenureValue"></dd>
+                  </div>
+                  <div class="profile-stat">
+                    <dt>入社</dt>
+                    <dd id="profileJoinYearValue"></dd>
+                  </div>
+                </div>
+                <div class="profile-simple-wide" id="profileDescriptionRow">
+                  <dt id="profileDescriptionLabel">経歴</dt>
+                  <dd id="profileDescriptionValue" class="history-list"></dd>
+                </div>
+              </dl>
             </div>
-            <div class="profile-simple-wide" id="profileDescriptionRow">
-              <dt id="profileDescriptionLabel">経歴</dt>
-              <dd id="profileDescriptionValue" class="history-list"></dd>
+            <div class="profile-photo" id="profilePhoto" hidden>
+              <img id="profilePhotoImage" alt="顔写真">
             </div>
-          </dl>
+          </div>
 
           <details class="profile-disclosure" id="profileEditor">
             <summary>編集</summary>
@@ -240,6 +244,6 @@
     </main>
   </div>
 
-  <script src="./script.js?v=20260427-37"></script>
+  <script src="./script.js?v=20260427-38"></script>
 </body>
 </html>
