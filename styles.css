@@ -443,20 +443,30 @@ textarea {
 }
 
 .chart-root-layout {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: max-content max-content;
+  justify-content: center;
+  align-items: start;
+  gap: 28px;
+}
+
+.chart-root-layout > ul {
+  align-self: start;
 }
 
 .chart-detached-row {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
-  gap: 24px;
+  justify-content: flex-start;
+  gap: 18px;
   width: max-content;
-  margin: 0 auto;
-  margin-top: 8px;
+  margin: 0;
+  padding: 12px 14px 14px;
+  border: 1px solid rgba(31, 106, 67, 0.14);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: var(--shadow-card);
 }
 
 .org-chart ul {
@@ -495,7 +505,7 @@ textarea {
   margin-top: 0;
   align-self: flex-start;
   justify-self: flex-start;
-  width: 100%;
+  width: max-content;
 }
 
 .chart-detached-row > ul.detached-tree::before {
@@ -2134,6 +2144,18 @@ textarea {
     gap: 16px;
     width: 100%;
     margin-top: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .chart-root-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
   }
 
   .chart-detached-row > ul.detached-tree {
