@@ -2241,7 +2241,7 @@ function applyServerState(serverState) {
   const mergedUpdatedAt = preferLocalEditable ? persistence.localUpdatedAt || serverState.updatedAt : serverState.updatedAt;
   branches = mergeBranchLists(serverState.branches, branches, {
     preferLocalEditable,
-    keepLocalOnlyNodes: KEEP_LOCAL_ONLY_NODES,
+    keepLocalOnlyNodes: KEEP_LOCAL_ONLY_NODES || preferLocalEditable,
   });
   writeStorageSnapshot(branches, mergedUpdatedAt);
   persistence.localUpdatedAt = normalizeText(mergedUpdatedAt);
