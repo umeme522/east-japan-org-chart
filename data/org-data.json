@@ -33,9 +33,9 @@
           "firstName": "祐介",
           "employeeNumber": "",
           "birthDate": "",
-          "age": "",
+          "age": "0",
           "joinYear": "",
-          "tenure": "",
+          "tenure": "0",
           "historyEntries": [],
           "hobbies": [
             "ゴルフ",

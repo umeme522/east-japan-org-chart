@@ -5,7 +5,7 @@ const USE_REMOTE_SYNC_ENDPOINT = window.location.protocol === "file:" || ["local
 const KEEP_LOCAL_ONLY_NODES = USE_REMOTE_SYNC_ENDPOINT;
 const SERVER_DATA_ENDPOINT = USE_REMOTE_SYNC_ENDPOINT ? PUBLIC_SYNC_ENDPOINT : "/api/org-data";
 const SERVER_SYNC_INTERVAL_MS = 8000;
-const BUNDLED_UPDATED_AT = "2026-03-31T00:00:00.000Z";
+const BUNDLED_UPDATED_AT = "2026-04-27T00:00:00.000Z";
 const ORG_DRAG_ENABLED = false;
 const EDIT_ROLE_OPTIONS = ["", "支店長", "副支店長", "部長", "所長", "課長", "副長", "係長", "スタッフ"];
 const EDIT_TENURE_OPTIONS = Array.from({ length: 61 }, (_, index) => String(index));
@@ -31,8 +31,8 @@ const DEFAULT_BRANCHES = [
         firstName: "",
         title: "支店長",
         department: "支店統括",
-        age: "52歳",
-        tenure: "28年",
+        age: "0",
+        tenure: "0",
         history: "",
         hobbies: ["ゴルフ", "歴史散策"],
         tags: ["支店運営", "組織管理", "営業統括"],
@@ -1501,6 +1501,10 @@ function migrateEastJapanBranch(branch) {
 
   const rootNode = branch.nodes.find((node) => node.id === branch.rootId);
   if (rootNode) {
+    if (rootNode.id === "east-japan-1") {
+      rootNode.age = "0";
+      rootNode.tenure = "0";
+    }
     rootNode.historyEntries = [];
     rootNode.history = "";
   }
@@ -1965,7 +1969,7 @@ const storedPayload = loadStoredPayload();
 const bundledBranches = loadBranches(DEFAULT_BRANCHES);
 const storedBranches = loadBranches(storedPayload);
 const storedUpdatedAt = normalizeText(storedPayload?.updatedAt);
-const preferStoredEditable = parseUpdatedAt(storedUpdatedAt) >= parseUpdatedAt(BUNDLED_UPDATED_AT);
+const preferStoredEditable = true;
 let branches = mergeBranchLists(bundledBranches, storedBranches, {
   preferLocalEditable: preferStoredEditable,
   keepLocalOnlyNodes: false,
