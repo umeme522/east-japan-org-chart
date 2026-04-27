@@ -26,7 +26,8 @@
           ],
           "reports": [
             "east-japan-2",
-            "branch-admin"
+            "branch-admin",
+            "sales-innovation"
           ],
           "lastName": "大久保",
           "firstName": "祐介",
@@ -1904,6 +1905,50 @@
           "managerTitle": "",
           "managerTitles": [],
           "managerLinkedId": ""
+        },
+        {
+          "id": "sales-innovation",
+          "kind": "unit",
+          "name": "営業革新部",
+          "title": "",
+          "titles": [],
+          "department": "東日本支店",
+          "tags": [
+            "組織"
+          ],
+          "reports": [
+            "sales-innovation-kiuchi"
+          ],
+          "description": "営業革新部です。",
+          "managerName": "",
+          "managerLastName": "",
+          "managerFirstName": "",
+          "managerTitle": "",
+          "managerTitles": [],
+          "managerLinkedId": ""
+        },
+        {
+          "id": "sales-innovation-kiuchi",
+          "kind": "person",
+          "name": "木内",
+          "lastName": "木内",
+          "firstName": "",
+          "title": "所長",
+          "titles": [
+            "所長"
+          ],
+          "department": "営業革新部",
+          "age": "",
+          "joinYear": "",
+          "tenure": "",
+          "history": "",
+          "historyEntries": [],
+          "hobbies": [],
+          "tags": [],
+          "reports": [],
+          "employeeNumber": "",
+          "birthDate": "",
+          "photo": ""
         },
         {
           "id": "branch-admin-inoue",

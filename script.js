@@ -36,7 +36,7 @@ const DEFAULT_BRANCHES = [
         history: "首都圏の責任者と東日本エリア統括を経て、支店長に就任。",
         hobbies: ["ゴルフ", "歴史散策"],
         tags: ["支店運営", "組織管理", "営業統括"],
-        reports: ["east-japan-2"],
+        reports: ["east-japan-2", "branch-admin", "sales-innovation"],
       },
       {
         id: "east-japan-2",
@@ -1605,6 +1605,39 @@ function migrateEastJapanBranch(branch) {
   }, { preferExisting: true });
 
   upsertBranchNode(branch, {
+    id: "sales-innovation",
+    kind: "unit",
+    name: "営業革新部",
+    title: "",
+    department: "東日本支店",
+    description: "営業革新部です。",
+    tags: ["組織"],
+    reports: ["sales-innovation-kiuchi"],
+  }, { preferExisting: true });
+
+  upsertBranchNode(branch, {
+    id: "sales-innovation-kiuchi",
+    kind: "person",
+    name: "木内",
+    lastName: "木内",
+    firstName: "",
+    title: "所長",
+    titles: ["所長"],
+    department: "営業革新部",
+    age: "",
+    joinYear: "",
+    tenure: "",
+    history: "",
+    historyEntries: [],
+    hobbies: [],
+    tags: [],
+    reports: [],
+    employeeNumber: "",
+    birthDate: "",
+    photo: "",
+  }, { preferExisting: true });
+
+  upsertBranchNode(branch, {
     id: "branch-admin-inoue",
     kind: "person",
     name: "井上 珠美",
@@ -1666,7 +1699,8 @@ function migrateEastJapanBranch(branch) {
     rootNode.reports = [
       "east-japan-2",
       "branch-admin",
-      ...existingReports.filter((reportId) => !["east-japan-2", "branch-admin"].includes(reportId)),
+      "sales-innovation",
+      ...existingReports.filter((reportId) => !["east-japan-2", "branch-admin", "sales-innovation"].includes(reportId)),
     ];
   }
 
@@ -2037,6 +2071,7 @@ const elements = {
   profileDescriptionLabel: document.getElementById("profileDescriptionLabel"),
   profileDescriptionValue: document.getElementById("profileDescriptionValue"),
   profileEditButton: document.getElementById("profileEditButton"),
+  profileCloseButton: document.getElementById("profileCloseButton"),
   profileEditor: document.getElementById("profileEditor"),
   profileForm: document.getElementById("profileForm"),
   profileSaveButton: document.getElementById("profileSaveButton"),
@@ -3195,7 +3230,7 @@ function createNode(
   const isActive = node.id === state.selectedNodeId;
   const isRoot = node.id === scopeRootId;
   const isLeaf = reportIds.length === 0;
-  const isIndependentUnit = node.id === "branch-admin" && parentId === branch.rootId;
+  const isIndependentUnit = ["branch-admin", "sales-innovation"].includes(node.id);
   const toneClass = node.kind === "person" ? ` role-tone-${getRoleToneKey(node)}` : "";
   const hasInlineLeader = Boolean(inlineLeader);
   const isExecutive = node.kind === "person" && /(支店長|副支店長)/.test(getRoleText(node));
@@ -3288,7 +3323,7 @@ function renderOrgChart(branch) {
   const executiveNode = executiveNodeId ? nodes.get(executiveNodeId) : null;
   const executiveChildIds = executiveNode ? sortReportIdsForDisplay(executiveNode, nodes) : [];
   const detachedChildIds = root.id === branch.rootId
-    ? root.reports.filter((reportId) => reportId === "branch-admin")
+    ? root.reports.filter((reportId) => ["branch-admin", "sales-innovation"].includes(reportId))
     : [];
   const detachedChildIdSet = new Set(detachedChildIds);
   const mainRoot = detachedChildIds.length > 0
@@ -3813,6 +3848,22 @@ function handleCloseEditPanel() {
   }
 }
 
+function handleCloseProfilePanel() {
+  const branch = getActiveBranch();
+  if (!branch) {
+    return;
+  }
+
+  state.selectedNodeId = state.scopeNodeId || branch.rootId;
+  state.editStatus = "";
+  state.createStatus = "";
+  clearActionStatus();
+  if (elements.profileEditor) {
+    elements.profileEditor.open = false;
+  }
+  render();
+}
+
 function isDescendantOf(branch, nodeId, ancestorId) {
   if (!nodeId || !ancestorId) {
     return false;
@@ -4138,6 +4189,9 @@ if (elements.profileEditButton) {
 
     openProfileEditor(branch.id, state.selectedNodeId);
   });
+}
+if (elements.profileCloseButton) {
+  elements.profileCloseButton.addEventListener("click", handleCloseProfilePanel);
 }
 
 elements.addEditHistoryRow.addEventListener("click", () => {
