@@ -3214,14 +3214,6 @@ function renderOrgChart(branch) {
     return;
   }
 
-  const executiveNodeId = root.id === branch.rootId
-    ? root.reports.find((reportId) => {
-        const report = nodes.get(reportId);
-        return report?.kind === "person" && /(副支店長|支店長)/.test(getRoleText(report));
-      }) ?? ""
-    : "";
-  const executiveNode = executiveNodeId ? nodes.get(executiveNodeId) : null;
-  const executiveChildIds = executiveNode ? sortReportIdsForDisplay(executiveNode, nodes) : [];
   const detachedChildIds = root.id === branch.rootId
     ? root.reports.filter((reportId) => ["branch-admin", "sales-innovation"].includes(reportId))
     : [];
@@ -3236,9 +3228,7 @@ function renderOrgChart(branch) {
     branch,
     nodes,
     new Set(),
-    root.id,
-    "",
-    { suppressChildrenFor: new Set(executiveNodeId ? [executiveNodeId] : []) }
+    root.id
   ));
 
   if (Array.from(tree.children).every((child) => child.hidden)) {
@@ -3256,20 +3246,6 @@ function renderOrgChart(branch) {
   const detachedRow = document.createElement("div");
   detachedRow.className = "chart-detached-row";
   let hasDetachedRow = false;
-
-  if (executiveNode && executiveChildIds.length > 0) {
-    const executiveTree = document.createElement("ul");
-    executiveTree.className = "detached-tree executive-children-tree";
-    executiveChildIds.forEach((childId) => {
-      const childNode = nodes.get(childId);
-      if (!childNode) {
-        return;
-      }
-      executiveTree.appendChild(createNode(childNode, branch, nodes, new Set(), childNode.id, executiveNode.id));
-    });
-    detachedRow.appendChild(executiveTree);
-    hasDetachedRow = true;
-  }
 
   detachedChildIds.forEach((childId) => {
     const childNode = nodes.get(childId);
