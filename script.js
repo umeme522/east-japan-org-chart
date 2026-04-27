@@ -1500,6 +1500,10 @@ function migrateEastJapanBranch(branch) {
   }
 
   const rootNode = branch.nodes.find((node) => node.id === branch.rootId);
+  if (rootNode) {
+    rootNode.historyEntries = [];
+    rootNode.history = "";
+  }
   const dept1 = branch.nodes.find((node) => node.id === "dept-1");
   const dept1Manager = branch.nodes.find((node) => node.id === "dept-1-manager");
   if (dept1 && dept1Manager) {
