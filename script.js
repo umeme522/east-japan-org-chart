@@ -1572,6 +1572,12 @@ function migrateEastJapanBranch(branch) {
     description: "営業革新部です。",
     tags: ["組織"],
     reports: ["sales-innovation-kiuchi"],
+    managerName: "木内",
+    managerLastName: "木内",
+    managerFirstName: "",
+    managerTitle: "係長",
+    managerTitles: ["係長"],
+    managerLinkedId: "sales-innovation-kiuchi",
   }, { preferExisting: true });
 
   upsertBranchNode(branch, {
@@ -1580,8 +1586,8 @@ function migrateEastJapanBranch(branch) {
     name: "木内",
     lastName: "木内",
     firstName: "",
-    title: "所長",
-    titles: ["所長"],
+    title: "係長",
+    titles: ["係長"],
     department: "営業革新部",
     age: "",
     joinYear: "",

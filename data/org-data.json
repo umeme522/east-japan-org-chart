@@ -1922,12 +1922,14 @@
             "sales-innovation-kiuchi"
           ],
           "description": "営業革新部です。",
-          "managerName": "",
-          "managerLastName": "",
+          "managerName": "木内",
+          "managerLastName": "木内",
           "managerFirstName": "",
-          "managerTitle": "",
-          "managerTitles": [],
-          "managerLinkedId": ""
+          "managerTitle": "係長",
+          "managerTitles": [
+            "係長"
+          ],
+          "managerLinkedId": "sales-innovation-kiuchi"
         },
         {
           "id": "sales-innovation-kiuchi",
@@ -1935,9 +1937,9 @@
           "name": "木内",
           "lastName": "木内",
           "firstName": "",
-          "title": "所長",
+          "title": "係長",
           "titles": [
-            "所長"
+            "係長"
           ],
           "department": "営業革新部",
           "age": "",
