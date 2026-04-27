@@ -4,6 +4,7 @@ const PUBLIC_SYNC_ENDPOINT = "https://east-japan-org-chart.pages.dev/api/org-dat
 const USE_REMOTE_SYNC_ENDPOINT = window.location.protocol === "file:" || ["localhost", "127.0.0.1", "0.0.0.0"].includes(window.location.hostname);
 const KEEP_LOCAL_ONLY_NODES = USE_REMOTE_SYNC_ENDPOINT;
 const SERVER_DATA_ENDPOINT = USE_REMOTE_SYNC_ENDPOINT ? PUBLIC_SYNC_ENDPOINT : "/api/org-data";
+const SERVER_PHOTO_ENDPOINT = SERVER_DATA_ENDPOINT.replace(/\/api\/org-data$/, "/api/org-photo");
 const SERVER_SYNC_INTERVAL_MS = 8000;
 const BUNDLED_UPDATED_AT = "2026-04-27T00:00:00.000Z";
 const ORG_DRAG_ENABLED = false;
@@ -1392,6 +1393,7 @@ function normalizeNode(node, index) {
     normalized.tenure = normalizeNumericField(node?.tenure);
     normalized.historyEntries = normalizeHistoryEntries(node?.historyEntries, node?.history);
     normalized.hobbies = normalizeStringArray(node?.hobbies);
+    normalized.photoId = normalizeText(node?.photoId);
     normalized.photo = normalizeText(node?.photo);
   } else {
     normalized.description = normalizeText(node?.description);
@@ -1906,7 +1908,11 @@ function mergeNormalizedNode(primaryNode, localNode, options = {}) {
     merged.department = mergeTextValue(primaryNode.department, localNode.department, { preferLocal: preferLocalEditable });
     merged.employeeNumber = mergeTextValue(primaryNode.employeeNumber, localNode.employeeNumber, { preferLocal: preferLocalEditable });
     merged.birthDate = mergeTextValue(primaryNode.birthDate, localNode.birthDate, { preferLocal: preferLocalEditable });
+    merged.photoId = mergeTextValue(primaryNode.photoId, localNode.photoId, { preferLocal: preferLocalEditable });
     merged.photo = mergeTextValue(primaryNode.photo, localNode.photo, { preferLocal: preferLocalEditable });
+    if (merged.photoId) {
+      merged.photo = "";
+    }
     merged.age = mergeTextValue(primaryNode.age, localNode.age, { preferLocal: preferLocalEditable });
     merged.joinYear = mergeTextValue(primaryNode.joinYear, localNode.joinYear, { preferLocal: preferLocalEditable });
     merged.tenure = mergeTextValue(primaryNode.tenure, localNode.tenure, { preferLocal: preferLocalEditable });
@@ -2048,6 +2054,7 @@ const dragState = {
 
 let syncTimerId = 0;
 let syncInFlight = false;
+let photoMigrationInFlight = false;
 
 const elements = {
   branchTabs: document.getElementById("branchTabs"),
@@ -2304,6 +2311,7 @@ function applyServerState(serverState, options = {}) {
   }
 
   render();
+  void migrateLegacyPhotoAssets(branches);
 }
 
 async function syncBranchesFromServer(options = {}) {
@@ -2983,7 +2991,11 @@ function serializeHistoryEntries(entries = []) {
     .join(" | ");
 }
 
-function readImageFileAsDataUrl(file) {
+const PHOTO_MAX_DIMENSION = 960;
+const PHOTO_OUTPUT_QUALITY = 0.82;
+const PHOTO_OUTPUT_TYPE = "image/jpeg";
+
+function readFileAsDataUrl(file) {
   if (!file) {
     return Promise.resolve("");
   }
@@ -2994,6 +3006,155 @@ function readImageFileAsDataUrl(file) {
     reader.onerror = () => reject(new Error("image-read-failed"));
     reader.readAsDataURL(file);
   });
+}
+
+function loadImageElement(source) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("image-load-failed"));
+    image.src = source;
+  });
+}
+
+function fitWithinBounds(width, height, maxDimension = PHOTO_MAX_DIMENSION) {
+  if (!width || !height) {
+    return { width: maxDimension, height: maxDimension };
+  }
+
+  const scale = Math.min(1, maxDimension / Math.max(width, height));
+  return {
+    width: Math.max(1, Math.round(width * scale)),
+    height: Math.max(1, Math.round(height * scale)),
+  };
+}
+
+async function readImageFileAsDataUrl(file) {
+  if (!file) {
+    return "";
+  }
+
+  const keepOriginal = /^image\/jpe?g$/i.test(file.type) && file.size <= 500 * 1024;
+  let objectUrl = "";
+
+  try {
+    objectUrl = URL.createObjectURL(file);
+    const image = await loadImageElement(objectUrl);
+    const sourceWidth = image.naturalWidth || image.width || PHOTO_MAX_DIMENSION;
+    const sourceHeight = image.naturalHeight || image.height || PHOTO_MAX_DIMENSION;
+
+    if (keepOriginal && sourceWidth <= PHOTO_MAX_DIMENSION && sourceHeight <= PHOTO_MAX_DIMENSION) {
+      return await readFileAsDataUrl(file);
+    }
+
+    const { width, height } = fitWithinBounds(sourceWidth, sourceHeight);
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("canvas-context-unavailable");
+    }
+
+    context.drawImage(image, 0, 0, width, height);
+    return canvas.toDataURL(PHOTO_OUTPUT_TYPE, PHOTO_OUTPUT_QUALITY);
+  } catch {
+    return readFileAsDataUrl(file);
+  } finally {
+    if (objectUrl) {
+      URL.revokeObjectURL(objectUrl);
+    }
+  }
+}
+
+function isDataImageUrl(value) {
+  return /^data:image\//i.test(normalizeText(value));
+}
+
+function resolvePhotoUrl(node) {
+  const photoId = normalizeText(node?.photoId);
+  if (photoId) {
+    return `${SERVER_PHOTO_ENDPOINT}?id=${encodeURIComponent(photoId)}`;
+  }
+
+  return normalizeText(node?.photo);
+}
+
+async function uploadPhotoDataUrl(dataUrl) {
+  const normalizedDataUrl = normalizeText(dataUrl);
+  if (!normalizedDataUrl) {
+    return "";
+  }
+
+  const response = await window.fetch(SERVER_PHOTO_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ dataUrl: normalizedDataUrl }),
+  });
+
+  const result = await response.json().catch(() => null);
+  if (!response.ok || result?.ok === false || !normalizeText(result?.photoId)) {
+    throw new Error("photo-upload-failed");
+  }
+
+  return normalizeText(result.photoId);
+}
+
+function findLegacyPhotoTargets(branchList = branches) {
+  const targets = [];
+
+  branchList.forEach((branch) => {
+    branch.nodes.forEach((node) => {
+      if (node.kind === "person" && !normalizeText(node.photoId) && isDataImageUrl(node.photo)) {
+        targets.push({ branchId: branch.id, nodeId: node.id, photo: node.photo });
+      }
+    });
+  });
+
+  return targets;
+}
+
+async function migrateLegacyPhotoAssets(branchList = branches) {
+  if (photoMigrationInFlight) {
+    return false;
+  }
+
+  const targets = findLegacyPhotoTargets(branchList);
+  if (!targets.length) {
+    return false;
+  }
+
+  photoMigrationInFlight = true;
+  try {
+    let changed = false;
+
+    for (const target of targets) {
+      const photoId = await uploadPhotoDataUrl(target.photo);
+      if (!photoId) {
+        continue;
+      }
+
+      updateNode(target.branchId, target.nodeId, {
+        photoId,
+        photo: "",
+      });
+      changed = true;
+    }
+
+    if (changed) {
+      await saveBranches();
+      render();
+    }
+
+    return changed;
+  } catch {
+    return false;
+  } finally {
+    photoMigrationInFlight = false;
+  }
 }
 
 function renderHistoryDisplay(target, entries = [], fallback = "未設定") {
@@ -3353,9 +3514,10 @@ function renderProfile(branch) {
   elements.profileName.textContent = selected.name;
   elements.profileName.title = selected.name;
   if (elements.profilePhoto && elements.profilePhotoImage) {
-    if (selected.kind === "person" && selected.photo) {
+    const photoSrc = selected.kind === "person" ? resolvePhotoUrl(selected) : "";
+    if (photoSrc) {
       elements.profilePhoto.hidden = false;
-      elements.profilePhotoImage.src = selected.photo;
+      elements.profilePhotoImage.src = photoSrc;
       elements.profilePhotoImage.alt = `${selected.name} の顔写真`;
     } else {
       elements.profilePhoto.hidden = true;
@@ -3366,7 +3528,7 @@ function renderProfile(branch) {
   if (elements.profileInfoLayout) {
     elements.profileInfoLayout.classList.toggle(
       "has-photo",
-      Boolean(selected.kind === "person" && selected.photo)
+      Boolean(selected.kind === "person" && resolvePhotoUrl(selected))
     );
   }
   const affiliation = buildAffiliation(branch, selected) || "未設定";
@@ -3539,6 +3701,7 @@ async function handleProfileSave(event) {
   const nextHistoryEntries = collectHistoryEntries(elements.editHistoryRows);
   const nextHistory = serializeHistoryEntries(nextHistoryEntries);
   const nextPhotoFile = elements.editPhoto?.files?.[0] ?? null;
+  let nextPhotoId = normalizeText(selected.photoId);
 
   if (selected.kind === "person" && !displayName) {
     state.editStatus = "氏名を入力してください。";
@@ -3572,8 +3735,14 @@ async function handleProfileSave(event) {
       updates.tenure = nextTenure;
       updates.historyEntries = nextHistoryEntries;
       updates.history = nextHistory;
-      const nextPhoto = await readImageFileAsDataUrl(nextPhotoFile);
-      updates.photo = nextPhoto || selected.photo || "";
+      if (nextPhotoFile) {
+        const nextPhoto = await readImageFileAsDataUrl(nextPhotoFile);
+        nextPhotoId = nextPhoto ? await uploadPhotoDataUrl(nextPhoto) : "";
+      } else if (!nextPhotoId && isDataImageUrl(selected.photo)) {
+        nextPhotoId = await uploadPhotoDataUrl(selected.photo);
+      }
+      updates.photoId = nextPhotoId;
+      updates.photo = "";
     }
 
     updateNode(branch.id, selected.id, updates);
@@ -3680,7 +3849,9 @@ async function handleCreatePerson(event) {
     return;
   }
 
-  const photo = await readImageFileAsDataUrl(elements.createPhoto?.files?.[0]);
+  const createPhotoFile = elements.createPhoto?.files?.[0] ?? null;
+  const createPhoto = createPhotoFile ? await readImageFileAsDataUrl(createPhotoFile) : "";
+  const photoId = createPhoto ? await uploadPhotoDataUrl(createPhoto) : "";
 
   const newNode = {
     id: createNodeId(branch, "person"),
@@ -3701,7 +3872,8 @@ async function handleCreatePerson(event) {
     historyEntries: [],
     tags: [],
     reports: [],
-    photo,
+    photoId,
+    photo: "",
   };
   newNode.title = newNode.titles[0] || "";
 
@@ -4086,6 +4258,7 @@ async function initializeApp() {
     persistence.serverReachable = true;
     persistence.serverUpdatedAt = normalizeText(serverState.updatedAt);
     applyServerState(serverState);
+    void migrateLegacyPhotoAssets(branches);
     setActionStatus("");
   } catch {
     persistence.serverReachable = false;
