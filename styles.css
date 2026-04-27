@@ -456,10 +456,10 @@ textarea {
 
 .chart-detached-row {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 18px;
+  gap: 20px;
   width: max-content;
   margin: 0;
   padding: 12px 14px 14px;
