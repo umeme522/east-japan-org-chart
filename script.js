@@ -1183,6 +1183,15 @@ function getInlineUnitLeader(node, nodes) {
     );
   }
 
+  if (["branch-admin", "sales-innovation"].includes(node.id)) {
+    return (
+      node.reports
+        .map((reportId) => nodes.get(reportId))
+        .find((candidate) => candidate?.kind === "person") ??
+      null
+    );
+  }
+
   return null;
 }
 
@@ -1237,12 +1246,13 @@ function sortReportIdsForDisplay(node, nodes) {
   const inlineLeader = getInlineUnitLeader(node, nodes);
   const inlineLeaderNode = inlineLeader?.linkedNodeId ? nodes.get(inlineLeader.linkedNodeId) : null;
   const inlineLeaderReports = inlineLeaderNode?.reports ?? inlineLeader?.reports ?? [];
+  const specialUnitLeaderId = ["branch-admin", "sales-innovation"].includes(node.id) ? inlineLeader?.id : "";
   const officeChildIds = isOfficeNode(node) && inlineLeader
     ? [
         ...node.reports.filter((reportId) => reportId !== inlineLeader.id),
         ...inlineLeaderReports,
       ]
-    : node.reports.filter((reportId) => reportId !== inlineLeader?.id);
+    : node.reports.filter((reportId) => reportId !== inlineLeader?.id && reportId !== specialUnitLeaderId);
 
   const reports = pruneNestedReportIds(officeChildIds, nodes)
     .map((reportId, index) => ({
@@ -3235,11 +3245,12 @@ function createNode(
   const hasInlineLeader = Boolean(inlineLeader);
   const isExecutive = node.kind === "person" && /(支店長|副支店長)/.test(getRoleText(node));
   const isOfficeWithLeader = isOfficeNode(node) && hasInlineLeader;
+  const isIndependentUnitWithLeader = ["branch-admin", "sales-innovation"].includes(node.id) && hasInlineLeader;
   const childrenSuppressed = suppressChildrenFor.has(node.id);
   const renderChildReports = !childrenSuppressed && shouldRenderChildren(node, nodes);
 
   card.type = "button";
-  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle && !childrenSuppressed ? " is-department" : ""}${isLeaf || childrenSuppressed ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${isOfficeWithLeader ? " office-inline-stacked" : ""}${isExecutive ? " is-executive" : ""}${toneClass}`;
+  card.className = `node-card ${kindClass}${isActive ? " active" : ""}${isRoot ? " is-root" : ""}${canToggle && !childrenSuppressed ? " is-department" : ""}${isLeaf || childrenSuppressed ? " is-leaf" : ""}${hasInlineLeader ? " has-inline-leader" : ""}${isOfficeWithLeader ? " office-inline-stacked" : ""}${isIndependentUnitWithLeader ? " unit-inline-stacked" : ""}${isExecutive ? " is-executive" : ""}${toneClass}`;
   if (isIndependentUnit) {
     item.classList.add("is-independent-root");
   }
@@ -3253,6 +3264,14 @@ function createNode(
             <span class="node-inline-leader-name">${inlineLeader.name}</span>
           </span>
         ` : ""}
+        ${canToggle ? `<span class="node-toggle-indicator">${isExpanded ? "-" : "+"}</span>` : ""}
+      </div>
+    `;
+  } else if (isIndependentUnitWithLeader) {
+    card.innerHTML = `
+      <div class="node-card-header unit-card-header">
+        <span class="node-unit-title">${node.name}</span>
+        <span class="node-unit-top-name">${inlineLeader.name}</span>
         ${canToggle ? `<span class="node-toggle-indicator">${isExpanded ? "-" : "+"}</span>` : ""}
       </div>
     `;

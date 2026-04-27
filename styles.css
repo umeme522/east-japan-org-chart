@@ -770,7 +770,8 @@ textarea {
   border-color: rgba(102, 111, 104, 0.14);
 }
 
-.node-card.office-inline-stacked {
+.node-card.office-inline-stacked,
+.node-card.unit-inline-stacked {
   width: 184px;
   min-width: 184px;
   background: rgba(249, 250, 247, 0.98);
@@ -805,6 +806,25 @@ textarea {
   text-overflow: ellipsis;
 }
 
+.node-unit-title {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.15;
+  text-align: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .node-office-leader-line {
   display: flex;
   align-items: center;
@@ -812,6 +832,20 @@ textarea {
   gap: 4px;
   width: 100%;
   min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.node-unit-top-name {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--accent-ink);
+  line-height: 1.1;
+  text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -854,6 +888,16 @@ textarea {
   align-items: center;
   gap: 5px;
   padding-right: 0;
+}
+
+.node-card.unit-inline-stacked .node-card-header,
+.node-card.office-inline-stacked .node-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
 }
 
 .node-inline-main {
