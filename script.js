@@ -2,7 +2,7 @@ const STORAGE_KEY = "east-japan-org-chart-data";
 const STORAGE_VERSION = 1;
 const PUBLIC_SYNC_ENDPOINT = "https://east-japan-org-chart.pages.dev/api/org-data";
 const USE_REMOTE_SYNC_ENDPOINT = window.location.protocol === "file:" || ["localhost", "127.0.0.1", "0.0.0.0"].includes(window.location.hostname);
-const KEEP_LOCAL_ONLY_NODES = USE_REMOTE_SYNC_ENDPOINT;
+const KEEP_LOCAL_ONLY_NODES = true;
 const SERVER_DATA_ENDPOINT = USE_REMOTE_SYNC_ENDPOINT ? PUBLIC_SYNC_ENDPOINT : "/api/org-data";
 const SERVER_PHOTO_ENDPOINT = SERVER_DATA_ENDPOINT.replace(/\/api\/org-data$/, "/api/org-photo");
 const SERVER_SYNC_INTERVAL_MS = 8000;
@@ -2012,7 +2012,7 @@ const storedRevision = normalizeRevision(storedPayload?.revision) || 1;
 const preferStoredEditable = true;
 let branches = mergeBranchLists(bundledBranches, storedBranches, {
   preferLocalEditable: preferStoredEditable,
-  keepLocalOnlyNodes: false,
+  keepLocalOnlyNodes: KEEP_LOCAL_ONLY_NODES,
 });
 if (!branches.length) {
   branches = bundledBranches;
@@ -2189,6 +2189,7 @@ async function saveBranches() {
   }
 
   const payload = buildStoragePayload("", persistence.currentRevision ?? 1);
+  writeStorageSnapshot(branches, payload.updatedAt, payload.revision);
   const controller = typeof AbortController === "function" ? new AbortController() : null;
   const timeoutId = controller
     ? window.setTimeout(() => {
@@ -2276,7 +2277,7 @@ function applyServerState(serverState, options = {}) {
   branches = mergeLocal
     ? mergeBranchLists(serverState.branches, branches, {
         preferLocalEditable: false,
-        keepLocalOnlyNodes: false,
+        keepLocalOnlyNodes: KEEP_LOCAL_ONLY_NODES,
       })
     : migrateBranches(serverState.branches);
   writeStorageSnapshot(branches, mergedUpdatedAt, mergedRevision);
